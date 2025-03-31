@@ -1,47 +1,92 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import botAvatar from "../../../assets/botAvatar.png";
 import userAvatar from "../../../assets/Avatar.png";
+import Header from "../../../components/Layout/Header";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [showIntro, setShowIntro] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const suggestedQuestions = [
     "Explain the concept of...",
     "How do I manage the classroom when...",
     "How can I engage my students in...",
   ];
-
-  const handleSendMessage = (text) => {
+  const chatEndRef = useRef(null); 
+  const scrollToBottom = () => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollTop = chatEndRef.current.scrollHeight;
+    }  };
+  const handleSendMessage = async (text) => {
     if (!text.trim()) return;
 
-    // Hide the intro and show chat window when first message is sent
-    if (showIntro) {
-      setShowIntro(false);
-    }
-
-    setMessages((prev) => [...prev, { text, sender: "user" }]);
+    const newMessage = {
+      text,
+      sender: "user",
+    };
+    setMessages((prev) => [...prev, newMessage]);
     setInput("");
+    setLoading(true);
+    setShowIntro(false);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              { role: "system", content: "You are a helpful assistant." },
+              { role: "user", content: text },
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch response from GPT-4");
+      }
+
+      const data = await response.json();
+      const botMessage = data.choices[0].message.content;
+
       setMessages((prev) => [
         ...prev,
         {
-          text: "That's a great question! Here's a helpful answer.",
+          text: botMessage,
           sender: "bot",
         },
       ]);
-    }, 1500);
+    } catch (error) {
+      console.error("Error fetching GPT-4 response:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "Sorry, something went wrong. Please try again later.",
+          sender: "bot",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+      scrollToBottom()
+    }
   };
 
-  return (
-    <div className="w-full h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-100">
-      {/* Conditional rendering based on showIntro state */}
+  return (<>
+  
+  <Header/>
+    <div style={{height: "90vh"}} className="w-full h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-100">
+    
       {showIntro ? (
         <>
-          {/* Bot Introduction */}
           <div className="text-center mb-4">
             <img
               src={botAvatar}
@@ -56,7 +101,6 @@ const Chatbot = () => {
             </p>
           </div>
 
-          {/* Suggested Questions */}
           <div className="flex flex-wrap gap-2 max-w-lg justify-center">
             {suggestedQuestions.map((question, index) => (
               <button
@@ -70,8 +114,7 @@ const Chatbot = () => {
           </div>
         </>
       ) : (
-        /* Chat Window - only shown after sending first message */
-        <div className="w-full mt-6 bg-transparent rounded-lg p-4 overflow-y-auto h-full">
+        <div ref={chatEndRef} className="w-full mt-6 bg-transparent rounded-lg p-4 overflow-y-auto h-full">
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -107,7 +150,19 @@ const Chatbot = () => {
         </div>
       )}
 
-      {/* Input Section */}
+      {loading && (
+        <div
+          style={{
+            textAlign: "center",
+            width: "100%",
+            color: "dimgray",
+            marginTop: 10,
+          }}
+        >
+          Reasoning...
+        </div>
+      )}
+
       <div
         className={`w-[80%] flex items-center mt-4 border-t ${
           showIntro ? "pt-[40vh]" : "pt-4"
@@ -119,20 +174,24 @@ const Chatbot = () => {
           placeholder="Ask me anything..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleSendMessage(input);
             }
           }}
+          disabled={loading}
         />
         <button
           onClick={() => handleSendMessage(input)}
-          className="ml-3 bg-[#035b7c] text-white p-2 rounded-lg hover:bg-blue-600"
+          className="ml-3 bg-[#035b7c] text-white p-2 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+          disabled={loading || !input.trim()}
         >
           <FiSend className="text-xl" />
         </button>
       </div>
     </div>
+  </>
+
   );
 };
 

@@ -23,8 +23,6 @@ const FeedbackBot = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      // Instead of alert, navigate to FeedbackBotResponse page
-      // You can also pass state data to the new route if needed
       navigate("/FeedbackBotResponse", {
         state: {
           feedbackType,
@@ -39,7 +37,6 @@ const FeedbackBot = () => {
     <div>
       <Header />
       <div className="flex flex-col md:flex-row gap-6 p-6">
-        {/* Left Form Section */}
         <form
           onSubmit={handleSubmit}
           className="w-full md:w-1/2 border p-5 rounded-lg shadow bg-white"
@@ -57,7 +54,6 @@ const FeedbackBot = () => {
             <option>Content Feedback</option>
           </select>
 
-          {/* File Upload Section */}
           <div className="mt-4 border-2 border-dashed border-gray-300 bg-[#f3fbf9] p-6 rounded-lg text-center">
             <label className="cursor-pointer flex flex-col items-center">
               <FaCloudUploadAlt className="text-blue-500 text-4xl mb-2" />
@@ -78,13 +74,12 @@ const FeedbackBot = () => {
             </label>
             <button
               type="button"
-              className="mt-3  text-[#0598ce] py-1 px-4 rounded-lg "
+              className="mt-3 text-[#0598ce] py-1 px-4 rounded-lg"
             >
               Upload
             </button>
           </div>
 
-          {/* Extra Information Input */}
           <label className="block text-gray-700 font-semibold mt-4 text-xs">
             Anything else you want to be considered in the feedback?
           </label>
@@ -95,7 +90,6 @@ const FeedbackBot = () => {
             placeholder="e.g. feedback length"
           ></textarea>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full mt-4 bg-[#0598ce] text-white py-2 rounded-lg hover:bg-blue-600"
@@ -104,14 +98,12 @@ const FeedbackBot = () => {
           </button>
         </form>
 
-        {/* Right Loading/Processing Section */}
         <div className="w-full md:w-1/2 border p-6 rounded-lg shadow bg-white flex flex-col items-center justify-center">
           {isLoading ? (
             <>
               <img src={Loading} alt="Loading" className="w-80 h-40" />
               <p className="text-gray-600 mt-2 text-center">
-                Just a moment... <br /> We're analyzing your request and
-                building your assessment questions.
+                Just a moment... <br /> We’re analyzing your request and building your assessment questions.
               </p>
             </>
           ) : (
