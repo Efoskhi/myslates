@@ -63,7 +63,7 @@ const [loading, setLoading] = useState(true);
         max: 6000,
         whereClauses: [{ field: "role", operator: "==", value: "learner" }],
       });
-      console.log('we got data',data.length)
+      // console.log('we got data',data.length)
       setStudents(data);
     } catch (error) {
       console.error(error);

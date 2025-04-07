@@ -32,7 +32,10 @@ const TakeAttendanceModal = ({ setIsOpen, setIsModalOpen }) => {
         <div className="mt-4 space-y-4">
           {/* 📜 Take Manually */}
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              setIsModalOpen(true)
+setIsOpen(false)
+            }}
             className="flex flex-col gap-6 items-center w-full px-4 py-3 border rounded-lg bg-[#f5f7fa]  hover:bg-gray-100 transition"
           >
             <FaUserEdit className="text-blue-600 text-2xl mr-2" />

@@ -1,83 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FaCheckCircle,
   FaTimesCircle,
   FaExclamationCircle,
 } from "react-icons/fa";
 import Avatar from "../../assets/Avatar.png";
+import { docQr } from "../../Logics/docQr_ORGate";
 
-const students = [
-  {
-    name: "Taofeeqah Bello",
-    avatar: Avatar,
-    attendance: [
-      "Absent",
-      "Absent",
-      "Absent",
-      "Excused",
-      "Absent",
-      "Absent",
-      "Excused",
-      "Absent",
-    ],
-  },
-  {
-    name: "Ashir Benya",
-    avatar: Avatar,
-    attendance: [
-      "Present",
-      "Present",
-      "Present",
-      "Present",
-      "Present",
-      "Absent",
-      "Excused",
-      "Absent",
-    ],
-  },
-  {
-    name: "Abdulrahman Sodiq",
-    avatar: Avatar,
-    attendance: [
-      "Present",
-      "Absent",
-      "Present",
-      "Present",
-      "Present",
-      "Absent",
-      "Excused",
-      "Absent",
-    ],
-  },
-  {
-    name: "Titiiope Tijani",
-    avatar: Avatar,
-    attendance: [
-      "Absent",
-      "Excused",
-      "Present",
-      "Absent",
-      "Present",
-      "Absent",
-      "Excused",
-      "Absent",
-    ],
-  },
-  {
-    name: "Victoria Eugene",
-    avatar: Avatar,
-    attendance: [
-      "Absent",
-      "Present",
-      "Present",
-      "Present",
-      "Present",
-      "Absent",
-      "Excused",
-      "Absent",
-    ],
-  },
-];
+
 
 const attendanceConfig = {
   Present: {
@@ -94,22 +24,19 @@ const attendanceConfig = {
   },
 };
 
-const AttendanceTable = () => {
+const AttendanceTable = ({attendanceHeader,studentsData}) => {
+const students=studentsData;
+
   return (
     <div className="overflow-x-auto py-6">
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-[#e3f4fa] text-left">
-            <th className="p-3">Student Name</th>
-            <th className="p-3">22/11/2024</th>
-            <th className="p-3">26/11/2024</th>
-            <th className="p-3">28/11/2024</th>
-            <th className="p-3">29/12/2024</th>
-            <th className="p-3">30/12/2024</th>
+           {attendanceHeader.map((name,i)=>{
 
-            <th className="p-3">22/11/2024</th>
-            <th className="p-3">26/11/2024</th>
-            <th className="p-3">28/11/2024</th>
+            return <th className="p-3" key={name+""+i}>{name}</th>
+          })}
+           
           </tr>
         </thead>
         <tbody>
