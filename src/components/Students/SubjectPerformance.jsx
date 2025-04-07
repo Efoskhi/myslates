@@ -8,20 +8,22 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { subject: "Eng", percentage: 70 },
-  { subject: "Math", percentage: 85 },
-  { subject: "Lib", percentage: 55 },
-  { subject: "Yor", percentage: 60 },
-  { subject: "Obj", percentage: 80 },
-  { subject: "Dic", percentage: 90 },
-  { subject: "Cem", percentage: 68 },
-  { subject: "Ora", percentage: 75 },
-];
 
 export default function SubjectPerformance() {
-  const [timeframe, setTimeframe] = useState("This month");
 
+  const [data,setData] = useState([
+    { subject: "Eng", percentage: 70 },
+    { subject: "Math", percentage: 85 },
+    { subject: "Lib", percentage: 55 },
+    { subject: "Yor", percentage: 60 },
+    { subject: "Obj", percentage: 80 },
+    { subject: "Dic", percentage: 90 },
+    { subject: "Cem", percentage: 68 },
+    { subject: "Ora", percentage: 75 },
+  ]);
+  
+  const [timeframe, setTimeframe] = useState("This month");
+//i do not see where to fetch to fetch how many times student attended each subject
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-12">

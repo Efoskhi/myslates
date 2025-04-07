@@ -17,7 +17,6 @@ const studentsList = [
 
 const TakeManuallyModal = ({ onClose }) => {
   const [students, setStudents] = useState(studentsList);
-
   const toggleStatus = (id, status) => {
     setStudents((prev) =>
       prev.map((student) =>

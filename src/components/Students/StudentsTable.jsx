@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useMemo } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { FiFilter } from "react-icons/fi";
 import Face2 from "../../assets/Face2.png";
 import { IoFilter } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-
+import { docQr } from './../../Logics/docQr_ORGate';
+import {ClipLoader} from "react-spinner";
 const STUDENTS_DATA = [
   {
     id: 1,
@@ -14,106 +15,7 @@ const STUDENTS_DATA = [
     grade: "Grade 1",
     subjects: ["English", "Biology", "Basic Science"],
     additionalScore: "+4",
-  },
-  {
-    id: 2,
-    name: "Taofeequah Bello",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 2",
-    subjects: ["Chemistry"],
-    additionalScore: "+4",
-  },
-  {
-    id: 3,
-    name: "Taofeequah Bello",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 3",
-    subjects: ["English"],
-    additionalScore: null,
-  },
-  {
-    id: 4,
-    name: "Ashir Benya",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 4",
-    subjects: ["English", "Biology"],
-    additionalScore: null,
-  },
-  {
-    id: 5,
-    name: "Abdulrahman Sadiq",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "SSS 1",
-    subjects: ["Physics"],
-    additionalScore: null,
-  },
-  {
-    id: 6,
-    name: "Titilope Tijani",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "SSS 2",
-    subjects: ["Physics"],
-    additionalScore: null,
-  },
-  {
-    id: 7,
-    name: "Victoria Eugene",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 1",
-    subjects: ["Physics"],
-    additionalScore: null,
-  },
-  {
-    id: 8,
-    name: "Victoria Eugene",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 1",
-    subjects: ["Chemistry", "Biology"],
-    additionalScore: null,
-  },
-  {
-    id: 9,
-    name: "Victoria Eugene",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 1",
-    subjects: ["Chemistry", "Biology"],
-    additionalScore: null,
-  },
-  {
-    id: 10,
-    name: "James Anderson",
-    email: "james.anderson@gmail.com",
-    phone: "09034576892",
-    grade: "SSS 3",
-    subjects: ["Physics", "Chemistry"],
-    additionalScore: "+3",
-  },
-  {
-    id: 11,
-    name: "Sarah Mitchell",
-    email: "sarah.mitchell@gmail.com",
-    phone: "09034576893",
-    grade: "Grade 2",
-    subjects: ["English", "Basic Science"],
-    additionalScore: "+5",
-  },
-  {
-    id: 12,
-    name: "Michael Chang",
-    email: "michael.chang@gmail.com",
-    phone: "09034576894",
-    grade: "SSS 1",
-    subjects: ["Biology", "Chemistry"],
-    additionalScore: "+2",
-  },
+  }
   // Add more student data as needed...
 ];
 
@@ -143,13 +45,47 @@ const SubjectTag = ({ subject }) => {
 const StudentsTable = () => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleClick = (student) => {
+    window.sessionStorage.setItem("student", JSON.stringify(student));
     navigate("/StudentDetails"); // Update the route as needed
   };
 
   const [currentPage, setCurrentPage] = useState(3);
   const totalPages = 6;
 
+const [students, setStudents] = useState([]);
+const [subjects,setSubjects] = useState([]);
+const [loading, setLoading] = useState(true);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await docQr("users", {
+        max: 6000,
+        whereClauses: [{ field: "role", operator: "==", value: "learner" }],
+      });
+      console.log('we got data',data.length)
+      setStudents(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+
+
+  const STUDENTS_DATA=useMemo(() => students.map((e)=>{
+    const subjects=[]
+    return {
+      ...e,
+      subjects
+    }
+  }), [students])
   const renderPaginationButton = (pageNumber) => {
     const isActive = pageNumber === currentPage;
     return (
@@ -179,7 +115,7 @@ const StudentsTable = () => {
             Apply filter
           </button>
         </div>
-
+{loading && <span>Loading...</span> }
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -209,7 +145,7 @@ const StudentsTable = () => {
                 <tr
                   key={student.id}
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={handleClick}
+                  onClick={()=>handleClick(student)}
                 >
                   <td className="px-4 py-3">
                     <input

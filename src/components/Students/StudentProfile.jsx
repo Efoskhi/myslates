@@ -1,20 +1,20 @@
 import Avatar from "../../assets/Avatar.png";
 import Coin from "../../assets/Coin.png";
 
-export default function StudentProfile() {
+export default function StudentProfile({student}) {
   return (
     <div className="w-full">
       {/* Profile Section */}
       <div className="flex flex-row items-center gap-8">
         <img
-          src={Avatar} // Replace with actual avatar URL
+          src={student?.photo_url|| Avatar} // Replace with actual avatar URL
           alt="User Avatar"
           className="w-20 h-20 rounded-full border-2 border-blue-400"
         />
         <div>
-          <h2 className="text-lg font-semibold mt-2">Vee Bona-Egun</h2>
-          <p className="text-gray-500 text-sm">tahdnajikabb@gmail.com</p>
-          <p className="text-gray-500 text-sm">09034562134</p>
+          <h2 className="text-lg font-semibold mt-2">{student?.display_name}</h2>
+          <p className="text-gray-500 text-sm">{student?.email}</p>
+          <p className="text-gray-500 text-sm">{student?.phone_number}</p>
 
           {/* Coins Section */}
           <div className="flex items-center mt-2 text-lg font-semibold text-gray-700">
