@@ -1,24 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaCamera, FaCheck, FaCheckCircle } from "react-icons/fa";
 import Avatar from "../../assets/Avatar.png";
+import { uploadHtmlFile } from "../../Logics/uploadFileToFirebase";
 
 const ProfileSettings = () => {
   const [profileImage, setProfileImage] = useState(Avatar); // Replace with a default image path
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
+      const url=await uploadHtmlFile(file);
+      console.log({url});
+
     }
   };
 
   const [formData, setFormData] = useState({
-    firstName: "Vee",
-    lastName: "Bona-Egun",
-    email: "tahdnajikabb@gmail.com",
-    phone: "09034562134",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
   });
+
+  const [user,setUser]=useState({});
+useEffect(()=>{
+const user=  JSON.parse(sessionStorage.getItem("user"));
+setFormData({
+    firstName: user?.firstname,
+    lastName: user?.lastname,
+    email: user?.email,
+    phone: user?.phoneNumber
+})
+setUser(user);
+},[]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
