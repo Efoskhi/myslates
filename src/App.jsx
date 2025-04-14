@@ -32,6 +32,9 @@ import Calendar from "./Pages/Dashboard/Calendar/Calendar";
 import StudentDetails from "./Pages/Dashboard/Students/StudentDetails";
 import CreateAccount from "./Pages/Auth/CreateAccount";
 import PasswordSetup from "./Pages/Auth/PasswordSetup";
+import ResultManagement from "./Pages/Dashboard/Subjects/ResultManagement";
+import UploadResult from "./Pages/Dashboard/Subjects/UploadResult";
+import StudentResult from "./Pages/Dashboard/Students/StudentResult";
 
 function App() {
   return (
@@ -75,6 +78,12 @@ function App() {
             <Route path="TeachingTools" element={<TeachingTools />} />
 
             <Route path="CommunicationTools" element={<CommuncationTools />} />
+
+            <Route path="ResultManagement" element={<ResultManagement />} />
+
+            <Route path="UploadResult" element={<UploadResult />} />
+
+            <Route path="StudentResult" element={<StudentResult />} />
 
             <Route path="ChatPage" element={<ChatPage />} />
 

@@ -7,6 +7,7 @@ import { CourseCard } from "../../../components/Subjects/CourseCard";
 import Pagination from "../../../components/Subjects/Pagination";
 import Skeleton from "@mui/material/Skeleton";
 import { docQr } from "../../../Logics/docQr"; // Adjust the import based on your project
+import { getFirebaseData } from "../../../utils/firebase";
 
 const Subjects = () => {
   const [subjects, setSubjects] = useState([]);
@@ -17,9 +18,27 @@ const Subjects = () => {
   const fetchSubjects = async () => {
     try {
       setLoading(true);
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      if(!user) {
+        throw new Error("User is not logged in " + user)
+      }
+
+      const response = await getFirebaseData({
+        collection: "Subjects",
+        refFields: ['classRef', 'deptRef'],
+        query: [
+          ['teacher_id', '==', user.teacher_id]
+        ],
+        page: 1,
+        pageSize: 10
+        
+      })
+
+      if(response.status === "error") throw new Error(response.message);
+
       // Replace with your actual fetch logic
-      const subjectsData = await docQr("Subjects", { max: 5000 });
-      setSubjects(subjectsData);
+      // const subjectsData = await docQr("Subjects", { max: 5000, whereClauses: [{ field: "teacher_id", operator: "==", value: user.teacher_id }] });
+      setSubjects(response.data.Subjects);
     } catch (error) {
       console.error("Error fetching subjects:", error);
     } finally {

@@ -2,8 +2,20 @@ import Header from "../../../components/Layout/Header";
 import Course from "../../../assets/Course.png";
 import { IoCopyOutline } from "react-icons/io5";
 import ClassDetailsAccordion from "../../../components/Subjects/ClassDetailsAccordion";
+import { IoIosArrowBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const SubjectDetails = () => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1); // This navigates back to the previous page
+  };
+
+  const goToStudentsList = () => {
+    navigate("/ResultManagement"); // Navigate to the ResultManagement page
+  };
+
   // Get the subject data from session storage and parse it as JSON
   const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
 
@@ -23,6 +35,20 @@ const SubjectDetails = () => {
     <div>
       <Header />
       <div className="p-6 bg-white">
+        <div className="flex flex-row items-center justify-between pb-4">
+          <div
+            className="border p-1 px-2 text-xs rounded-md inline-flex items-center cursor-pointer hover:bg-gray-100"
+            onClick={handleBack}
+          >
+            <IoIosArrowBack /> Back
+          </div>
+          <div
+            className="border p-1 px-2 text-xs rounded-md cursor-pointer hover:bg-gray-100"
+            onClick={goToStudentsList}
+          >
+            View Students List
+          </div>
+        </div>
         {/* Render subject title or fallback */}
         <h1 className="text-2xl font-bold">{subject.title || "Subject Title"}</h1>
         <div className="mt-2">

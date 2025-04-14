@@ -6,18 +6,7 @@ import { IoFilter } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { docQr } from './../../Logics/docQr_ORGate';
 import {ClipLoader} from "react-spinner";
-const STUDENTS_DATA = [
-  {
-    id: 1,
-    name: "Taofeequah Bello",
-    email: "taofeequahbello@gmail.com",
-    phone: "09034576891",
-    grade: "Grade 1",
-    subjects: ["English", "Biology", "Basic Science"],
-    additionalScore: "+4",
-  }
-  // Add more student data as needed...
-];
+import useStudents from "../../Hooks/useStudents";
 
 const SubjectTag = ({ subject }) => {
   const getTagColor = (subject) => {
@@ -50,40 +39,14 @@ const StudentsTable = () => {
     navigate("/StudentDetails"); // Update the route as needed
   };
 
+  const { loading, students } = useStudents();
+
   const [currentPage, setCurrentPage] = useState(3);
   const totalPages = 6;
 
-const [students, setStudents] = useState([]);
-const [subjects,setSubjects] = useState([]);
-const [loading, setLoading] = useState(true);
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const data = await docQr("users", {
-        max: 6000,
-        whereClauses: [{ field: "role", operator: "==", value: "learner" }],
-      });
-      // console.log('we got data',data.length)
-      setStudents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
-
-
   const STUDENTS_DATA=useMemo(() => students.map((e)=>{
-    const subjects=[]
     return {
       ...e,
-      subjects
     }
   }), [students])
   const renderPaginationButton = (pageNumber) => {
@@ -156,12 +119,12 @@ const [loading, setLoading] = useState(true);
                   <td className="px-4 py-3">
                     <div className="flex items-center">
                       <img
-                        src={Face2}
-                        alt={student.name}
+                        src={student.photo_url}
+                        alt={student.display_name}
                         className="w-8 h-8 rounded-full mr-3"
                       />
                       <span className="text-sm font-medium text-gray-900">
-                        {student.name}
+                        {student.display_name}
                       </span>
                     </div>
                   </td>
@@ -169,7 +132,7 @@ const [loading, setLoading] = useState(true);
                     {student.email}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">
-                    {student.phone}
+                    {student.phone_number}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">
                     {student.grade}

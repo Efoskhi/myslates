@@ -10,14 +10,14 @@ import TakeManuallyModal from "../../../components/Attendance/TakeManuallyModal"
 import Pagination from "../../../components/Attendance/Pagination";
 import { docQr } from "../../../Logics/docQr_ORGate";
 import toast from "react-hot-toast";
-import { useStudents } from "../../../Hooks/useStudents";
+import useStudents from "../../../Hooks/useStudents";
 import { format, subDays, isAfter, isBefore, parseISO, isWithinInterval, isEqual } from "date-fns";
 import { ClipLoader } from "react-spinners";
 const Attendance = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attendance, setAttendance] = useState([]);
-const {students,loading}=useStudents()
+const {students,loading} = useStudents()
 
   const getAttendance =async () => {
     try {
