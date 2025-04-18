@@ -37,6 +37,31 @@ interface FindOption {
     value: string;
 }
 
+interface AddFirebaseData {
+    collection: string;
+    data?: Record<string, any>;
+    id?: string;
+    subCollectionData?: Record<string, any>;
+    successMessage: string;
+}
+
+interface UpdateFirebaseData {
+    collection: string;
+    data?: Record<string, any>;
+    id: string;
+    title?: string;
+    subCollectionData?: Record<string, any>;
+}
+
+interface DeleteFirebaseData {
+    collection: string;
+    id: string;
+    subCollection?: Record<string, any>;
+    title?: string;
+    subCollectionData?: Record<string, any>;
+    deleteMainDocument?: boolean;
+}
+
 type WhereFilterOp =
     | "<"
     | "<="
@@ -214,13 +239,13 @@ const getFirebaseData = async (
 
                     if (subcollections.length > 0) {
                         for (const subName of subcollections) {
-                          const subRef = collection(docSnapshot.ref, subName);
-                          const subSnap = await getDocs(subRef);
-                  
-                          docData[subName] = subSnap.docs.map((subDoc) => ({
-                            id: subDoc.id,
-                            ...subDoc.data(),
-                          }));
+                            const subRef = collection(docSnapshot.ref, subName);
+                            const subSnap = await getDocs(subRef);
+
+                            docData[subName] = subSnap.docs.map((subDoc) => ({
+                                id: subDoc.id,
+                                ...subDoc.data(),
+                            }));
                         }
                     }
 
@@ -271,60 +296,63 @@ const getFirebaseData = async (
 const addFirebaseData = async ({
     collection: coll,
     data,
-    id = null,
-    subCollectionData = null,
+    id,
+    subCollectionData,
     successMessage,
-  }) => {
+}: AddFirebaseData) => {
     try {
-      const preparedData = data
-        ? {
-            ...prepareDataWithReferences(data),
-            created_time: Timestamp.fromDate(new Date()),
-          }
-        : null;
-  
-      const docRef = id ? doc(db, coll, id) : doc(collection(db, coll));
-  
-      if (preparedData) {
-        const docSnapshot = await getDoc(docRef);
-  
-        // Only create the doc if it doesn't exist
-        if (!docSnapshot.exists()) {
-          await setDoc(docRef, preparedData);
+        const preparedData = data
+            ? {
+                  ...prepareDataWithReferences(data),
+                  created_date: Timestamp.fromDate(new Date()),
+              }
+            : null;
+
+        const docRef = id ? doc(db, coll, id) : doc(collection(db, coll));
+
+        if (preparedData) {
+            const docSnapshot = await getDoc(docRef);
+
+            // Only create the doc if it doesn't exist
+            if (!docSnapshot.exists()) {
+                await setDoc(docRef, preparedData);
+            }
         }
-      }
-  
-      // Handle subcollections
-      if (subCollectionData && typeof subCollectionData === "object") {
-        for (const [subCollName, subData] of Object.entries(subCollectionData)) {
-          const subRef = collection(docRef, subCollName);
-  
-          const subDocs = Array.isArray(subData) ? subData : [subData];
-  
-          for (const doc of subDocs) {
-            const preparedSubData = {
-              ...prepareDataWithReferences(doc),
-              created_time: Timestamp.fromDate(new Date()),
-            };
-            await addDoc(subRef, preparedSubData);
-          }
+
+        // Handle subcollections
+        if (subCollectionData && typeof subCollectionData === "object") {
+            for (const [subCollName, subData] of Object.entries(
+                subCollectionData
+            )) {
+                const subDocs = Array.isArray(subData) ? subData : [subData];
+
+                for (const item of subDocs) {
+                    const subRef = item.id
+                        ? doc(docRef, subCollName, item.id)
+                        : doc(collection(docRef, subCollName));
+
+                    const preparedSubData = {
+                        ...prepareDataWithReferences(doc),
+                        created_time: Timestamp.fromDate(new Date()),
+                    };
+                    await setDoc(subRef, preparedSubData);
+                }
+            }
         }
-      }
-  
-      return {
-        status: "success",
-        message: successMessage,
-        data: docRef,
-      };
+
+        return {
+            status: "success",
+            message: successMessage,
+            data: docRef,
+        };
     } catch (error) {
-      console.error("error", error);
-      return {
-        status: "error",
-        message: "Something went wrong adding data",
-      };
+        console.error("error", error);
+        return {
+            status: "error",
+            message: "Something went wrong adding data",
+        };
     }
-  };
-  
+};
 
 const prepareDataWithReferences = (data) => {
     const preparedData = { ...data };
@@ -344,10 +372,10 @@ const prepareDataWithReferences = (data) => {
     return preparedData;
 };
 
-const uploadImageToFirebase = async (file, path) => {
+const uploadFileToFirebase = async (file, path) => {
     if (!file) {
         console.error("No file selected.");
-        return;
+        return "";
     }
 
     try {
@@ -359,6 +387,7 @@ const uploadImageToFirebase = async (file, path) => {
 
         return downloadURL;
     } catch (error) {
+        return "";
         // console.error("Error uploading image:", error);
     }
 };
@@ -377,16 +406,29 @@ const deleteFirebaseData = async ({
     collection: collectionName,
     id,
     subCollection,
+    subCollectionData,
     title,
-}) => {
+    deleteMainDocument = true,
+}: DeleteFirebaseData) => {
     try {
         const docRef = doc(db, collectionName, id);
-        await deleteDoc(docRef);
 
+        // 1. Delete specific subcollection docs by ID
+        if (subCollectionData && typeof subCollectionData === "object") {
+            for (const [subCollName, subDocInfo] of Object.entries(
+                subCollectionData
+            )) {
+                if (subDocInfo?.id) {
+                    const subDocRef = doc(docRef, subCollName, subDocInfo.id);
+                    await deleteDoc(subDocRef);
+                }
+            }
+        }
+
+        // 2. Optional: query-based deletion
         if (subCollection) {
             const { collection: subCollectionName, field } = subCollection;
             const subCollectionRef = collection(db, subCollectionName);
-
             const q = query(subCollectionRef, where(field, "==", docRef));
             const querySnapshot = await getDocs(q);
 
@@ -396,11 +438,17 @@ const deleteFirebaseData = async ({
             await Promise.all(deletePromises);
         }
 
+        // 3. Delete the main doc only if allowed
+        if (deleteMainDocument) {
+            await deleteDoc(docRef);
+        }
+
         return {
             status: "success",
             message: `${title} has been deleted`,
         };
     } catch (error) {
+        console.error(error);
         return {
             status: "error",
             message: `Could not delete ${title}`,
@@ -409,17 +457,51 @@ const deleteFirebaseData = async ({
 };
 
 const updateFirebaseData = async ({
-    collection,
+    collection: coll,
     data,
     id,
     title = "Customer",
-}) => {
+    subCollectionData,
+}: UpdateFirebaseData) => {
     try {
-        const docRef = doc(db, collection, id);
+        const docRef = doc(db, coll, id);
 
-        const updatedData = prepareDataWithReferences(data);
+        // Update main document
+        if (data) {
+            const updatedData = prepareDataWithReferences(data);
+            await updateDoc(docRef, updatedData);
+        }
 
-        await updateDoc(docRef, updatedData);
+        // Handle subcollection updates
+        if (subCollectionData && typeof subCollectionData === "object") {
+            for (const [subCollName, subData] of Object.entries(
+                subCollectionData
+            )) {
+                const subDocs = Array.isArray(subData) ? subData : [subData];
+
+                for (const subDoc of subDocs) {
+                    if (!subDoc.id) {
+                        console.warn(
+                            `Skipping subdocument without id in ${subCollName}`
+                        );
+                        continue;
+                    }
+
+                    // Correct: Get document reference in subcollection
+                    const subDocRef = doc(
+                        collection(docRef, subCollName),
+                        subDoc.id
+                    );
+
+                    const preparedSubData = {
+                        ...prepareDataWithReferences(subDoc),
+                        created_time: Timestamp.fromDate(new Date()),
+                    };
+
+                    await updateDoc(subDocRef, preparedSubData);
+                }
+            }
+        }
 
         return {
             status: "success",
@@ -437,7 +519,7 @@ const updateFirebaseData = async ({
 export {
     getFirebaseData,
     addFirebaseData,
-    uploadImageToFirebase,
+    uploadFileToFirebase,
     deleteFirebaseData,
     updateFirebaseData,
     deleteFileFromFirebase,

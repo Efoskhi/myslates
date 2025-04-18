@@ -221,7 +221,6 @@ const useResultManagement = ({
 
                         return await addFirebaseData({
                             collection: "StudentResults",
-                            data: null,
                             successMessage: "",
                             subCollectionData,
                             id

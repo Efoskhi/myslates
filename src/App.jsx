@@ -35,6 +35,7 @@ import PasswordSetup from "./Pages/Auth/PasswordSetup";
 import ResultManagement from "./Pages/Dashboard/Subjects/ResultManagement";
 import UploadResult from "./Pages/Dashboard/Subjects/UploadResult";
 import StudentResult from "./Pages/Dashboard/Students/StudentResult";
+import TopicDetails from "./Pages/Dashboard/Subjects/TopicDetails";
 
 function App() {
   return (
@@ -100,6 +101,7 @@ function App() {
             />
             <Route path="LessonPlan" element={<LessonPlan />} />
             <Route path="Settings" element={<Settings />} />
+            <Route path="TopicDetails" element={<TopicDetails />} />
           </Route>
         </Routes>
       </Router>
