@@ -7,7 +7,7 @@ interface Props {
 }
 
 const defaultProps = {
-    shouldGetClasses: false,
+    shouldGetClasses: true,
 }
 
 let fetchedClasses = [];

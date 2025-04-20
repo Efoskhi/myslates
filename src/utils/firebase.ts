@@ -332,7 +332,7 @@ const addFirebaseData = async ({
                         : doc(collection(docRef, subCollName));
 
                     const preparedSubData = {
-                        ...prepareDataWithReferences(doc),
+                        ...prepareDataWithReferences(item),
                         created_time: Timestamp.fromDate(new Date()),
                     };
                     await setDoc(subRef, preparedSubData);
@@ -340,10 +340,15 @@ const addFirebaseData = async ({
             }
         }
 
+        const newDocSnapshot = await getDoc(docRef);
+
         return {
             status: "success",
             message: successMessage,
-            data: docRef,
+            data: {
+                id: docRef.id,
+                ...newDocSnapshot.data(),
+            }
         };
     } catch (error) {
         console.error("error", error);

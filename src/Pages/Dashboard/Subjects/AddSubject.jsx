@@ -9,34 +9,17 @@ import AddLessons from "../../../components/Subjects/AddLessons";
 import { useState } from "react";
 import AddAssignment from "../../../components/Subjects/Assignments";
 import AddQuizzes from "../../../components/Subjects/AddQuizzes";
+import AddTopic from "../../../components/Subjects/AddTopic";
+import useAddSubject from "../../../Hooks/useAddSubject";
+import Loading from "../../../components/Layout/Loading";
 
-const steps = [
-  {
-    title: "Subject Information",
-    description: "Fill up the subject details here",
-    component: <SubjectInformation />,
-  },
-  {
-    title: "Add Lessons",
-    description: "Fill up the lessons details here",
-    component: <AddLessons />,
-  },
-  {
-    title: "Assignments",
-    description: "Fill up the assignment questions here",
-    component: <AddAssignment />,
-  },
-  {
-    title: "Quizzes",
-    description: "Fill up the quiz questions here",
-    component: <AddQuizzes />,
-  },
-];
 
 const AddSubject = () => {
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState(0);
+
+  const hooks = useAddSubject();
 
   const handleProceed = () => {
     setCurrentStep((prevStep) =>
@@ -47,6 +30,35 @@ const AddSubject = () => {
   const handlePrevious = () => {
     setCurrentStep((prevStep) => (prevStep > 0 ? prevStep - 1 : prevStep));
   };
+
+  const steps = [
+    {
+      title: "Subject Information",
+      description: "Fill up the subject details here",
+      component: <SubjectInformation hooks={hooks}/>,
+    },
+    {
+      title: "Add Topic",
+      description: "Fill up the topic details here",
+      component: <AddTopic hooks={hooks}/>,
+    },
+    {
+      title: "Add Lessons",
+      description: "Fill up the lessons details here",
+      component: <AddLessons hooks={hooks}/>,
+    },
+    {
+      title: "Assignments",
+      description: "Fill up the assignment questions here",
+      component: <AddAssignment hooks={hooks}/>,
+    },
+    {
+      title: "Quizzes",
+      description: "Fill up the quiz questions here",
+      component: <AddQuizzes hooks={hooks}/>,
+    },
+  ];
+  
 
   return (
     <div>
@@ -70,7 +82,7 @@ const AddSubject = () => {
                 className={
                   index === currentStep
                     ? "text-black font-bold"
-                    : "text-gray-600"
+                    : "text-gray-600 opacity-75"
                 }
               >
                 <p>{step.title}</p>
@@ -90,13 +102,17 @@ const AddSubject = () => {
                 Previous
               </button>
             )}
-            <button
-              onClick={handleProceed}
+           <button
+              onClick={currentStep === steps.length - 1 ? hooks.handleAddSubject : handleProceed}
               className="inline-flex py-4 px-16 items-center font-bold gap-2 cursor-pointer rounded-md text-sm bg-[#0598ce] text-white"
-              disabled={currentStep === steps.length - 1}
             >
-              Proceed
+              {currentStep === steps.length - 1
+                ? hooks.isSaving
+                  ? <Loading />
+                  : "Add"
+                : "Proceed"}
             </button>
+
           </div>
         </div>
       </div>

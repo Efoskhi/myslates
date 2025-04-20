@@ -1,6 +1,7 @@
 import React from "react";
 import toast from "react-hot-toast";
 import { addFirebaseData, deleteFileFromFirebase, deleteFirebaseData, updateFirebaseData, uploadFileToFirebase } from "../utils/firebase";
+import { LessonError } from "../errors";
 
 const defaultInputs = {
     lesson_number: "",
@@ -11,7 +12,7 @@ const defaultInputs = {
     img_example: "",
 } as any;
 
-const useLessons = () => {
+const useLessons = ({shouldGetLesson = true} = {}) => {
     const [ lessons, setLessons ] = React.useState([] as any);
     const [ isLoading, setLoading ] = React.useState(true);
     const [ lessonModalVisible, setLessonModalVisible ] = React.useState(false);
@@ -24,7 +25,7 @@ const useLessons = () => {
     const getLessons = () => {
         try {
             
-            if(!topic) throw new Error;
+            if(!topic) throw new LessonError;
 
             setLessons(topic.Lessons);
 
@@ -61,21 +62,47 @@ const useLessons = () => {
         sessionStorage.setItem("currentTopic", JSON.stringify(topic));
     }
 
-    const handleAddLesson = async () => {
+    const validateInput = (customInput?: any) => {
+        const { activities, content, examples, img_content, img_example } = customInput ?? inputs;
+
+        const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+
+        if (!topic) throw new LessonError("Topic data was not found");
+        if (!activities) throw new LessonError("Enter lesson activities");
+        if (!content) throw new LessonError("Enter lesson content");
+        if (!examples) throw new LessonError("Enter lesson examples");
+        if (!img_content) throw new LessonError("Upload lesson image content");
+        if (!img_example) throw new LessonError("Upload lesson image example");
+
+        return {
+            activities,
+            content,
+            examples,
+            img_content,
+            img_example
+        };
+        
+    }
+
+    const handleAddLesson = async (customInput?: any) => {
+        let errorMessage = "Something went wrong adding lesson";
+
         try {
-            if(!topic) throw new Error;
+            const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+
+            const validatedInput = validateInput(customInput);
 
             setSaving(true);
 
             const [ img_content, img_example ] = await Promise.all([
-                await uploadFileToFirebase(inputs.img_content, "lessons"),
-                await uploadFileToFirebase(inputs.img_example, "lessons"),
+                await uploadFileToFirebase(validatedInput.img_content, "lessons"),
+                await uploadFileToFirebase(validatedInput.img_example, "lessons"),
             ])
 
             const totalLessons = lessons.length;
 
             const lesson = {
-                ...inputs,
+                ...validatedInput,
                 img_content,
                 img_example,
                 next: totalLessons + 2,
@@ -85,7 +112,7 @@ const useLessons = () => {
                 likes: 0,
             }
 
-            const { status, message } = await addFirebaseData({
+            const { status, message, data } = await addFirebaseData({
                 collection: "Topics",
                 successMessage: "",
                 subCollectionData: {
@@ -94,8 +121,10 @@ const useLessons = () => {
                 id: topic.id
             })
 
-            if(status === "error") throw new Error(message);
-            
+            if(status === "error") throw new LessonError(errorMessage);
+
+            if(customInput) return { status, message, data };
+
             toast.success("Lesson has been added");
 
             const updatedLessons = [lesson, ...lessons];
@@ -104,7 +133,13 @@ const useLessons = () => {
             updateTopics(updatedLessons);
 
         } catch(error) {
-            toast.error("Something went wrong adding lesson");
+            if(customInput) throw new LessonError(error);
+
+            if(error instanceof LessonError){
+                errorMessage = error.message;
+            }
+
+            toast.error(errorMessage);
         } finally {
             setSaving(false)
         }
@@ -114,14 +149,14 @@ const useLessons = () => {
         let errorMessage = "Something went wrong updating lesson";
 
         try {
-            if(!topic) throw new Error;
+            if(!topic) throw new LessonError;
             setSaving(true);
 
             const { activities, content, examples, img_content, img_example } = inputs;
 
-            if(!activities) throw new Error("Enter activity");
-            if(!content) throw new Error("Enter content");
-            if(!examples) throw new Error("Enter examples");
+            if(!activities) throw new LessonError("Enter activity");
+            if(!content) throw new LessonError("Enter content");
+            if(!examples) throw new LessonError("Enter examples");
 
             let image_content_url;
             let image_example_url;
@@ -152,7 +187,7 @@ const useLessons = () => {
                 id: topic.id,
             })
 
-            if(status === "error") throw new Error(errorMessage);
+            if(status === "error") throw new LessonError(errorMessage);
             
             const updatedLessons = lessons.map(item => item.id === lesson.id ? {...item, ...lesson} : item);
             toast.success("Lesson has been updated");
@@ -166,7 +201,7 @@ const useLessons = () => {
             // if(img_example.name) deleteLessonFile([image_example_url]);
 
         } catch(error) {
-            if(error instanceof Error){
+            if(error instanceof LessonError){
                 errorMessage = error.message;
             }
 
@@ -191,7 +226,7 @@ const useLessons = () => {
                 deleteMainDocument: false,
             })
 
-            if(status === "error") throw new Error(message);
+            if(status === "error") throw new LessonError(message);
 
             deleteLessonFile([lesson.img_content, lesson.img_example])
             
@@ -203,7 +238,7 @@ const useLessons = () => {
 
         } catch(error) {
 
-            // if(error instanceof Error){
+            // if(error instanceof LessonError){
             //     errorMessage = error.message;
             // }
 
@@ -220,7 +255,7 @@ const useLessons = () => {
     }
 
     React.useEffect(() => {
-        getLessons();
+        if(shouldGetLesson) getLessons();
     }, [])
 
     return {
@@ -236,6 +271,7 @@ const useLessons = () => {
         handleAddLesson,
         handleUpdateLesson,
         handleDeleteLesson,
+        validateInput,
     }
 }
 

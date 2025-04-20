@@ -187,7 +187,7 @@ const AssignmentDetailsModal = ({ hooks }) => {
                 ) : (
                     <button
                         disabled={isSaving}
-                        onClick={handleAddAssignment}
+                        onClick={() => handleAddAssignment()}
                         className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
                     >
                         {isSaving ? <Loading /> : "Add Assignment"}

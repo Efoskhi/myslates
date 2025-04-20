@@ -3,6 +3,7 @@ import useWeeks from "./useWeeks";
 import useTerms from "./useTerms";
 import toast from "react-hot-toast";
 import { addFirebaseData, updateFirebaseData } from "../utils/firebase";
+import { TopicError } from "../errors";
 
 const useTopicDetails = (topic?: any) => {
     const [ inputs, setInputs ] = React.useState({
@@ -23,17 +24,17 @@ const useTopicDetails = (topic?: any) => {
         }))
     }
 
-    const validateInput = () => {
-        const { week, term, title, serial_no } = inputs;
+    const validateInput = (customInput?: any) => {
+        const { week, term, title, serial_no } = customInput ?? inputs;
 
-        const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
+        let subject = customInput ? customInput.subject : JSON.parse(sessionStorage.getItem("subject") || "null");
 
-        if(!subject) throw new Error("Subject could not be validated");
+        if(!subject) throw new TopicError("Subject could not be validated");
 
-        if(!week) throw new Error("Select topic week");
-        if(!term) throw new Error("Select topic term");
-        if(!title) throw new Error("Enter title of topic");
-        if(!serial_no || isNaN(serial_no)) throw new Error("Serial number must be a number");
+        if(!week) throw new TopicError("Select topic week");
+        if(!term) throw new TopicError("Select topic term");
+        if(!title) throw new TopicError("Enter title of topic");
+        if(!serial_no || isNaN(serial_no)) throw new TopicError("Serial number must be a number");
 
         const validatedInput = {
             title,
@@ -58,12 +59,12 @@ const useTopicDetails = (topic?: any) => {
         return validatedInput
     }
 
-    const handleAddTopic = async () => {
+    const handleAddTopic = async (customInput?: any) => {
         let errorMessage = "Something went wrong adding topic";
 
         try {
             setSaving(true);
-            const validatedInput = validateInput();
+            const validatedInput = validateInput(customInput);
 
             const response = await addFirebaseData({
                 collection: "Topics",
@@ -71,7 +72,7 @@ const useTopicDetails = (topic?: any) => {
                 successMessage: ""
             })
 
-            if(response.status === "error") throw new Error(errorMessage);
+            if(response.status === "error") throw new TopicError(errorMessage);
 
             setInputs({
                 week: "",
@@ -80,14 +81,25 @@ const useTopicDetails = (topic?: any) => {
                 serial_no: "",
             })
 
-            toast.success("Topic has been created");
+            if(!customInput) toast.success("Topic has been created");
+
+            return response;
 
         } catch(error) {
-            if(error instanceof Error){
+            if(error instanceof TopicError){
                 errorMessage = error.message;
             }
 
+            if(customInput) throw new TopicError(error);
+                
             toast.error(errorMessage);
+
+            return {
+                status: "error",
+                message: "",
+                data: {}
+            }
+
         } finally {
             setSaving(false)
         }
@@ -106,12 +118,12 @@ const useTopicDetails = (topic?: any) => {
                 id: topic.id
             })
 
-            if(response.status === "error") throw new Error(errorMessage);
+            if(response.status === "error") throw new TopicError(errorMessage);
 
             toast.success("Topic has been updated");
 
         } catch(error) {
-            if(error instanceof Error){
+            if(error instanceof TopicError){
                 errorMessage = error.message;
             }
 

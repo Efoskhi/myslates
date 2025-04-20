@@ -6,7 +6,6 @@ export const CourseCard = ({ subject }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    console.log({subject})
     sessionStorage.setItem("subject", JSON.stringify(subject));
     navigate("/SubjectDetails"); // Update the route as needed
   };

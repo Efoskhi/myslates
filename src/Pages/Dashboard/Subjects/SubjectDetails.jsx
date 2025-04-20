@@ -4,8 +4,12 @@ import { IoCopyOutline } from "react-icons/io5";
 import ClassDetailsAccordion from "../../../components/Subjects/ClassDetailsAccordion";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import React from "react";
+import SubjectDeleteModal from "../../../components/Subjects/SubjectDeleteModal";
 
 const SubjectDetails = () => {
+  const [ isVisibleDeleteModal, setVisibleDeleteModal ] = React.useState(false);
+
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -18,6 +22,8 @@ const SubjectDetails = () => {
 
   // Get the subject data from session storage and parse it as JSON
   const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
+
+  const toggleDeleteVisibleModal = () => setVisibleDeleteModal(prev => !prev);
 
   // If no subject data exists, render a fallback message
   if (!subject) {
@@ -34,6 +40,7 @@ const SubjectDetails = () => {
   return (
     <div>
       <Header />
+      {isVisibleDeleteModal && <SubjectDeleteModal toggleModal={toggleDeleteVisibleModal} /> }
       <div className="p-6 bg-white">
         <div className="flex flex-row items-center justify-between pb-4">
           <div
@@ -50,7 +57,16 @@ const SubjectDetails = () => {
           </div>
         </div>
         {/* Render subject title or fallback */}
-        <h1 className="text-2xl font-bold">{subject.title || "Subject Title"}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">{subject.title || "Subject Title"}</h1>
+          <button
+            onClick={toggleDeleteVisibleModal}
+            className="text-red-600 font-semibold hover:underline"
+          >
+            Delete Subject
+          </button>
+        </div>
+
         <div className="mt-2">
           <p className="text-gray-500">Class Link</p>
           <div className="inline-flex justify-between w-full">

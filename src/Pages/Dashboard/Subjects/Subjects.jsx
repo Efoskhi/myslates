@@ -8,47 +8,11 @@ import Pagination from "../../../components/Subjects/Pagination";
 import Skeleton from "@mui/material/Skeleton";
 import { docQr } from "../../../Logics/docQr"; // Adjust the import based on your project
 import { getFirebaseData } from "../../../utils/firebase";
+import useSubject from "../../../Hooks/useSubject";
 
 const Subjects = () => {
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { subjects, isLoading, searchTerm, setSearchTerm } = useSubject({ shouldGetSubjects: true })
 
-  // Fetch subjects data
-  const fetchSubjects = async () => {
-    try {
-      setLoading(true);
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      if(!user) {
-        throw new Error("User is not logged in " + user)
-      }
-
-      const response = await getFirebaseData({
-        collection: "Subjects",
-        refFields: ['classRef', 'deptRef'],
-        query: [
-          ['teacher_id', '==', user.teacher_id]
-        ],
-        page: 1,
-        pageSize: 10
-        
-      })
-
-      if(response.status === "error") throw new Error(response.message);
-
-      // Replace with your actual fetch logic
-      // const subjectsData = await docQr("Subjects", { max: 5000, whereClauses: [{ field: "teacher_id", operator: "==", value: user.teacher_id }] });
-      setSubjects(response.data.Subjects);
-    } catch (error) {
-      console.error("Error fetching subjects:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSubjects();
-  }, []);
 
   // Number of skeleton cards to show while loading
   const skeletonCards = Array.from({ length: 3 });
@@ -93,7 +57,7 @@ const Subjects = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 p-4">
-          {loading
+          {isLoading
             ? skeletonCards.map((_, idx) => <SkeletonCourseCard key={idx} />)
             : filteredSubjects.map((subject) => (
                 <CourseCard key={subject.subject_id} subject={subject} />

@@ -2,6 +2,7 @@ import React from "react";
 import toast from "react-hot-toast";
 import { addFirebaseData, deleteFirebaseData, updateFirebaseData } from "../utils/firebase";
 import { v4 as uuid } from "uuid";
+import { QuizError } from "../errors";
 
 const defaultInputs = {
     question_number: "",
@@ -13,7 +14,7 @@ const defaultInputs = {
     answer: "",
 } as any;
 
-const useQuizs = () => {
+const useQuizs = ({shouldGetQuiz = true} = {}) => {
     const [ quizes, setQuizes ] = React.useState([] as any);
     const [ isLoading, setLoading ] = React.useState(true);
     const [ quizModalVisible, setQuizModalVisible ] = React.useState(false);
@@ -26,7 +27,7 @@ const useQuizs = () => {
     const getQuizes = () => {
         try {
             
-            if(!topic) throw new Error;
+            if(!topic) throw new QuizError;
 
             setQuizes(topic.Quizzes);
 
@@ -63,23 +64,29 @@ const useQuizs = () => {
         sessionStorage.setItem("currentTopic", JSON.stringify(topic));
     }
 
-    const handleAddQuiz = async () => {
+    const handleAddQuiz = async (customInput?: any) => {
+        let errorMessage = "Something went wrong adding quiz";
+        
         try {
-            if(!topic) throw new Error;
+            const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+
+            if(!topic) throw new QuizError;
 
             setSaving(true);
 
+            const input = customInput ?? inputs;
+
             // const totalQuizs = quizes.length;
 
-            validateInput();
+            validateInput(customInput);
 
             const quiz = {
-                ...inputs,
+                ...input,
                 question_type: "Multiple Choice",
                 id: uuid(),
             }
 
-            const { status, message } = await addFirebaseData({
+            const { status, message, data } = await addFirebaseData({
                 collection: "Topics",
                 successMessage: "",
                 subCollectionData: {
@@ -88,7 +95,9 @@ const useQuizs = () => {
                 id: topic.id
             })
 
-            if(status === "error") throw new Error(message);
+            if(status === "error") throw new QuizError(errorMessage);
+
+            if(customInput) return { status, message, data }
             
             toast.success("Quiz has been added");
 
@@ -98,7 +107,13 @@ const useQuizs = () => {
             updateTopics(updatedQuizs);
 
         } catch(error) {
-            toast.error("Something went wrong adding quiz");
+            if(customInput) throw new QuizError(error);
+
+            if(error instanceof QuizError){
+                errorMessage = error.message
+            }
+
+            toast.error(errorMessage);
         } finally {
             setSaving(false)
         }
@@ -108,7 +123,7 @@ const useQuizs = () => {
         let errorMessage = "Something went wrong updating quiz";
 
         try {
-            if(!topic) throw new Error;
+            if(!topic) throw new QuizError;
             setSaving(true);
 
             validateInput();
@@ -121,7 +136,7 @@ const useQuizs = () => {
                 id: topic.id,
             })
 
-            if(status === "error") throw new Error(errorMessage);
+            if(status === "error") throw new QuizError(errorMessage);
             
             const updatedQuizs = quizes.map(item => item.id === inputs.id ? {...item, ...inputs} : item);
             toast.success("Quiz has been updated");
@@ -130,7 +145,7 @@ const useQuizs = () => {
             updateTopics(updatedQuizs);
 
         } catch(error) {
-            if(error instanceof Error){
+            if(error instanceof QuizError){
                 errorMessage = error.message;
             }
 
@@ -155,7 +170,7 @@ const useQuizs = () => {
                 deleteMainDocument: false,
             })
 
-            if(status === "error") throw new Error(message);
+            if(status === "error") throw new QuizError(message);
             
             const updatedQuizs = quizes.filter(item => item.id !== quiz.id)
             toast.success("Quiz has been deleted");
@@ -165,7 +180,7 @@ const useQuizs = () => {
 
         } catch(error) {
 
-            // if(error instanceof Error){
+            // if(error instanceof QuizError){
             //     errorMessage = error.message;
             // }
 
@@ -175,20 +190,20 @@ const useQuizs = () => {
         }
     }
 
-    const validateInput = () => {
-        const { question_number, question, optionA, optionB, optionC, optionD, answer } = inputs;
+    const validateInput = (customInput?: any) => {
+        const { question_number, question, optionA, optionB, optionC, optionD, answer } = customInput ?? inputs;
 
-        if(!question_number) throw new Error("Enter question number");
-        if(!question) throw new Error("Enter question");
-        if(!optionA) throw new Error("Enter optionA");
-        if(!optionB) throw new Error("Enter optionB");
-        if(!optionC) throw new Error("Enter optionC");
-        if(!optionD) throw new Error("Enter optionD");
-        if(!answer) throw new Error("Enter answer");
+        if(!question_number) throw new QuizError("Enter question number");
+        if(!question) throw new QuizError("Enter question");
+        if(!optionA) throw new QuizError("Enter optionA");
+        if(!optionB) throw new QuizError("Enter optionB");
+        if(!optionC) throw new QuizError("Enter optionC");
+        if(!optionD) throw new QuizError("Enter optionD");
+        if(!answer) throw new QuizError("Enter answer");
     }
 
     React.useEffect(() => {
-        getQuizes();
+        if(shouldGetQuiz) getQuizes();
     }, [])
 
     return {
@@ -204,6 +219,7 @@ const useQuizs = () => {
         handleAddQuiz,
         handleUpdateQuiz,
         handleDeleteQuiz,
+        validateInput,
     }
 }
 

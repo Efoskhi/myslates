@@ -144,7 +144,7 @@ const QuizDetailsModal = ({ hooks }) => {
                     ) : (
                         <button
                             disabled={isSaving}
-                            onClick={handleAddQuiz}
+                            onClick={() => handleAddQuiz()}
                             className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
                         >
                             {isSaving ? <Loading /> : "Add Quiz"}

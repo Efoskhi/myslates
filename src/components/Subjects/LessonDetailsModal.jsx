@@ -189,7 +189,7 @@ const LessonDetailsModal = ({ hooks }) => {
                 </button>
               </div>
           ) : (
-            <button disabled={isSaving} onClick={handleAddLesson} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
+            <button disabled={isSaving} onClick={() => handleAddLesson()} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
               {isSaving ? <Loading/> : "Add Lesson"}
             </button>
           )}

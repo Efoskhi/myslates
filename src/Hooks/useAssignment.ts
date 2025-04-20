@@ -11,6 +11,7 @@ import {
 import { v4 as uuid } from "uuid";
 import useClasses from "./useClasses";
 import { Timestamp } from "firebase/firestore";
+import { AssignmentError } from "../errors";
 
 const defaultInputs = {
     assignment_no: "",
@@ -21,9 +22,9 @@ const defaultInputs = {
     className: "",
 } as any;
 
-let fetchedAssignments = [];
+let fetchedAssignments = {} as any;
 
-const useAssignments = () => {
+const useAssignments = ({shouldGetAssignment = true} = {}) => {
     const [assignments, setAssignments] = React.useState([] as any);
     const [isLoading, setLoading] = React.useState(true);
     const [assignmentModalVisible, setAssignmentModalVisible] =
@@ -38,21 +39,20 @@ const useAssignments = () => {
 
     const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
     const user = JSON.parse(sessionStorage.getItem("user") || "null");
-    const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
 
     const getAssignments = async () => {
         try {
-            if (fetchedAssignments?.length) {
-                return setAssignments(fetchedAssignments);
+            if (fetchedAssignments[topic.id]) {
+                return setAssignments(fetchedAssignments[topic.id]);
             }
 
-            if (!topic) throw new Error();
+            if (!topic) throw new AssignmentError();
 
             setLoading(true);
 
             const { status, message, data } = await getFirebaseData({
                 collection: "Topics",
-                refFields: ["class_ref"],
+                refFields: ["class_ref", "topic_ref"],
                 find: {
                     collection: "Assignment",
                     field: "topic_ref",
@@ -60,10 +60,10 @@ const useAssignments = () => {
                 },
             });
 
-            if (status === "error") throw new Error(message);
+            if (status === "error") throw new AssignmentError(message);
 
             setAssignments(data.Topics);
-            fetchedAssignments = data.Topics;
+            fetchedAssignments[topic.id] = data.Topics;
         } catch (error) {
             console.log("error", error);
             toast.error("Something went wrong getting assignments");
@@ -121,18 +121,18 @@ const useAssignments = () => {
         sessionStorage.setItem("currentTopic", JSON.stringify(topic));
     };
 
-    const handleAddAssignment = async () => {
+    const handleAddAssignment = async (customInput?: any) => {
         try {
-            if (!topic) throw new Error();
-
             setSaving(true);
 
             // const totalAssignments = assignments.length;
 
-            const validatedInput = validateInput();
+            const input = customInput ?? inputs;
+
+            const validatedInput = validateInput({}, customInput);
 
             const imageUrl = await uploadFileToFirebase(
-                inputs.image,
+                input.image,
                 "assignments"
             );
 
@@ -141,14 +141,15 @@ const useAssignments = () => {
                 image: imageUrl,
             };
 
-            const { status, message } = await addFirebaseData({
+            const { status, message, data } = await addFirebaseData({
                 collection: "Assignment",
                 successMessage: "",
                 data: assignment,
             });
 
-            if (status === "error")
-                throw new Error("Something went wrong adding assignment");
+            if (status === "error") throw new AssignmentError("Something went wrong adding assignment");
+
+            if(customInput) return { status, message, data };
 
             toast.success("Assignment has been added");
 
@@ -156,6 +157,8 @@ const useAssignments = () => {
             setAssignments(updatedAssignments);
             toggleAssignmentModalVisible("Add");
         } catch (error) {
+            if(customInput) throw error;
+
             toast.error(error.message);
         } finally {
             setSaving(false);
@@ -166,7 +169,7 @@ const useAssignments = () => {
         let errorMessage = "Something went wrong updating assignment";
 
         try {
-            if (!topic) throw new Error();
+            if (!topic) throw new AssignmentError();
             setSaving(true);
 
             const validatedInput = validateInput({ image: true });
@@ -181,9 +184,9 @@ const useAssignments = () => {
             }
 
             let assignment = {
-                ...inputs,
+                ...validatedInput,
                 image: image_url,
-            };
+            } as any;
 
             assignment = Object.fromEntries(
                 Object.entries(assignment).filter(([_, v]) => v !== undefined)
@@ -195,7 +198,7 @@ const useAssignments = () => {
                 id: assignment.id,
             });
 
-            if (status === "error") throw new Error(errorMessage);
+            if (status === "error") throw new AssignmentError(errorMessage);
 
             const updatedAssignments = assignments.map((item) =>
                 item.id === assignment.id
@@ -215,7 +218,7 @@ const useAssignments = () => {
             setAssignments(updatedAssignments);
             toggleAssignmentModalVisible("Add");
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof AssignmentError) {
                 errorMessage = error.message;
             }
 
@@ -236,7 +239,7 @@ const useAssignments = () => {
                 id: assignment.id,
             });
 
-            if (status === "error") throw new Error(message);
+            if (status === "error") throw new AssignmentError(message);
 
             deleteAssignmentFile([assignment.image]);
 
@@ -247,7 +250,7 @@ const useAssignments = () => {
             setAssignments(updatedAssignments);
             toggleAssignmentModalVisible("Add");
         } catch (error) {
-            // if(error instanceof Error){
+            // if(error instanceof AssignmentError){
             //     errorMessage = error.message;
             // }
 
@@ -257,7 +260,7 @@ const useAssignments = () => {
         }
     };
 
-    const validateInput = (optionalFields = {} as any) => {
+    const validateInput = (optionalFields = {} as any, customInput?: any) => {
         const {
             className,
             question,
@@ -265,21 +268,22 @@ const useAssignments = () => {
             due_date,
             max_mark,
             assignment_no,
-        } = inputs;
+        } = customInput ?? inputs;
 
-        if (!topic) throw new Error("Topic data was not found");
-        if (!user) throw new Error("User data was not found");
-        if (!subject) throw new Error("Subject was not found");
+        const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+        const subject = customInput ? customInput.subject : JSON.parse(sessionStorage.getItem("subject") || "null");
 
-        if (!assignment_no || isNaN(max_mark))
-            throw new Error("Enter a valid assignment number");
-        if (!className) throw new Error("Select a class");
-        if (!question) throw new Error("Enter question");
-        if (!image && !optionalFields?.image)
-            throw new Error("Upload an image");
-        if (!due_date) throw new Error("Enter due date");
-        if (!max_mark || isNaN(max_mark))
-            throw new Error("Enter a valid maximum mark");
+        if (!topic) throw new AssignmentError("Topic data was not found");
+        if (!user) throw new AssignmentError("User data was not found");
+        if (!subject) throw new AssignmentError("Subject was not found");
+
+        if (!assignment_no || isNaN(assignment_no))throw new AssignmentError("Enter a valid assignment number");
+        if (!max_mark || isNaN(max_mark)) throw new AssignmentError("Enter a valid maximum mark");
+        if (!due_date) throw new AssignmentError("Enter due date");
+        if (!className) throw new AssignmentError("Select a class");
+        if (!question) throw new AssignmentError("Enter question");
+        if (!image && !optionalFields?.image) throw new AssignmentError("Upload an image");
+        
 
         return {
             question,
@@ -316,7 +320,7 @@ const useAssignments = () => {
     };
 
     React.useEffect(() => {
-        getAssignments();
+        if(shouldGetAssignment) getAssignments();
     }, []);
 
     return {
@@ -334,6 +338,7 @@ const useAssignments = () => {
         handleAddAssignment,
         handleUpdateAssignment,
         handleDeleteAssignment,
+        validateInput,
     };
 };
 

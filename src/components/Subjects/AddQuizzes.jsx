@@ -3,7 +3,7 @@ import { FaBold, FaItalic, FaUnderline, FaStrikethrough } from "react-icons/fa";
 
 import { FaCloudUploadAlt } from "react-icons/fa";
 
-export const QuizQuestion = () => {
+export const QuizQuestion = ({ hooks }) => {
   const [questions, setQuestions] = useState([""]);
   const [files, setFiles] = useState({});
 
@@ -16,46 +16,47 @@ export const QuizQuestion = () => {
     setFiles(newFiles);
   };
 
+  const {
+    inputs,
+    handleInput
+  } = hooks;
+
   return (
     <div className="w-full">
       {/* Associated Lesson */}
-      <label className="block font-bold mb-1">Associated Lesson</label>
+      <label className="block font-bold mb-1">Question Number</label>
       <input
-        type="text"
-        value="Supply and Demand"
-        disabled
+        type="tel"
+        value={inputs.quiz.question_number}
+        onChange={e => handleInput("quiz.question_number", e.target.value)}
         className="w-full p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 mb-4"
       />
 
       {/* Questions */}
       {questions.map((question, index) => (
         <div key={index} className="mb-4">
-          <div>
+          {/* <div>
             <label className="block font-bold mb-1">Question Type</label>
             <select className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="fill-in-the-blanks">Fill in the Blanks</option>
               <option value="essay">Essay</option>
               <option value="short-answer">Multiple Choice</option>
             </select>
-          </div>
+          </div> */}
           <div className="mt-4">
             <label className="block font-bold mb-1">Question</label>
 
             <input
               type="text"
               placeholder="Enter question"
-              value={question}
-              onChange={(e) => {
-                const newQuestions = [...questions];
-                newQuestions[index] = e.target.value;
-                setQuestions(newQuestions);
-              }}
+              value={inputs.quiz.question}
+              onChange={e => handleInput("quiz.question", e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* File Upload */}
-          <p className="mt-6 font-bold">Files</p>
+          {/* <p className="mt-6 font-bold">Files</p>
           <div className="mt-4 p-6 border border-dashed border-gray-400 rounded-lg text-center">
             <label className="cursor-pointer flex flex-col items-center">
               <FaCloudUploadAlt className="text-4xl text-gray-500" />
@@ -73,28 +74,33 @@ export const QuizQuestion = () => {
             {files[index] && (
               <p className="text-sm text-gray-600 mt-2">{files[index].name}</p>
             )}
-          </div>
+          </div> */}
         </div>
       ))}
 
       {/* Add More Question Button */}
-      <button
+      {/* <button
         onClick={handleAddQuestion}
         className="w-full mt-4 p-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-200"
       >
         Add more Question
-      </button>
+      </button> */}
     </div>
   );
 };
 
-const Answers = () => {
+const Answers = ({ hooks }) => {
   const [options, setOptions] = useState({
     A: "",
     B: "",
     C: "",
     D: "",
   });
+
+  const {
+    inputs,
+    handleInput
+  } = hooks;
 
   const [correctOption, setCorrectOption] = useState("A");
 
@@ -118,8 +124,8 @@ const Answers = () => {
             <input
               type="text"
               placeholder="Enter an answer option"
-              value={options[key]}
-              onChange={(e) => handleOptionChange(key, e.target.value)}
+              value={inputs.quiz[`option${key.toUpperCase()}`]}
+              onChange={e => handleInput(`quiz.option${key.toUpperCase()}`, e.target.value)}
               className="w-full p-2 border-l border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -135,9 +141,8 @@ const Answers = () => {
               <input
                 type="radio"
                 name="correctOption"
-                value={key}
-                checked={correctOption === key}
-                onChange={() => setCorrectOption(key)}
+                onChange={e => handleInput("quiz.answer", key.toUpperCase())}
+                checked={key === inputs.quiz.answer}
                 className="text-blue-500 focus:ring-blue-500"
               />
               <span className="text-gray-700">Option {key}</span>
@@ -149,21 +154,23 @@ const Answers = () => {
   );
 };
 
-const tabs = [
-  {
-    title: "Quiz Question",
-    description: "Fill up the quiz question here",
-    component: <QuizQuestion />,
-  },
-  {
-    title: "Answers",
-    description: "Fill in the answers to the assignment",
-    component: <Answers />,
-  },
-];
 
-export default function AddQuizzes() {
+
+export default function AddQuizzes({ hooks }) {
   const [currentTab, setCurrentTab] = useState(0);
+
+  const tabs = [
+    {
+      title: "Quiz Question",
+      description: "Fill up the quiz question here",
+      component: <QuizQuestion hooks={hooks}/>,
+    },
+    {
+      title: "Answers",
+      description: "Fill in the answers to the assignment",
+      component: <Answers hooks={hooks}/>,
+    },
+  ];
 
   return (
     <div className="flex lg:flex-row flex-col  mt-8">

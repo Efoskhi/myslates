@@ -1,12 +1,25 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FaImages, FaUpload } from "react-icons/fa";
+import useCurriculums from "../../Hooks/useCurriculums";
+import useClasses from "../../Hooks/useClasses";
+import useDepartments from "../../Hooks/useDepartments";
 
-const SubjectInformation = () => {
+const SubjectInformation = ({ hooks }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const {
+    inputs,
+    handleInput
+  } = hooks;
+
+  const { curriculums } = useCurriculums();
+  const { classes } = useClasses();
+  const { departments } = useDepartments();
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      handleInput("subject.thumbnail", file);
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
     }
@@ -18,22 +31,68 @@ const SubjectInformation = () => {
     fileInputRef.current.click(); // Triggers the hidden input
   };
 
+  React.useEffect(() => {
+    if(inputs.subject.thumbnail){
+      const imageUrl = URL.createObjectURL(inputs.subject.thumbnail);
+      setSelectedImage(imageUrl);
+    }
+    
+  }, [])
+
   return (
     <div className="py-6 grid lg:grid-cols-2 grid-cols-1 gap-6 w-full">
       <div>
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
           <div>
-            <label className="block text-gray-700 text-xs ">Grade</label>
-            <select className="w-full p-2 border rounded-lg">
-              <option>Select Grade</option>
+            <label className="block text-gray-700 text-xs ">Curriculum</label>
+            <select 
+              className="w-full p-2 border rounded-lg"
+              onChange={e => handleInput("subject.curriculum", e.target.value)}
+              value={inputs.subject.curriculum}
+            >
+              <option value="">Select Curriculum</option>
+              {curriculums.map((curriculum, key) => (
+                  <option option={curriculum.name} key={key}>{curriculum.name}</option>
+              ))}
             </select>
           </div>
           <div>
-            <label className="block text-gray-700 text-xs">Subject Name</label>
-            <select className="w-full p-2 border rounded-lg">
-              <option>Select Subject</option>
+            <label className="block text-gray-700 text-xs">Class</label>
+            <select 
+              className="w-full p-2 border rounded-lg"
+              onChange={e => handleInput("subject.className", e.target.value)}
+              value={inputs.subject.className}
+            >
+              <option value="">Select Class</option>
+              {classes.map((item, key) => (
+                  <option option={item.student_class} key={key}>{item.student_class}</option>
+              ))}
             </select>
           </div>
+          <div>
+            <label className="block text-gray-700 text-xs">Department</label>
+            <select 
+              className="w-full p-2 border rounded-lg"
+              onChange={e => handleInput("subject.department", e.target.value)}
+              value={inputs.subject.department}
+            >
+              <option value="">Select Department</option>
+              {departments.map((item, key) => (
+                  <option option={item.title} key={key}>{item.title}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-gray-700 text-xs">Subject Name</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Name of subject"
+            onChange={e => handleInput("subject.title", e.target.value)}
+            value={inputs.subject.title}
+          />
         </div>
 
         <div className="mt-4">
@@ -41,10 +100,12 @@ const SubjectInformation = () => {
           <textarea
             className="w-full p-2 border rounded-lg"
             placeholder="Tell us about the subject"
+            onChange={e => handleInput("subject.description", e.target.value)}
+            value={inputs.subject.description}
           />
         </div>
 
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <label className="block text-gray-700 text-xs">Assign Teachers</label>
           <select className="w-full p-2 border rounded-lg">
             <option>Ms Vee Egun</option>
@@ -64,7 +125,7 @@ const SubjectInformation = () => {
             </label>
             <input type="date" className="w-full p-2 border rounded-lg" />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="">
