@@ -2,18 +2,9 @@ import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
 
-interface Props {
-    shouldGetWeeks: boolean;
-}
-
-const defaultProps = {
-    shouldGetWeeks: false,
-}
-
 let fetchedWeeks = [];
 
-const useWeeks = (props?: Props) => {
-    const { shouldGetWeeks } = props || defaultProps;
+const useWeeks = ({ shouldGetWeeks = false, pageSize = 10 } = {}) => {
 
     const [ weeks, setWeeks ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
@@ -25,7 +16,9 @@ const useWeeks = (props?: Props) => {
             }
             
             const { status, message, data } = await getFirebaseData({
-                collection: "Weeks"
+                collection: "Weeks",
+                page: 1,
+                pageSize
             });
 
             if(status === "error") throw new Error(message);

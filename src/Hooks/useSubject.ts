@@ -8,7 +8,7 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const useSubject = ({ shouldGetSubjects = false } = {}) => {
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10 } = {}) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
@@ -17,11 +17,11 @@ const useSubject = ({ shouldGetSubjects = false } = {}) => {
     const navigate = useNavigate();
 
     const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
+    const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
     const getSubjects = async () => {
         try {
             setLoading(true);
-            const user = JSON.parse(sessionStorage.getItem("user") || "null");
             if (!user) {
                 throw new Error("User is not logged in " + user);
             }
@@ -31,7 +31,7 @@ const useSubject = ({ shouldGetSubjects = false } = {}) => {
                 refFields: ["classRef", "deptRef"],
                 query: [["teacher_id", "==", user.teacher_id]],
                 page: 1,
-                pageSize: 10,
+                pageSize,
             });
 
             if (response.status === "error") throw new Error(response.message);
@@ -89,6 +89,27 @@ const useSubject = ({ shouldGetSubjects = false } = {}) => {
         }
     };
 
+    const getTotalSubjects = async (props = {}) => {
+        const { startDate, endDate } = props as any;
+
+        let query = [["teacher_id", "==", user.teacher_id]] as any;
+
+        if(startDate && endDate){
+			query.push(
+				["created_time", ">=", startDate, "timestamp"],
+				["created_time", "<=", endDate, "timestamp"],
+			)
+		}
+
+		const response = await getFirebaseData({
+			collection: "Subjects",
+            query,
+			countDocuments: true,
+		});
+
+		return response;
+	}
+
     React.useEffect(() => {
         if(shouldGetSubjects) getSubjects()
     }, [])
@@ -100,6 +121,7 @@ const useSubject = ({ shouldGetSubjects = false } = {}) => {
         searchTerm,
         setSearchTerm,
         handleDeleteSubject,
+        getTotalSubjects,
     };
 };
 

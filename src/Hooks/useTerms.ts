@@ -2,18 +2,9 @@ import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
 
-interface Props {
-    shouldGetTerms: boolean;
-}
-
-const defaultProps = {
-    shouldGetTerms: false,
-}
-
 let fetchedTerms = [];
 
-const useTerms = (props?: Props) => {
-    const { shouldGetTerms } = props || defaultProps;
+const useTerms = ({ shouldGetTerms = false, pageSize = 10 } = {}) => {
 
     const [ terms, setTerms ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
@@ -25,7 +16,9 @@ const useTerms = (props?: Props) => {
             }
             
             const { status, message, data } = await getFirebaseData({
-                collection: "Terms"
+                collection: "Terms",
+                page: 1,
+                pageSize
             });
 
             if(status === "error") throw new Error(message);

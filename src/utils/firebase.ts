@@ -16,6 +16,7 @@ import {
     Timestamp,
     getDoc,
     addDoc,
+    writeBatch,
 } from "firebase/firestore";
 import {
     ref,
@@ -359,6 +360,33 @@ const addFirebaseData = async ({
     }
 };
 
+const BATCH_LIMIT = 500;
+
+const chunkArray = (array, chunkSize) => {
+  const chunks = [] as any;
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
+const addBulkFirebaseData = async ({ collection: coll, data }) => {
+    const ref = collection(db, coll);
+    const chunks = chunkArray(data, BATCH_LIMIT);
+
+    for (const chunk of chunks) {
+        const batch = writeBatch(db);
+
+        chunk.forEach((record) => {
+            const data = prepareDataWithReferences(record)
+            const docRef = doc(ref); // auto-generated ID
+            batch.set(docRef, data);
+        });
+
+        await batch.commit(); // commit each batch
+    }
+};
+
 const prepareDataWithReferences = (data) => {
     const preparedData = { ...data };
 
@@ -528,4 +556,5 @@ export {
     deleteFirebaseData,
     updateFirebaseData,
     deleteFileFromFirebase,
+    addBulkFirebaseData,
 };

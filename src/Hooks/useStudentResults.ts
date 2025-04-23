@@ -36,7 +36,7 @@ const useStudentResults = () => {
 
             if(response.status === "error") toast.error("No result found for student");
 
-            setStudentResults(response.data.StudentResults);
+            if(response.data.StudentResults) setStudentResults(response.data.StudentResults);
 
         } catch(error) {
             toast.error("Something went wrong");

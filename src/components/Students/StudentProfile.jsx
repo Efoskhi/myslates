@@ -33,7 +33,7 @@ export default function StudentProfile({student}) {
           <label className="block text-gray-600 text-sm">Grade</label>
           <input
             type="text"
-            value="Grade A"
+            value={student?.student_class}
             disabled
             className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-lg text-gray-500"
           />
@@ -45,7 +45,7 @@ export default function StudentProfile({student}) {
           </label>
           <input
             type="text"
-            value="Six"
+            value={student?.subjects.length}
             disabled
             className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-lg text-gray-500"
           />

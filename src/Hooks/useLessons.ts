@@ -68,11 +68,11 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
         const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
 
         if (!topic) throw new LessonError("Topic data was not found");
-        if (!activities) throw new LessonError("Enter lesson activities");
+        // if (!activities) throw new LessonError("Enter lesson activities");
         if (!content) throw new LessonError("Enter lesson content");
-        if (!examples) throw new LessonError("Enter lesson examples");
-        if (!img_content) throw new LessonError("Upload lesson image content");
-        if (!img_example) throw new LessonError("Upload lesson image example");
+        // if (!examples) throw new LessonError("Enter lesson examples");
+        // if (!img_content) throw new LessonError("Upload lesson image content");
+        // if (!img_example) throw new LessonError("Upload lesson image example");
 
         return {
             activities,
@@ -94,14 +94,19 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
 
             setSaving(true);
 
-            const [ img_content, img_example ] = await Promise.all([
-                await uploadFileToFirebase(validatedInput.img_content, "lessons"),
-                await uploadFileToFirebase(validatedInput.img_example, "lessons"),
-            ])
+            let img_content;
+            let img_example;
+
+            if(validatedInput.img_content || validatedInput.img_content){
+                [ img_content, img_example ] = await Promise.all([
+                    await uploadFileToFirebase(validatedInput.img_content, "lessons"),
+                    await uploadFileToFirebase(validatedInput.img_example, "lessons"),
+                ])
+            }
 
             const totalLessons = lessons.length;
 
-            const lesson = {
+            let lesson = {
                 ...validatedInput,
                 img_content,
                 img_example,
@@ -110,7 +115,11 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
                 lesson_number: totalLessons + 1,
                 id: `lesson_${totalLessons + 1}`,
                 likes: 0,
-            }
+            } as any
+
+            lesson = Object.fromEntries(
+                Object.entries(lesson).filter(([_, v]) => v !== undefined)
+            );
 
             const { status, message, data } = await addFirebaseData({
                 collection: "Topics",

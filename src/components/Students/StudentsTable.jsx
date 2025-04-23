@@ -39,7 +39,7 @@ const StudentsTable = () => {
     navigate("/StudentDetails"); // Update the route as needed
   };
 
-  const { loading, students } = useStudents();
+  const { loading, students } = useStudents({shouldGetStudentSubjects: true});
 
   const [currentPage, setCurrentPage] = useState(3);
   const totalPages = 6;
@@ -140,7 +140,7 @@ const StudentsTable = () => {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {student.subjects.map((subject, index) => (
-                        <SubjectTag key={index} subject={subject} />
+                        <SubjectTag key={index} subject={subject.title.split("by")[0]} />
                       ))}
                       {student.additionalScore && (
                         <span className="text-xs text-gray-500">

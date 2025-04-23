@@ -2,18 +2,9 @@ import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
 
-interface Props {
-    shouldGetClasses: boolean;
-}
-
-const defaultProps = {
-    shouldGetClasses: true,
-}
-
 let fetchedClasses = [];
 
-const useClasses = (props?: Props) => {
-    const { shouldGetClasses } = props || defaultProps;
+const useClasses = ({ shouldGetClasses = true, pageSize = 10 } = {}) => {
 
     const [ classes, setClasses ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
@@ -25,7 +16,9 @@ const useClasses = (props?: Props) => {
             }
             
             const { status, message, data } = await getFirebaseData({
-                collection: "Classes"
+                collection: "Classes",
+                page: 1,
+                pageSize
             });
 
             if(status === "error") throw new Error(message);

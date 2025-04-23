@@ -3,13 +3,14 @@ import { IoFilterSharp } from "react-icons/io5";
 import { docQr } from "../../Logics/docQr";
 import { Skeleton } from "@mui/material";
 import ReactPaginate from "react-paginate";
+import useStudents from "../../Hooks/useStudents";
 
 export default function StudentList() {
   const [selected, setSelected] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
+
+  const { loading, students } = useStudents();
 
   const toggleSelectAll = () => {
     if (selected.length === students.length) {
@@ -25,24 +26,6 @@ export default function StudentList() {
     );
   };
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const data = await docQr("users", {
-        max: 6000,
-        whereClauses: [{ field: "role", operator: "==", value: "learner" }],
-      });
-      setStudents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const pageCount = Math.ceil(students.length / itemsPerPage);
   const offset = currentPage * itemsPerPage;

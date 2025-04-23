@@ -106,7 +106,7 @@ const Chatbot = () => {
               <button
                 key={index}
                 className="bg-blue-200 text-blue-800 text-xs px-3 py-1 rounded-full hover:bg-blue-300"
-                onClick={() => handleSendMessage(question)}
+                onClick={() => setInput(question)}
               >
                 + {question}
               </button>

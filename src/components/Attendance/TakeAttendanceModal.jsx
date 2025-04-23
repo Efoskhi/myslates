@@ -10,7 +10,7 @@ import {
 import Face from "../../assets/Face2.png";
 import { MdFace } from "react-icons/md";
 
-const TakeAttendanceModal = ({ setIsOpen, setIsModalOpen }) => {
+const TakeAttendanceModal = ({ setIsOpen, toggleAttendanceModalVisible }) => {
   const [cameraModalOpen, setCameraModalOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const webcamRef = useRef(null);
@@ -33,8 +33,8 @@ const TakeAttendanceModal = ({ setIsOpen, setIsModalOpen }) => {
           {/* 📜 Take Manually */}
           <button
             onClick={() => {
-              setIsModalOpen(true)
-setIsOpen(false)
+              toggleAttendanceModalVisible()
+              setIsOpen(false)
             }}
             className="flex flex-col gap-6 items-center w-full px-4 py-3 border rounded-lg bg-[#f5f7fa]  hover:bg-gray-100 transition"
           >
