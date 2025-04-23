@@ -148,7 +148,7 @@ const AssessmentBuilder = () => {
               onRegenerate={handleGenerateAssesmentBuilder} 
               generatedResponse={generatedResponses.assessmentBuilder} 
               isLoading={isLoading}
-              title="Assigment questions will appear here"
+              title="Assessment questions will appear here"
             />
           </div>
         </div>

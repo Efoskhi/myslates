@@ -21,12 +21,18 @@ const useTeachingTools = () => {
             classDuration: "",
             description: "",
             file: null
+        },
+        feedback: {
+            description: "",
+            file: ""
         }
     });
+
     const [ generatedResponses, setGeneratedResponses ] = React.useState({
         assessmentBuilder: "",
         lessonPlan: "",
-    })
+        feedback: "",
+    });
 
     const handleInput = (field: string, value: any) => {
         const [parentKey, childKey] = field.split(".");
@@ -196,6 +202,38 @@ const useTeachingTools = () => {
         }
     };
 
+    const handleGenerateFeedback = async () => {
+        try {
+            setLoading(true);
+
+            validateFields(inputs.feedback);
+
+            const { 
+                description,
+                file 
+            } = inputs.feedback;
+
+            const generatedPrompt = `${description}. Do not add any extra text or formatting outside the lesson plan. Format the output clearly using Markdown with appropriate section headings (e.g., ## Objectives) and bullet points or numbered lists where suitable. Avoid using LaTeX, backslashes, or escape characters.`;
+            
+            const payload = await generateRequestBody({
+                userMessage: generatedPrompt,
+                image: file
+            })
+
+            const text = await getAIResponse(payload);
+
+            setGeneratedResponses(prev => ({
+                ...prev,
+                feedback: text,
+            }))
+
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return {
         inputs,
         isLoading,
@@ -203,6 +241,7 @@ const useTeachingTools = () => {
         handleInput,
         handleGenerateAssesmentBuilder,
         handleGenerateLessonPlan,
+        handleGenerateFeedback,
     };
 };
 

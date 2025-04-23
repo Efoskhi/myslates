@@ -135,6 +135,7 @@ const Chatbot = () => {
                     ? "bg-[#035b7c] text-white"
                     : "bg-gray-100 text-gray-800"
                 }`}
+                style={{whiteSpace: "pre-wrap"}}
               >
                 {msg.text}
               </div>
