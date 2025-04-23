@@ -4,11 +4,12 @@ import Face from "../../assets/Face.png";
 import useUser from "../../Hooks/useUser";
 
 export default function Header() {
-  const {user}=useUser();
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
   return (
     <div className="flex items-center justify-between border-b bg-white px-6 py-3 shadow-sm">
       {/* Greeting Text */}
-      <h1 className="text-lg font-bold">Hello {user?.firstname} {user?.lastname}</h1>
+      <h1 className="text-lg font-bold">Hello {user?.display_name}</h1>
 
       {/* Search Bar */}
       <div className="lg:inline-flex  gap-8 ">
@@ -25,7 +26,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <IoNotificationsOutline className="text-xl text-gray-600 cursor-pointer" />
           <img
-            src={Face} // Update with correct path
+            src={user?.photo_url || Face} // Update with correct path
             alt="Profile"
             className="w-10 h-10 rounded-full border-2 border-blue-300"
           />

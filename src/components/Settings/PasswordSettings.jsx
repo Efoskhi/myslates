@@ -5,12 +5,15 @@ import { IoIosArrowBack } from "react-icons/io";
 import { MdLockOutline } from "react-icons/md";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Lines from "../../assets/Lines.png";
+import useSettings from "../../Hooks/useSettings";
+import Loading from "../Layout/Loading";
 
 export default function PasswordSettings() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
+  const { inputs, isSaving, handleInput, handleUpdatePassword } = useSettings();
 
   const checkPasswordStrength = (pass) => {
     let strength = 0;
@@ -20,7 +23,7 @@ export default function PasswordSettings() {
     return strength;
   };
 
-  const passwordStrength = checkPasswordStrength(password);
+  const passwordStrength = checkPasswordStrength(inputs.password.newPassword);
 
   const getStrengthColor = () => {
     if (passwordStrength === 1) return "bg-red-500";
@@ -42,14 +45,42 @@ export default function PasswordSettings() {
         <div className="mt-2 w-full flex flex-col space-y-2">
           <div>
             <label className="text-xs text-black font-semibold">
+              Current Password
+            </label>
+            <div className="relative border px-2 rounded-md">
+              <MdLockOutline className="absolute top-2.5 text-1xl" />
+              <input
+                type={showCurrentPassword ? "text" : "password"}
+                value={inputs.password.currentPassword}
+                onChange={(e) => handleInput("password.currentPassword", e.target.value)}
+                placeholder="********"
+                className="px-8 border-none outline-none text-sm py-2 rounded-md font-semibold w-full"
+              />
+              <button
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute top-2.5 right-3"
+              >
+                {showCurrentPassword ? (
+                  <FiEyeOff className="text-1xl" />
+                ) : (
+                  <FiEye className="text-1xl" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-2 w-full flex flex-col space-y-2">
+          <div>
+            <label className="text-xs text-black font-semibold">
               New Password
             </label>
             <div className="relative border px-2 rounded-md">
               <MdLockOutline className="absolute top-2.5 text-1xl" />
               <input
                 type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={inputs.password.newPassword}
+                onChange={(e) => handleInput("password.newPassword", e.target.value)}
                 placeholder="********"
                 className="px-8 border-none outline-none text-sm py-2 rounded-md font-semibold w-full"
               />
@@ -74,8 +105,8 @@ export default function PasswordSettings() {
               <MdLockOutline className="absolute top-2.5 text-1xl" />
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                value={inputs.password.retypePassword}
+                onChange={(e) => handleInput("password.retypePassword", e.target.value)}
                 placeholder="********"
                 className="px-8 border-none outline-none text-sm py-2 rounded-md font-semibold w-full"
               />
@@ -106,7 +137,7 @@ export default function PasswordSettings() {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    /[A-Z]/.test(password) ? "bg-green-500" : "bg-gray-300"
+                    /[A-Z]/.test(inputs.password.newPassword) ? "bg-green-500" : "bg-gray-300"
                   }`}
                 />
                 <span>At least 1 uppercase</span>
@@ -114,7 +145,7 @@ export default function PasswordSettings() {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    /[0-9]/.test(password) ? "bg-green-500" : "bg-gray-300"
+                    /[0-9]/.test(inputs.password.newPassword) ? "bg-green-500" : "bg-gray-300"
                   }`}
                 />
                 <span>At least 1 number</span>
@@ -122,16 +153,19 @@ export default function PasswordSettings() {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    password.length >= 8 ? "bg-green-500" : "bg-gray-300"
+                    inputs.password.newPassword.length >= 8 ? "bg-green-500" : "bg-gray-300"
                   }`}
                 />
                 <span>At least 8 characters</span>
               </div>
             </div>
           </div>
-          <button className="bg-[#047aa5] text-white text-sm py-3 rounded-md font-semibold w-full">
-            Save Changes
-          </button>
+          <button 
+            onClick={handleUpdatePassword}
+            className="bg-[#047aa5] text-white text-sm py-3 rounded-md font-semibold w-full"
+          >
+              {isSaving ? <Loading/> : "Save Changes"}
+            </button>
         </div>
       </div>
     </div>

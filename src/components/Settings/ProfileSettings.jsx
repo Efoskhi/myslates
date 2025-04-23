@@ -2,44 +2,23 @@ import React, { useEffect, useState } from "react";
 import { FaCamera, FaCheck, FaCheckCircle } from "react-icons/fa";
 import Avatar from "../../assets/Avatar.png";
 import { uploadHtmlFile } from "../../Logics/uploadFileToFirebase";
+import useSettings from "../../Hooks/useSettings";
+import Loading from "../Layout/Loading";
 
 const ProfileSettings = () => {
-  const [profileImage, setProfileImage] = useState(Avatar); // Replace with a default image path
+  const [profileImage, setProfileImage] = useState(); // Replace with a default image path
+
+  const { inputs, isSaving, handleInput, handleUpdateProfile } = useSettings();
 
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
-      const url=await uploadHtmlFile(file);
-      console.log({url});
-
+      handleInput("profile.photo_url", file);
     }
   };
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
-  const [user,setUser]=useState({});
-useEffect(()=>{
-const user=  JSON.parse(sessionStorage.getItem("user"));
-setFormData({
-    firstName: user?.firstname,
-    lastName: user?.lastname,
-    email: user?.email,
-    phone: user?.phoneNumber
-})
-setUser(user);
-},[]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   return (
     <div>
@@ -68,7 +47,7 @@ setUser(user);
         {/* Profile Image */}
         <div className="relative">
           <img
-            src={profileImage}
+            src={profileImage || inputs.profile.photo_url}
             alt="Profile"
             className="w-24 h-24 rounded-full border-4 border-[#0598ce] shadow-md object-cover"
           />
@@ -87,23 +66,12 @@ setUser(user);
         {/* Form Fields */}
         <div className="grid grid-cols-2 gap-4 w-2/3">
           <div>
-            <label className="text-sm text-gray-600">First name</label>
+            <label className="text-sm text-gray-600">Fullname</label>
             <input
               type="text"
               name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-600">Last name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
+              value={inputs.profile.display_name}
+              onChange={e => handleInput("profile.display_name", e.target.value)}
               className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:ring-2 focus:ring-blue-400"
             />
           </div>
@@ -113,7 +81,8 @@ setUser(user);
             <input
               type="email"
               name="email"
-              value={formData.email}
+              disabled
+              value={inputs.profile.email}
               className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-500 "
             />
           </div>
@@ -123,13 +92,17 @@ setUser(user);
             <input
               type="text"
               name="phone"
-              value={formData.phone}
+              value={inputs.profile.phone_number}
+              onChange={e => handleInput("profile.phone_number", e.target.value)}
               className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-500 "
             />
           </div>
           <div />
-          <button className="mt-4 w-full bg-blue-200 text-white font-semibold py-2 rounded-md items-end">
-            Save Changes
+          <button 
+            onClick={handleUpdateProfile}
+            className="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded-md items-end"
+          >
+            {isSaving ? <Loading/> : "Save Changes"}
           </button>
         </div>
 
