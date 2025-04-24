@@ -35,7 +35,7 @@ const StudentsTable = () => {
   const navigate = useNavigate();
 
   const handleClick = (student) => {
-    window.sessionStorage.setItem("student", JSON.stringify(student));
+    sessionStorage.setItem("student", JSON.stringify(student));
     navigate("/StudentDetails"); // Update the route as needed
   };
 

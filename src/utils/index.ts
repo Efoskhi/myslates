@@ -62,4 +62,39 @@ const getLastWeekHeader = (): string[] => {
     return dates;
 };
 
-export { getCurrentWeekRange, getCurrentWeekHeader, getLastWeekRange, getLastWeekHeader };
+const getMonthRange = (month: string) => {
+    const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    const monthIndex = months.indexOf(month);
+    if (monthIndex === -1) {
+        throw new Error("Invalid month name");
+    }
+
+    const year = new Date().getFullYear();
+
+    const dateFrom = new Date(year, monthIndex, 1);
+    const dateTo = new Date(year, monthIndex + 1, 0); // 0th day of next month = last day of current month
+
+    return { dateFrom, dateTo };
+};
+
+export {
+    getCurrentWeekRange,
+    getCurrentWeekHeader,
+    getLastWeekRange,
+    getLastWeekHeader,
+    getMonthRange,
+};

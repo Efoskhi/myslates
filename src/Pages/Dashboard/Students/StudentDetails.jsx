@@ -1,25 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Layout/Header";
 import StudentProfile from "../../../components/Students/StudentProfile";
-import AttendanceCalendar from "../../../components/Students/Attendance";
 import SubjectPerformance from "../../../components/Students/SubjectPerformance";
-import SubjectAttendance from "../../../components/Students/SubjectAttendance";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
+import AttendanceCard from "../../../components/Students/AttendanceCard";
 
 const StudentDetails = () => {
-  const [student, setStudent] = useState();
 
-  const navigate=useNavigate()
-  useEffect(() => {
-    (() => {
-    const student = window.sessionStorage.getItem("student");
-      if(student && student.includes("}")) setStudent(JSON.parse(student));
-      else{
-        navigate("/students");
-      }
-    })()
-  },[])
+  const student = JSON.parse(sessionStorage.getItem("student"));
+
+  const navigate = useNavigate();
 
   const handleBack = () => {
     navigate(-1); // This navigates back to the previous page
@@ -28,6 +19,17 @@ const StudentDetails = () => {
   const goToStudentsResult = () => {
     navigate("/StudentResult"); // Navigate to the ResultManagement page
   };
+
+  if(!student){
+    return (
+        <div>
+            <Header />
+            <div className="p-6">
+                <p className="text-center text-gray-500">Student data was not found</p>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div>
@@ -47,16 +49,12 @@ const StudentDetails = () => {
             View Results
           </div>
         </div>
-        <div className="bg-white p-4 border grid gap-8 grid-cols-2">
-          <div>
-            <StudentProfile student={student} />
-            <AttendanceCalendar student={student} />
-          </div>
-          <div>
-            <SubjectPerformance student={student} />
-            <SubjectAttendance student={student}/>
-          </div>
+        <div className="bg-white p-4 border grid gap-8 grid-cols-2 grid-rows-2">
+          <StudentProfile student={student} />
+          <SubjectPerformance student={student} />
+          <AttendanceCard student={student} />
         </div>
+
       </div>
     </div>
   );
