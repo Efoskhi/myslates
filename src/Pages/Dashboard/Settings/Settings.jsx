@@ -6,8 +6,6 @@ import NotificationSettings from "../../../components/Settings/NotificationSetti
 import ProfileSettings from "../../../components/Settings/ProfileSettings";
 
 const Settings = () => {
-  const [profileImage, setProfileImage] = useState("/assets/avatar.png");
-  const [phone, setPhone] = useState("09034562134");
   const [activeTab, setActiveTab] = useState("profile");
 
   const tabs = [

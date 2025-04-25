@@ -91,10 +91,67 @@ const getMonthRange = (month: string) => {
     return { dateFrom, dateTo };
 };
 
+/**
+ * Combines a date string and two 24-hour time strings into start/end Date objects,
+ * validating that end > start.
+ * 
+ * @param dateStr   Date in "YYYY-MM-DD" format
+ * @param timeFrom  Start time in "HH:mm"
+ * @param timeTo    End   time in "HH:mm"
+ * @returns         { startDate, endDate }
+ * @throws          Error if timeTo is not after timeFrom or inputs invalid
+ */
+const getDateTimeRange = (
+    dateStr: string,
+    timeFrom: string,
+    timeTo?: string,
+  ): { startDate: Date; endDate: Date } => {
+    // Basic validation
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      throw new Error("Invalid date format (expected YYYY-MM-DD)");
+    }
+    if (!/^\d{2}:\d{2}$/.test(timeFrom) || (timeTo && !/^\d{2}:\d{2}$/.test(timeTo))) {
+      throw new Error("Invalid time format (expected HH:mm)");
+    }
+  
+    // Build full ISO strings
+    const startISO = `${dateStr}T${timeFrom}:00`;
+    const endISO   = `${dateStr}T${timeTo  }:00`;
+  
+    const startDate = new Date(startISO);
+    const endDate   = new Date(endISO);
+  
+    if (Number.isNaN(startDate.getTime()) ||(timeTo && Number.isNaN(endDate.getTime()))) {
+      throw new Error("Invalid date or time values");
+    }
+  
+    if ((endDate <= startDate) && timeTo) {
+      throw new Error("timeTo must be later than timeFrom");
+    }
+  
+    return { startDate, endDate };
+  }
+  
+  function getDuration(start: Date, end: Date): string {
+    const diffMs = end.getTime() - start.getTime(); // difference in milliseconds
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+  
+    const hourStr = hours > 0 ? `${hours}h` : "";
+    const minStr = minutes > 0 ? `${minutes}m` : "";
+  
+    return `${hourStr} ${minStr}`.trim();
+  }
+  
+
 export {
     getCurrentWeekRange,
     getCurrentWeekHeader,
     getLastWeekRange,
     getLastWeekHeader,
     getMonthRange,
+    getDateTimeRange,
+    getDuration,
 };

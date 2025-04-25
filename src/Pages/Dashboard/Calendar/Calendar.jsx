@@ -4,9 +4,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import MyCalendar from "../../../components/Calendar/MyCalendar";
 import Schedule from "../../../components/Calendar/Schedule";
 import AddScheduleModal from "../../../components/Calendar/AddScheduleModal";
+import useSchedule from "../../../Hooks/useSchedule";
 
 const Calendar = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const hooks = useSchedule();
 
   return (
     <div>
@@ -15,7 +16,7 @@ const Calendar = () => {
         <p className="text-2xl font-bold">November 2024</p>
         <div className="inline-flex gap-6">
           <div
-            onClick={() => setIsModalOpen(true)}
+            onClick={hooks.toggleModal}
             className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
           >
             <CiCirclePlus className="text-xl " />
@@ -24,11 +25,11 @@ const Calendar = () => {
         </div>
       </div>
 
-      {isModalOpen && (
-        <AddScheduleModal onClose={() => setIsModalOpen(false)} />
+      {hooks.isModalOpen && (
+        <AddScheduleModal hooks={hooks}/>
       )}
-      <MyCalendar />
-      <Schedule />
+      <MyCalendar hooks={hooks}/>
+      <Schedule hooks={hooks} />
     </div>
   );
 };

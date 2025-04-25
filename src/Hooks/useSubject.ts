@@ -8,9 +8,10 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const useSubject = ({ shouldGetSubjects = false, pageSize = 10 } = {}) => {
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false } = {}) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
+    const [staticSubjects, setStaticSubjects] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
     const [searchTerm, setSearchTerm] = React.useState("");
 
@@ -39,6 +40,27 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10 } = {}) => {
             // Replace with your actual fetch logic
             // const subjectsData = await docQr("Subjects", { max: 5000, whereClauses: [{ field: "teacher_id", operator: "==", value: user.teacher_id }] });
             setSubjects(response.data.Subjects);
+        } catch (error) {
+            console.error("Error fetching subjects:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getStaticSubjects = async () => {
+        try {
+            setLoading(true); 
+
+            const response = await getFirebaseData({
+                collection: "StaticSubjects",
+                page: 1,
+                pageSize: 100,
+            });
+
+            if (response.status === "error") throw new Error(response.message);
+            
+            setStaticSubjects(response.data.StaticSubjects);
+
         } catch (error) {
             console.error("Error fetching subjects:", error);
         } finally {
@@ -111,13 +133,15 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10 } = {}) => {
 	}
 
     React.useEffect(() => {
-        if(shouldGetSubjects) getSubjects()
+        if(shouldGetSubjects) getSubjects();
+        if(shouldGetStaticSubjects) getStaticSubjects();
     }, [])
 
     return {
         isSaving,
         isLoading,
         subjects,
+        staticSubjects,
         searchTerm,
         setSearchTerm,
         handleDeleteSubject,
