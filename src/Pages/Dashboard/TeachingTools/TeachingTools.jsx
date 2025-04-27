@@ -31,6 +31,16 @@ const features = [
     path: "/LessonPlan",
   },
   {
+    title: "Lesson Note Generator",
+    description:
+      "Create Lesson note for your classes so you can focus on teaching and impacting knowledge to your students.",
+    icon: Teach1,
+    IconComponent: AiFillThunderbolt,
+    iconColor: "text-blue-500",
+    gradient: "bg-gradient-to-r from-blue-100 to-white",
+    path: "/LessonNote",
+  },
+  {
     title: "Feedback Bot",
     description:
       "This tool helps you generate feedback on assignments and test answers of your students in an instant.",

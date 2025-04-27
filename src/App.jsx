@@ -22,6 +22,7 @@ import AssessmentBuilder from "./Pages/Dashboard/TeachingTools/AssessmentBuilder
 import FeedbackBot from "./Pages/Dashboard/TeachingTools/FeedbackBot";
 import Chatbot from "./Pages/Dashboard/TeachingTools/Chatbot";
 import LessonPlan from "./Pages/Dashboard/TeachingTools/LessonPlan";
+import LessonNote from "./Pages/Dashboard/TeachingTools/LessonNote";
 import FeedbackBotResponse from "./Pages/Dashboard/TeachingTools/FeedbackBotResponse";
 import CommuncationTools from "./Pages/Dashboard/CommunicationTools/CommuncationTools";
 import Attendance from "./Pages/Dashboard/Attendance/Attendance";
@@ -100,6 +101,7 @@ function App() {
               element={<FeedbackBotResponse />}
             />
             <Route path="LessonPlan" element={<LessonPlan />} />
+            <Route path="LessonNote" element={<LessonNote />} />
             <Route path="Settings" element={<Settings />} />
             <Route path="TopicDetails" element={<TopicDetails />} />
           </Route>

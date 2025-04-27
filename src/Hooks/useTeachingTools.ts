@@ -25,13 +25,23 @@ const useTeachingTools = () => {
         feedback: {
             description: "",
             file: ""
-        }
+        },
+        lessonNote: {
+            term: "",
+            week: "",
+            grade: "",
+            subject: "",
+            classDuration: "",
+            description: "",
+            file: null,
+        },
     });
 
     const [ generatedResponses, setGeneratedResponses ] = React.useState({
         assessmentBuilder: "",
         lessonPlan: "",
         feedback: "",
+        lessonNote: "",
     });
 
     const handleInput = (field: string, value: any) => {
@@ -64,9 +74,9 @@ const useTeachingTools = () => {
     }
       
 
-    const generateRequestBody = async ({ userMessage, image }) => {
+    const generateRequestBody = async ({ userMessage, image, systemMessage }) => {
 
-        const messages = [
+        const messages = [      
             {
                 role: "user",
                 content: [
@@ -77,6 +87,13 @@ const useTeachingTools = () => {
                 ],
             },
         ] as any;
+
+        if(systemMessage) {
+            messages.push({
+                role: "system",
+                content: systemMessage,
+            })
+        }
 
         if(image){
             const base64Image = await convertImageToBase64(image);
@@ -148,7 +165,8 @@ const useTeachingTools = () => {
 
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,
-                image: file
+                image: file,
+                systemMessage: "You are a teaching assistant to help Nigerian teachers generate questions and answers based on the Nigerian curriculum. Your task is to generate assessments that fits the grade level in terms of complexity. Your response should be in markdown format. For example, if the grade level is nursery then the assessment should be suitable for nursery students. Similarly, the plan should be made accordingly if the grade level is a senior secondary school."
             })
 
             const text = await getAIResponse(payload);
@@ -185,7 +203,8 @@ const useTeachingTools = () => {
             
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,
-                image: file
+                image: file,
+                systemMessage: "You are a teaching assistant to help Nigerian teachers generate lesson plans based on the Nigerian curriculum. Your task is to make lesson plans that fit the grade levels. For example, if the grade level is nursery then the plan should be suitable for nursery students. Similarly, the plan should be made accordingly if the grade level is a senior secondary school. Your response should be in markdown format. Follow the following template: A. GENERAL INFORMATION- Term- Week- Subject- Topic- Instructional Resources- Behavioral Objective- Previous Knowledge. B. INTRODUCTION- Preamble- Presentation (based on steps)- Culminating Activities- Conclusion- Assignment Work- Remarks"
             })
 
             const text = await getAIResponse(payload);
@@ -217,7 +236,8 @@ const useTeachingTools = () => {
             
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,
-                image: file
+                image: file,
+                systemMessage: null
             })
 
             const text = await getAIResponse(payload);
@@ -234,6 +254,44 @@ const useTeachingTools = () => {
         }
     }
 
+    const handleGenerateLessonNote = async () => {
+        try {
+            setLoading(true);
+
+            validateFields(inputs.lessonNote);
+
+            const { 
+                term, 
+                week, 
+                subject, 
+                grade, 
+                description,
+                classDuration,
+                file,
+            } = inputs.lessonNote;
+
+            const generatedPrompt = `Generate a lesson plan for ${grade} level for the ${subject} subject on the ${description} topic. The week is ${week} of the ${term} term. The class will last ${classDuration} minutes. Do not add any extra text or formatting outside the lesson notes. Format the output clearly using Markdown with appropriate section headings (e.g., ## Objectives) and bullet points or numbered lists where suitable. Avoid using LaTeX, backslashes, or escape characters.`;
+            
+            const payload = await generateRequestBody({
+                userMessage: generatedPrompt,
+                image: file,
+                systemMessage: "You are a teaching assistant to help Nigerian teachers generate lesson notes based on the Nigerian curriculum. Your task is to make lesson notes that fit the grade levels. For example, if the grade level is nursery then the note should be suitable for nursery students. Similarly, the note should be made accordingly if the grade level is a senior secondary school. Your response should be in markdown format. Keep in mind that a lesson note is not a lesson plan, therefore, there is no need for objectives, conclusions, homework, and the likes."
+            })
+
+            const text = await getAIResponse(payload);
+
+            setGeneratedResponses(prev => ({
+                ...prev,
+                lessonNote: text,
+            }))
+
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         inputs,
         isLoading,
@@ -242,6 +300,7 @@ const useTeachingTools = () => {
         handleGenerateAssesmentBuilder,
         handleGenerateLessonPlan,
         handleGenerateFeedback,
+        handleGenerateLessonNote,
     };
 };
 
