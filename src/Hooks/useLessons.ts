@@ -111,7 +111,7 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
                 img_content,
                 img_example,
                 next: totalLessons + 2,
-                previous: totalLessons - 1,
+                previous: totalLessons - 1 < 0 ? 0 : totalLessons - 1,
                 lesson_number: totalLessons + 1,
                 id: `lesson_${totalLessons + 1}`,
                 likes: 0,

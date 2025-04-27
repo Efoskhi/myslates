@@ -35,6 +35,7 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
 
     const { classes, isLoading: isLoadingClasses } = useClasses({
         shouldGetClasses: true,
+        pageSize: 100
     });
 
     const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");

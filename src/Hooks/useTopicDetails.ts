@@ -14,8 +14,8 @@ const useTopicDetails = (topic?: any) => {
     });
     const [ isSaving, setSaving ] = React.useState(false);
 
-    const { weeks, isLoading: isLoadingWeeks } = useWeeks({ shouldGetWeeks: true });
-    const { terms, isLoading: isLoadingTerms } = useTerms({ shouldGetTerms: true });
+    const { weeks, isLoading: isLoadingWeeks } = useWeeks({ shouldGetWeeks: true, pageSize: 100 });
+    const { terms, isLoading: isLoadingTerms } = useTerms({ shouldGetTerms: true, pageSize: 100 });
 
     const handleInput = (field: string, value: any) => {
         setInputs(prev => ({

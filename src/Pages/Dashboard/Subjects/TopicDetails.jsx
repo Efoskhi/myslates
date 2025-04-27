@@ -4,6 +4,7 @@ import UpdateTopicDetails from "../../../components/Subjects/TopicDetails";
 import LessonCard from "../../../components/Subjects/LessonCard";
 import QuizCard from "../../../components/Subjects/QuizCard";
 import AssignmentCard from "../../../components/Subjects/AssignmentCard";
+import StartTeaching from "../../../components/Subjects/StartTeaching";
 
 const tabClasses = (active) =>
   `px-4 py-2 rounded-t-md font-medium transition ${
@@ -104,84 +105,7 @@ const TopicDetails = () => {
           >
             Start Teaching
           </button>
-          {/* Modal Overlay */}
-          {isOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              {/* Modal Content */}
-              <div className="bg-white rounded-lg h-screen w-full lg:max-w-7xl p-6 relative overflow-y-auto">
-                {/* Close Button */}
-                <button
-                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-2xl"
-                  onClick={closeModal}
-                >
-                  &times;
-                </button>
-
-                {/* Modal Body */}
-                <div className="bg-cyan-500 text-white px-4 py-2  rounded-md mb-4 font-semibold ">
-                  Lesson 1
-                  <div className="text-sm font-normal">
-                    Topic 1: Parts of the Mouth – The Teeth
-                  </div>
-                </div>
-                {/* Note */}
-                <div className="bg-cyan-50 border border-cyan-200 p-4  rounded-md space-y-4">
-                  <div className="text-cyan-700 font-semibold">Note:</div>
-                  {/* You can replace this image with a local import if you want */}
-                  <img
-                    src="https://i.imgur.com/Z5pN3pP.png"
-                    alt="Parts of the Mouth"
-                    className="mx-auto w-48"
-                  />
-                  <p className="text-gray-800 text-sm">
-                    Teeth are hard structures in the mouth that help us chew
-                    food. Humans have different types of teeth, and each one has
-                    a specific function. The four main types of teeth are
-                    incisors, canines, premolars, and molars. These teeth work
-                    together to help us bite, tear, crush, and grind food
-                    properly before swallowing.
-                  </p>
-                </div>
-
-                {/* Watch Video Link */}
-                <div className="flex justify-end mt-2 pb-52">
-                  <button className="text-cyan-600 text-sm hover:underline flex items-center">
-                    <svg
-                      className="w-4 h-4 mr-1"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M10 8.64v6.72L15.27 12 10 8.64z" />
-                      <path d="M24 0v24H0V0h24z" fill="none" />
-                    </svg>
-                    Watch Video
-                  </button>
-                </div>
-
-                {/* Examples */}
-                <div className="bg-red-50 border border-red-400 p-4 rounded-md space-y-4">
-                  <div className="text-red-700 font-semibold">Examples:</div>
-                  {/* You can replace this image with a local import if you want */}
-                  <img
-                    src="https://i.imgur.com/Z5pN3pP.png"
-                    alt="Parts of the Mouth"
-                    className="mx-auto w-48"
-                  />
-                  <p className="text-gray-800 text-sm">1. Chewing rice</p>
-                </div>
-
-                {/* Watch Video Link */}
-                <div className="flex justify-end mt-2 pb-12">
-                  <button className="text-red-600 text-sm hover:underline flex items-center">
-                    Simplify
-                  </button>
-                </div>
-                <div className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 mx-auto text-center py-4 text-white rounded-md ">
-                  Continue
-                </div>
-              </div>
-            </div>
-          )}
+          {isOpen && <StartTeaching closeModal={closeModal}/>}
         </div>
 
         {/* Content */}
