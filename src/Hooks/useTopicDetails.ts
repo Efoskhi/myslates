@@ -11,6 +11,7 @@ const useTopicDetails = (topic?: any) => {
         term: topic?.termRef?.title ?? "",
         title: topic?.title ?? "",
         serial_no: topic?.serial_no ?? "",
+        lesson_plan: topic?.lesson_plan ?? "",
     });
     const [ isSaving, setSaving ] = React.useState(false);
 
@@ -25,7 +26,7 @@ const useTopicDetails = (topic?: any) => {
     }
 
     const validateInput = (customInput?: any) => {
-        const { week, term, title, serial_no } = customInput ?? inputs;
+        const { week, term, title, serial_no, lesson_plan } = customInput ?? inputs;
 
         let subject = customInput ? customInput.subject : JSON.parse(sessionStorage.getItem("subject") || "null");
 
@@ -34,10 +35,12 @@ const useTopicDetails = (topic?: any) => {
         if(!week) throw new TopicError("Select topic week");
         if(!term) throw new TopicError("Select topic term");
         if(!title) throw new TopicError("Enter title of topic");
-        if(!serial_no || isNaN(serial_no)) throw new TopicError("Serial number must be a number");
+        if(!serial_no || isNaN(serial_no)) throw new TopicError("Topic serial number must be a number");
+        if(!lesson_plan) throw new TopicError("Enter topic lesson plan");
 
         const validatedInput = {
             title,
+            lesson_plan,
             serial_no: Number(serial_no),
             weekRef: {
                 isRef: true,
@@ -57,6 +60,11 @@ const useTopicDetails = (topic?: any) => {
         }
 
         return validatedInput
+    }
+
+    const updateTopics = (data) => {
+        const currentTopic = { ...topic, ...data };
+        sessionStorage.setItem("currentTopic", JSON.stringify(currentTopic));
     }
 
     const handleAddTopic = async (customInput?: any) => {
@@ -79,6 +87,7 @@ const useTopicDetails = (topic?: any) => {
                 term: "",
                 title:  "",
                 serial_no: "",
+                lesson_plan: "",
             })
 
             if(!customInput) toast.success("Topic has been created");
@@ -119,6 +128,8 @@ const useTopicDetails = (topic?: any) => {
             })
 
             if(response.status === "error") throw new TopicError(errorMessage);
+
+            updateTopics(inputs);
 
             toast.success("Topic has been updated");
 

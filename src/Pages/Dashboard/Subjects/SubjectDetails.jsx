@@ -68,13 +68,13 @@ const SubjectDetails = () => {
         </div>
 
         <div className="mt-2">
-          <p className="text-gray-500">Class Link</p>
+          {/* <p className="text-gray-500">Class Link</p> */}
           <div className="inline-flex justify-between w-full">
             {/* Render subject class link or fallback */}
             <a href="#" className="font-semibold text-blue-500">
-              {subject.classLink || "ACL-A1SBU"}
+              {/* {subject.classLink || "ACL-A1SBU"} */}
             </a>
-            <IoCopyOutline className="text-gray-500" />
+            {/* <IoCopyOutline className="text-gray-500" /> */}
           </div>
         </div>
 
@@ -89,7 +89,7 @@ const SubjectDetails = () => {
             />
             <div className="absolute bottom-4 left-3 text-gray-200">
               {/* Render subject grade or fallback */}
-              <p className="text-sm">{subject.grade || "GRADE 8"}</p>
+              <p className="text-sm">{subject.classRef.student_class || ""}</p>
               {/* Render subject title again or fallback */}
               <h2 className="text-xl font-bold">{subject.title || "Economics"}</h2>
             </div>
@@ -104,12 +104,12 @@ const SubjectDetails = () => {
             <div className="flex items-center text-gray-600 text-sm mt-3">
               {/* Render number of lessons or fallback */}
               <p className="text-[#035B7c] font-bold">
-                {subject.lessons ? subject.lessons + " LESSONS" : "5 LESSONS"}
+                {/* {subject.Lessons ? subject.Lessons.length + " LESSONS" : ""} */}
               </p>
-              <span className="mx-2">|</span>
+              {/* <span className="mx-2">|</span> */}
               {/* Render student count or fallback */}
               <p className="text-[#035B7c] font-bold">
-                {subject.studentsCount ? subject.studentsCount + " STUDENTS" : "32 STUDENTS"}
+                {subject.studentsCount ? subject.studentsCount + " STUDENTS" : ""}
               </p>
             </div>
           </div>

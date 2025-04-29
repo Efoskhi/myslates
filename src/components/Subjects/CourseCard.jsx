@@ -26,11 +26,11 @@ export const CourseCard = ({ subject }) => {
       <div className="p-4">
         <p className="text-sm text-gray-500">{grade}</p>
         <h2 className="text-lg font-bold">{title}</h2>
-        <div className="flex items-center text-gray-600 text-sm mt-2">
+        {/* <div className="flex items-center text-gray-600 text-sm mt-2">
           <FaBook className="mr-1 text-[#0598ce]" /> {lessons} Lessons
           <span className="mx-2">|</span>
           <FaUsers className="mr-1 text-[#0598ce]" /> {studentsCount} Students
-        </div>
+        </div> */}
       </div>
     </div>
   );

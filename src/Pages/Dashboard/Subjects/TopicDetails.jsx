@@ -5,6 +5,7 @@ import LessonCard from "../../../components/Subjects/LessonCard";
 import QuizCard from "../../../components/Subjects/QuizCard";
 import AssignmentCard from "../../../components/Subjects/AssignmentCard";
 import StartTeaching from "../../../components/Subjects/StartTeaching";
+import LessonPlan from "../../../components/Subjects/LessonPlan";
 
 const tabClasses = (active) =>
   `px-4 py-2 rounded-t-md font-medium transition ${
@@ -17,9 +18,12 @@ const TopicDetails = () => {
   const [activeTab, setActiveTab] = useState("details");
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenLessonPlan, setIsOpenLessonPlan] = useState(false);
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
+  const openLessonPlanModal = () => setIsOpenLessonPlan(true);
+  const closeLessonPlanModal = () => setIsOpenLessonPlan(false);
 
   const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
 
@@ -106,6 +110,13 @@ const TopicDetails = () => {
             Start Teaching
           </button>
           {isOpen && <StartTeaching closeModal={closeModal}/>}
+          <button
+            onClick={openLessonPlanModal}
+            className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition "
+          >
+            View Lesson Plan
+          </button>
+          {isOpenLessonPlan && <LessonPlan closeModal={closeLessonPlanModal}/>}
         </div>
 
         {/* Content */}

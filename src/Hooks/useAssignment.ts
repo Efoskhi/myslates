@@ -117,11 +117,6 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         toggleAssignmentModalVisible("Update");
     };
 
-    const updateTopics = (updatedAssignments) => {
-        topic.Assignmentzes = updatedAssignments;
-        sessionStorage.setItem("currentTopic", JSON.stringify(topic));
-    };
-
     const handleAddAssignment = async (customInput?: any) => {
         try {
             setSaving(true);
@@ -132,14 +127,18 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
 
             const validatedInput = validateInput({}, customInput);
 
-            const imageUrl = await uploadFileToFirebase(
-                input.image,
-                "assignments"
-            );
+            let image_url;
+
+            if (inputs.image.name) {
+                image_url = await uploadFileToFirebase(
+                    inputs.image,
+                    "assignments"
+                );
+            }
 
             const assignment = {
                 ...validatedInput,
-                image: imageUrl,
+                image: image_url,
             };
 
             const { status, message, data } = await addFirebaseData({
@@ -283,7 +282,7 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         if (!due_date) throw new AssignmentError("Enter due date");
         if (!className) throw new AssignmentError("Select a class");
         if (!question) throw new AssignmentError("Enter question");
-        if (!image && !optionalFields?.image) throw new AssignmentError("Upload an image");
+        // if (!image && !optionalFields?.image) throw new AssignmentError("Upload assignment image");
         
 
         return {
