@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../components/Layout/Header";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoFilter } from "react-icons/io5";
@@ -9,10 +9,20 @@ import Skeleton from "@mui/material/Skeleton";
 import { docQr } from "../../../Logics/docQr"; // Adjust the import based on your project
 import { getFirebaseData } from "../../../utils/firebase";
 import useSubject from "../../../Hooks/useSubject";
+import GradesModal from "../../../components/Subjects/GradesModal";
+import { doc } from "firebase/firestore";
+import { db } from "../../../firebase.config";
 
 const Subjects = () => {
-  const { subjects, isLoading, searchTerm, setSearchTerm } = useSubject({ shouldGetSubjects: true })
+  const [ title, setTitle ] = React.useState("My Subjects");
+  const [ isVisibleGradeModal, setVisibleGradeModal ] = React.useState(false);
+  const [ filters, setFilters ] = React.useState();
 
+  const oppositeTitle = title === "Duplicate Subject" ? "My Subjects" : "Duplicate Subject";
+
+  const { subjects, isLoading, searchTerm, isSaving, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "Duplicate Subject", filters })
+  
+  const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
   // Number of skeleton cards to show while loading
   const skeletonCards = Array.from({ length: 3 });
@@ -22,11 +32,33 @@ const Subjects = () => {
     subject.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const toggleGradeModal = () => setVisibleGradeModal(prev => !prev);
+
+  const gradeModalCallback = (id) => {
+
+    const classRef = doc(db, "Classes", id);
+
+    setFilters([
+      ["teacher_id", "!=", user.teacher_id],
+      ["classRef", "==", classRef],
+      // ["school_id", "==", "000000"],
+    ])
+
+    setTitle(oppositeTitle);
+    toggleGradeModal();
+  }
+
+  const duplicateSubjectCallback = () => {
+    setFilters([]);
+    
+  }
+
   return (
     <div>
       <Header />
+      {isVisibleGradeModal && <GradesModal toggleModal={toggleGradeModal} callback={gradeModalCallback}/>}
       <div className="p-6 flex items-center justify-between">
-        <p className="text-2xl font-bold">My Subjects</p>
+        <p className="text-2xl font-bold">{title}</p>
         <div className="inline-flex gap-6">
           <div
             onClick={() => window.location.assign("/AddSubject")}
@@ -34,6 +66,21 @@ const Subjects = () => {
           >
             <CiCirclePlus className="text-xl" />
             Add Subject
+          </div>
+          {title === "Duplicate Subject" && 
+            <div
+              onClick={() => setTitle(oppositeTitle)}
+              className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
+            >
+              <CiCirclePlus className="text-xl" />
+              My Subjects
+            </div>
+          }
+          <div
+            onClick={toggleGradeModal}
+            className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
+          >
+            Duplicate Subject
           </div>
         </div>
       </div>
@@ -60,7 +107,14 @@ const Subjects = () => {
           {isLoading
             ? skeletonCards.map((_, idx) => <SkeletonCourseCard key={idx} />)
             : filteredSubjects.map((subject) => (
-                <CourseCard key={subject.subject_id} subject={subject} />
+                <CourseCard 
+                  key={subject.subject_id} 
+                  subject={subject} 
+                  isOwnSubject={title === "My Subjects"}
+                  handleDuplicateSubject={handleDuplicateSubject}
+                  handleDuplicateSubjectCallback={duplicateSubjectCallback}
+                  isSaving={isSaving}
+                />
               ))}
         </div>
         <Pagination />

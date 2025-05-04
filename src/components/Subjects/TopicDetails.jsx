@@ -33,9 +33,11 @@ const TopicDetails = ({ section, handleCloseModal }) => {
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-xl border border-blue-100">
             <div className="flex justify-between items-center border-b pb-3 ">
-                <h2 className="text-2xl font-semibold text-blue-600 mb-6">
-                    {section} Topic
-                </h2>
+                {(topic.isOwnSubject || section === "Add") && 
+                    <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+                        {section} Topic
+                    </h2>
+                }
                 {section === "Add" && 
                     <button onClick={handleCloseModal}>
                         <IoClose className="text-xl text-gray-500 hover:text-gray-700" />
@@ -123,12 +125,14 @@ const TopicDetails = ({ section, handleCloseModal }) => {
             </div>
 
             {/* Update Button */}
-            <button
-                onClick={section === "Update" ? handleUpdateTopic : () => handleAddTopic()}
-                className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition duration-200"
-            >
-                {isSaving ? <Loading/> : `${section} Topic`}
-            </button>
+            {(topic.isOwnSubject || section === "Add") && 
+                <button
+                    onClick={section === "Update" ? handleUpdateTopic : () => handleAddTopic()}
+                    className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition duration-200"
+                >
+                    {isSaving ? <Loading/> : `${section} Topic`}
+                </button>
+            }
         </div>
     );
 };

@@ -3,7 +3,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import QuizDetailsModal from "./QuizDetailsModal";
 import useQuiz from "../../Hooks/useQuiz";
 
-const QuizCard = () => {
+const QuizCard = ({ isOwnSubject }) => {
 
     const hooks = useQuiz();
     const {
@@ -20,13 +20,15 @@ const QuizCard = () => {
                 <div className="flex items-center gap-2 text-blue-700 text-lg font-semibold">
                     📝 <span>Quiz</span>
                 </div>
-                <button onClick={() => toggleQuizModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-                    Add Quiz
-                </button>
+                {isOwnSubject && 
+                    <button onClick={() => toggleQuizModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+                        Add Quiz
+                    </button>
+                }
             </div>
 
             {quizModalVisible && 
-                <QuizDetailsModal hooks={hooks} />
+                <QuizDetailsModal hooks={hooks} isOwnSubject={isOwnSubject}/>
             }
             {!isLoading && quizes.length === 0 &&
                 <div className="p-6">

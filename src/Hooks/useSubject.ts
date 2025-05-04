@@ -7,8 +7,17 @@ import {
 } from "../utils/firebase";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useAddSubject from "./useAddSubject";
 
-const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false } = {}) => {
+interface SubjectProps {
+    shouldGetSubjects?: boolean;
+    pageSize?: number;
+    shouldGetStaticSubjects?: boolean;
+    shouldGetNonCreatedSubjects?: boolean;
+    filters?: [];
+}
+
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [] }: SubjectProps) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
     const [staticSubjects, setStaticSubjects] = React.useState([]);
@@ -16,6 +25,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
     const [searchTerm, setSearchTerm] = React.useState("");
 
     const navigate = useNavigate();
+    const { addSubject } = useAddSubject();
 
     const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
     const user = JSON.parse(sessionStorage.getItem("user") || "null");
@@ -30,9 +40,9 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
             const response = await getFirebaseData({
                 collection: "Subjects",
                 refFields: ["classRef", "deptRef"],
-                query: [["teacher_id", "==", user.teacher_id]],
+                query: filters.length ? filters : [["teacher_id", "==", user.teacher_id]],
                 page: 1,
-                pageSize,
+                pageSize: filters.length ? 100 : pageSize,
             });
 
             if (response.status === "error") throw new Error(response.message);
@@ -132,10 +142,45 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
 		return response;
 	}
 
+    const handleDuplicateSubject = async (subject, callback) => {
+        try {
+            const { curriculum, classRef, deptRef, description,thumbnail, title } = subject;
+            setSaving(true);
+            await addSubject({
+                curriculum,
+                description,
+                thumbnail,
+                title, 
+                className: classRef.student_class,
+                department: deptRef.title,
+                parentSubjectRef: {
+                    isRef: true,
+                    collection: "Subjects",
+                    id: subject.id
+                }
+            })
+
+            toast.success("Subject has been copied");
+            callback();
+
+        } catch(error){
+            if(error instanceof SubjectError) {
+                return toast.error(error.message);
+            }
+
+            toast.error("Something went wrong duplicating subject");
+        } finally {
+            setSaving(false);
+        }
+    }
+
     React.useEffect(() => {
-        if(shouldGetSubjects) getSubjects();
         if(shouldGetStaticSubjects) getStaticSubjects();
     }, [])
+
+    React.useEffect(() => {
+        if(shouldGetSubjects) getSubjects();
+    }, [shouldGetNonCreatedSubjects])
 
     return {
         isSaving,
@@ -146,6 +191,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         setSearchTerm,
         handleDeleteSubject,
         getTotalSubjects,
+        handleDuplicateSubject,
     };
 };
 

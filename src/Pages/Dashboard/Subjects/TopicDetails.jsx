@@ -38,6 +38,8 @@ const TopicDetails = () => {
     );
   }
 
+  const isOwnSubject = topic.isOwnSubject;
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "details":
@@ -52,19 +54,19 @@ const TopicDetails = () => {
       case "lessons":
         return (
           <div className="p-4">
-            <LessonCard />
+            <LessonCard isOwnSubject={isOwnSubject}/>
           </div>
         );
       case "quizzes":
         return (
           <div className="p-4">
-            <QuizCard />
+            <QuizCard isOwnSubject={isOwnSubject} />
           </div>
         );
       case "assignment":
         return (
           <div className="p-4">
-            <AssignmentCard />
+            <AssignmentCard isOwnSubject={isOwnSubject} />
           </div>
         );
       default:

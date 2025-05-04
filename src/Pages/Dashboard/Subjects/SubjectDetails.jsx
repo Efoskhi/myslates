@@ -42,30 +42,34 @@ const SubjectDetails = () => {
       <Header />
       {isVisibleDeleteModal && <SubjectDeleteModal toggleModal={toggleDeleteVisibleModal} /> }
       <div className="p-6 bg-white">
-        <div className="flex flex-row items-center justify-between pb-4">
-          <div
-            className="border p-1 px-2 text-xs rounded-md inline-flex items-center cursor-pointer hover:bg-gray-100"
-            onClick={handleBack}
-          >
-            <IoIosArrowBack /> Back
-          </div>
-          <div
-            className="border p-1 px-2 text-xs rounded-md cursor-pointer hover:bg-gray-100"
-            onClick={goToStudentsList}
-          >
-            View Students List
-          </div>
-        </div>
-        {/* Render subject title or fallback */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{subject.title || "Subject Title"}</h1>
-          <button
-            onClick={toggleDeleteVisibleModal}
-            className="text-red-600 font-semibold hover:underline"
-          >
-            Delete Subject
-          </button>
-        </div>
+        {subject.isOwnSubject && 
+          <>
+            <div className="flex flex-row items-center justify-between pb-4">
+              <div
+                className="border p-1 px-2 text-xs rounded-md inline-flex items-center cursor-pointer hover:bg-gray-100"
+                onClick={handleBack}
+              >
+                <IoIosArrowBack /> Back
+              </div>
+              <div
+                className="border p-1 px-2 text-xs rounded-md cursor-pointer hover:bg-gray-100"
+                onClick={goToStudentsList}
+              >
+                View Students List
+              </div>
+            </div>
+            {/* Render subject title or fallback */}
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold">{subject.title || "Subject Title"}</h1>
+              <button
+                onClick={toggleDeleteVisibleModal}
+                className="text-red-600 font-semibold hover:underline"
+              >
+                Delete Subject
+              </button>
+            </div>
+          </>
+        }
 
         <div className="mt-2">
           {/* <p className="text-gray-500">Class Link</p> */}
@@ -115,7 +119,7 @@ const SubjectDetails = () => {
           </div>
         </div>
 
-        <ClassDetailsAccordion />
+        <ClassDetailsAccordion isOwnSubject={subject.isOwnSubject}/>
       </div>
     </div>
   );

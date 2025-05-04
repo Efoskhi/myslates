@@ -9,7 +9,7 @@ import Face from "../../assets/Face2.png";
 import AssignmentDeleteModal from "./AssignmentDeleteModal";
 import Loading from "../Layout/Loading";
 
-const AssignmentDetailsModal = ({ hooks }) => {
+const AssignmentDetailsModal = ({ hooks, isOwnSubject }) => {
     const [selectedLesson, setSelectedLesson] = useState("Supply and Demand");
     const [question, setQuestion] = useState("");
     const [file, setFile] = useState(null);
@@ -169,21 +169,25 @@ const AssignmentDetailsModal = ({ hooks }) => {
 
                 {/* Action Buttons */}
                 {section === "Update" ? (
-                    <div className="flex justify-between mt-4">
-                        <button
-                            disabled={isSaving}
-                            onClick={handleUpdateAssignment}
-                            className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
-                        >
-                            {isSaving ? <Loading /> : "Edit Assignment"}
-                        </button>
-                        <button
-                            onClick={toggleDeleteModal}
-                            className="border border-red-500 text-red-500 px-4 py-2 rounded-md"
-                        >
-                            Delete Assignment
-                        </button>
-                    </div>
+                    <>
+                        {isOwnSubject && 
+                            <div className="flex justify-between mt-4">
+                                <button
+                                    disabled={isSaving}
+                                    onClick={handleUpdateAssignment}
+                                    className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
+                                >
+                                    {isSaving ? <Loading /> : "Edit Assignment"}
+                                </button>
+                                <button
+                                    onClick={toggleDeleteModal}
+                                    className="border border-red-500 text-red-500 px-4 py-2 rounded-md"
+                                >
+                                    Delete Assignment
+                                </button>
+                            </div>
+                        }
+                    </>
                 ) : (
                     <button
                         disabled={isSaving}

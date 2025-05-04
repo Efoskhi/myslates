@@ -3,7 +3,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import LessonDetailsModal from "./LessonDetailsModal";
 import useLessons from "../../Hooks/useLessons";
 
-const LessonCard = () => {
+const LessonCard = ({ isOwnSubject }) => {
 
     const hooks = useLessons();
     const {
@@ -20,13 +20,15 @@ const LessonCard = () => {
                 <div className="flex items-center gap-2 text-blue-700 text-lg font-semibold">
                     📘 <span>Lessons</span>
                 </div>
-                <button onClick={() => toggleLessonModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-                    Add Lesson
-                </button>
+                {isOwnSubject && 
+                    <button onClick={() => toggleLessonModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+                        Add Lesson
+                    </button>
+                }
             </div>
 
             {lessonModalVisible && 
-                <LessonDetailsModal hooks={hooks} />
+                <LessonDetailsModal hooks={hooks} isOwnSubject={isOwnSubject}/>
             }
             {!isLoading && lessons.length === 0 &&
                 <div className="p-6">

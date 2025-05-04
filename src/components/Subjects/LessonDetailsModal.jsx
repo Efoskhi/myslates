@@ -9,7 +9,7 @@ import Face from "../../assets/Face2.png";
 import Loading from "../Layout/Loading";
 import LessonDeleteModal from "./LessonDeleteModal";
 
-const LessonDetailsModal = ({ hooks }) => {
+const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
   const [ deleteModalVisible, setDeleteModalVisible ] = React.useState(false);
 
   const { 
@@ -180,14 +180,18 @@ const LessonDetailsModal = ({ hooks }) => {
 
           {/* Action Buttons */}
           {section === "Update" ? (
-              <div className="flex justify-between mt-4">
-                <button disabled={isSaving} onClick={handleUpdateLesson} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
-                  {isSaving ? <Loading/> : "Edit Lesson"}
-                </button>
-                <button onClick={toggleDeleteModal} className="border border-red-500 text-red-500 px-4 py-2 rounded-md">
-                  Delete Lesson
-                </button>
-              </div>
+              <>
+                {isOwnSubject && 
+                  <div className="flex justify-between mt-4">
+                    <button disabled={isSaving} onClick={handleUpdateLesson} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
+                      {isSaving ? <Loading/> : "Edit Lesson"}
+                    </button>
+                    <button onClick={toggleDeleteModal} className="border border-red-500 text-red-500 px-4 py-2 rounded-md">
+                      Delete Lesson
+                    </button>
+                  </div>
+                }
+              </>
           ) : (
             <button disabled={isSaving} onClick={() => handleAddLesson()} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
               {isSaving ? <Loading/> : "Add Lesson"}

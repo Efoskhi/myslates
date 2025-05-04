@@ -31,6 +31,20 @@ interface AddSubjectResponses {
     quiz?: Record<string, any>;
 }
 
+interface AddSubjectProps {
+    curriculum: string;
+    className: string;
+    department: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    parentSubjectRef?: {
+        isRef: boolean;
+        collection: string;
+        id: string;
+    }
+}
+
 const useAddSubject = () => {
     const [isSaving, setSaving] = React.useState(false);
     const [inputs, setInputs] = React.useState({
@@ -94,7 +108,7 @@ const useAddSubject = () => {
         }));
     };
 
-    const addSubject = async () => {
+    const addSubject = async (fields?: AddSubjectProps) => {
         try {
             const {
                 curriculum,
@@ -103,7 +117,7 @@ const useAddSubject = () => {
                 description,
                 thumbnail,
                 title,
-            } = inputs.subject;
+            } = fields ?? inputs.subject;
             const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
             if (!user)
@@ -113,12 +127,12 @@ const useAddSubject = () => {
             if (!className) throw new SubjectError("Select subject class");
             if (!department)
                 throw new SubjectError("Select subject department");
-            if (!description)
-                throw new SubjectError("Enter subject description");
+            // if (!description)
+            //     throw new SubjectError("Enter subject description");
             if (!thumbnail) throw new SubjectError("Upload subject thumbnail");
             if (!title) throw new SubjectError("Enter subject title");
 
-            const thumbnail_url = await uploadFileToFirebase(
+            const thumbnail_url = fields ? thumbnail : await uploadFileToFirebase(
                 thumbnail,
                 "subjects"
             );
@@ -140,6 +154,7 @@ const useAddSubject = () => {
                 },
                 teacher_id: user.teacher_id,
                 school_id: user.school_id,
+                parentSubjectRef: fields?.parentSubjectRef || null,
             };
 
             const response = await addFirebaseData({
@@ -231,6 +246,7 @@ const useAddSubject = () => {
         isSaving,
         handleInput,
         handleAddSubject,
+        addSubject,
     };
 };
 

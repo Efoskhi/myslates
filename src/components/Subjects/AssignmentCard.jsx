@@ -4,7 +4,7 @@ import AssignmentDetailsModal from "./AssignmentDetailsModal";
 import useAssignment from "../../Hooks/useAssignment";
 import Loading from "../Layout/Loading";
 
-const AssignmentCard = () => {
+const AssignmentCard = ({ isOwnSubject }) => {
 
     const hooks = useAssignment();
     const {
@@ -21,13 +21,15 @@ const AssignmentCard = () => {
                 <div className="flex items-center gap-2 text-blue-700 text-lg font-semibold">
                     📂 <span>Assignment</span>
                 </div>
-                <button onClick={() => toggleAssignmentModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-                    Add Assignment
-                </button>
+                {isOwnSubject && 
+                    <button onClick={() => toggleAssignmentModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+                        Add Assignment
+                    </button>
+                }
             </div>
 
             {assignmentModalVisible && 
-                <AssignmentDetailsModal hooks={hooks} />
+                <AssignmentDetailsModal hooks={hooks} isOwnSubject={isOwnSubject}/>
             }
             {isLoading && <Loading/>}
             {!isLoading && assignments.length === 0 &&

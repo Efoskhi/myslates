@@ -13,7 +13,7 @@ import useTopics from "../../Hooks/useTopics";
 import Loading from "../Layout/Loading";
 import AddTopicModal from "./AddTopicModal";
 
-const ClassDetailsAccordion = () => {
+const ClassDetailsAccordion = ({ isOwnSubject }) => {
     const [openSection, setOpenSection] = useState(null);
 
     const [addTopicModalVisible, setAddTopicModalVisible] = useState(false);
@@ -28,7 +28,7 @@ const ClassDetailsAccordion = () => {
 
 
 	const handleTopicNavigate = (topic) => {
-		sessionStorage.setItem("currentTopic", JSON.stringify(topic));
+		sessionStorage.setItem("currentTopic", JSON.stringify({...topic, isOwnSubject}));
 		navigate("/TopicDetails");
 	}
 
@@ -50,15 +50,17 @@ const ClassDetailsAccordion = () => {
                 </div>
                 {openSection === "lessons" && (
                     <div className="p-4">
-						<div className="w-full items-center justify-center flex mt-12 mb-5">
-                            <div
-                                className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
-                                onClick={toggleTopicModalVisible}
-                            >
-                                <CiCirclePlus className="text-xl " />
-                                Add New Topic
+						{isOwnSubject && 
+                            <div className="w-full items-center justify-center flex mt-12 mb-5">
+                                <div
+                                    className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
+                                    onClick={toggleTopicModalVisible}
+                                >
+                                    <CiCirclePlus className="text-xl " />
+                                    Add New Topic
+                                </div>
                             </div>
-                        </div>
+                        }
 						{isLoading && <Loading/>} 
                         {topics.map((topic, key) => (
 							<div key={key} className="inline-flex items-center w-full justify-between cursor-pointer" onClick={ () => handleTopicNavigate(topic) }>
