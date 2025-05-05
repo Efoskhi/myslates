@@ -1,13 +1,15 @@
 import React from "react";
 import useLessons from "../../Hooks/useLessons";
 import { IoClose } from "react-icons/io5";
+import { useAppContext } from "../../context/AppContext";
 
 const StartTeaching = ({ closeModal }) => {
     const { lessons } = useLessons({ shouldGetLesson: true });
     const [ currentLessonType, setCurrentLessonType ] = React.useState(null);
     const [ currentLessonIndex, setCurrentLessonIndex ] = React.useState(1);
     const lesson = lessons.filter(item => item.lesson_number === currentLessonIndex)[0];
-    const topic = JSON.parse(sessionStorage.getItem("currentTopic"));
+
+    const { currentTopic: topic } = useAppContext();
 
     const handlePaginate = (page) => {
         setCurrentLessonIndex(page < 0 ? 0 : page);

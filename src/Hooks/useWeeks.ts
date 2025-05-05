@@ -4,7 +4,7 @@ import { getFirebaseData } from "../utils/firebase";
 
 let fetchedWeeks = [];
 
-const useWeeks = ({ shouldGetWeeks = false, pageSize = 10 }) => {
+const useWeeks = ({ shouldGetWeeks = false, pageSize = 100 }) => {
 
     const [ weeks, setWeeks ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);

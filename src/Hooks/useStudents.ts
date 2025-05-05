@@ -4,6 +4,7 @@ import { getFirebaseData } from "../utils/firebase";
 import toast from "react-hot-toast";
 import { doc } from "firebase/firestore";
 import { db } from "../firebase.config";
+import { useAppContext } from "../context/AppContext";
 
 let fetchedStudents = [];
 
@@ -19,8 +20,8 @@ const useStudents = ({
     const [loading, setLoading] = useState(false);
     const [ pagination, setPagination ] = useState({})
 
-    const user = JSON.parse(sessionStorage.getItem("user") ?? "null");
-
+    const { user } = useAppContext();
+    
     const getStudents = async () => {
         try {
             if (!user) {

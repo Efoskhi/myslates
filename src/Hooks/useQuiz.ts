@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { addFirebaseData, deleteFirebaseData, updateFirebaseData } from "../utils/firebase";
 import { v4 as uuid } from "uuid";
 import { QuizError } from "../errors";
+import { useAppContext } from "../context/AppContext";
 
 const defaultInputs = {
     question_number: "",
@@ -22,7 +23,7 @@ const useQuizs = ({shouldGetQuiz = true} = {}) => {
     const [ isSaving, setSaving ] = React.useState(false);
     const section = React.useRef("");
 
-    const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+    const { currentTopic: topic, handleSetCurrentTopic } = useAppContext();
 
     const getQuizes = () => {
         try {
@@ -61,16 +62,16 @@ const useQuizs = ({shouldGetQuiz = true} = {}) => {
 
     const updateTopics = (updatedQuizes) => {
         topic.Quizzes = updatedQuizes;
-        sessionStorage.setItem("currentTopic", JSON.stringify(topic));
+        handleSetCurrentTopic(topic);
     }
 
     const handleAddQuiz = async (customInput?: any) => {
         let errorMessage = "Something went wrong adding quiz";
         
         try {
-            const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+            const newTopic = customInput ? customInput.topic : topic;
 
-            if(!topic) throw new QuizError;
+            if(!newTopic) throw new QuizError;
 
             setSaving(true);
 
@@ -92,7 +93,7 @@ const useQuizs = ({shouldGetQuiz = true} = {}) => {
                 subCollectionData: {
                     Quizzes: quiz,
                 },
-                id: topic.id
+                id: newTopic.id
             })
 
             if(status === "error") throw new QuizError(errorMessage);

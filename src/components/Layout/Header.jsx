@@ -2,10 +2,11 @@ import { FaSearch } from "react-icons/fa";
 import { IoNotificationsOutline } from "react-icons/io5";
 import Face from "../../assets/Face.png";
 import useUser from "../../Hooks/useUser";
+import { useAppContext } from "../../context/AppContext";
 
 export default function Header() {
-  const user = JSON.parse(sessionStorage.getItem("user"));
-
+  const { user } = useAppContext();
+  
   return (
     <div className="flex items-center justify-between border-b bg-white px-6 py-3 shadow-sm">
       {/* Greeting Text */}

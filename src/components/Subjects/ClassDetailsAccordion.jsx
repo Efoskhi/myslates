@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import useTopics from "../../Hooks/useTopics";
 import Loading from "../Layout/Loading";
 import AddTopicModal from "./AddTopicModal";
+import { useAppContext } from "../../context/AppContext";
 
 const ClassDetailsAccordion = ({ isOwnSubject }) => {
     const [openSection, setOpenSection] = useState(null);
@@ -19,6 +20,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
     const [addTopicModalVisible, setAddTopicModalVisible] = useState(false);
 
 	const navigate = useNavigate();
+    const { handleSetCurrentTopic } = useAppContext();
 
     const toggleSection = (section) => {
         setOpenSection(openSection === section ? null : section);
@@ -28,7 +30,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
 
 
 	const handleTopicNavigate = (topic) => {
-		sessionStorage.setItem("currentTopic", JSON.stringify({...topic, isOwnSubject}));
+        handleSetCurrentTopic({...topic, isOwnSubject});
 		navigate("/TopicDetails");
 	}
 

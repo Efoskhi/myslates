@@ -37,75 +37,78 @@ import ResultManagement from "./Pages/Dashboard/Subjects/ResultManagement";
 import UploadResult from "./Pages/Dashboard/Subjects/UploadResult";
 import StudentResult from "./Pages/Dashboard/Students/StudentResult";
 import TopicDetails from "./Pages/Dashboard/Subjects/TopicDetails";
+import AppContextProvider from "./context/AppContext";
 
 function App() {
   return (
     <>
       <Router>
-        <Routes>
-          <Route path="/" element={<Onboarding />} />
+        <AppContextProvider>
+          <Routes>
+            <Route path="/" element={<Onboarding />} />
 
-          <Route path="/Login" element={<Login />} />
-          <Route path="/CreateAccount" element={<CreateAccount />} />
+            <Route path="/Login" element={<Login />} />
+            <Route path="/CreateAccount" element={<CreateAccount />} />
 
-          <Route path="/SchoolAccessSetup" element={<SchoolAccessSetup />} />
-
-          <Route
-            path="/PersonalInformation"
-            element={<PersonalInformation />}
-          />
-
-          <Route path="/PasswordSetup" element={<PasswordSetup />} />
-
-          <Route path="/ForgotPassword" element={<ForgotPassword />} />
-
-          <Route path="/PasswordSuccess" element={<PasswordSuccess />} />
-
-          <Route path="/SetNewPassword" element={<SetNewPassword />} />
-
-          <Route path="/CheckMail" element={<CheckMail />} />
-
-          <Route element={<Layout />}>
-            <Route path="Dashboard" element={<Homepage />} />
-
-            <Route path="Students" element={<Students />} />
-
-            <Route path="StudentDetails" element={<StudentDetails />} />
-
-            <Route path="Subjects" element={<Subjects />} />
-
-            <Route path="SubjectDetails" element={<SubjectDetails />} />
-
-            <Route path="AddSubject" element={<AddSubject />} />
-            <Route path="TeachingTools" element={<TeachingTools />} />
-
-            <Route path="CommunicationTools" element={<CommuncationTools />} />
-
-            <Route path="ResultManagement" element={<ResultManagement />} />
-
-            <Route path="UploadResult" element={<UploadResult />} />
-
-            <Route path="StudentResult" element={<StudentResult />} />
-
-            <Route path="ChatPage" element={<ChatPage />} />
-
-            <Route path="Attendance" element={<Attendance />} />
-
-            <Route path="Calendar" element={<Calendar />} />
-            <Route path="AssessmentBuilder" element={<AssessmentBuilder />} />
-            <Route path="Chatbot" element={<Chatbot />} />
-            <Route path="FeedbackBot" element={<FeedbackBot />} />
+            <Route path="/SchoolAccessSetup" element={<SchoolAccessSetup />} />
 
             <Route
-              path="FeedbackBotResponse"
-              element={<FeedbackBotResponse />}
+              path="/PersonalInformation"
+              element={<PersonalInformation />}
             />
-            <Route path="LessonPlan" element={<LessonPlan />} />
-            <Route path="LessonNote" element={<LessonNote />} />
-            <Route path="Settings" element={<Settings />} />
-            <Route path="TopicDetails" element={<TopicDetails />} />
-          </Route>
-        </Routes>
+
+            <Route path="/PasswordSetup" element={<PasswordSetup />} />
+
+            <Route path="/ForgotPassword" element={<ForgotPassword />} />
+
+            <Route path="/PasswordSuccess" element={<PasswordSuccess />} />
+
+            <Route path="/SetNewPassword" element={<SetNewPassword />} />
+
+            <Route path="/CheckMail" element={<CheckMail />} />
+
+            <Route element={<Layout />}>
+              <Route path="Dashboard" element={<Homepage />} />
+
+              <Route path="Students" element={<Students />} />
+
+              <Route path="StudentDetails" element={<StudentDetails />} />
+
+              <Route path="Subjects" element={<Subjects />} />
+
+              <Route path="SubjectDetails" element={<SubjectDetails />} />
+
+              <Route path="AddSubject" element={<AddSubject />} />
+              <Route path="TeachingTools" element={<TeachingTools />} />
+
+              <Route path="CommunicationTools" element={<CommuncationTools />} />
+
+              <Route path="ResultManagement" element={<ResultManagement />} />
+
+              <Route path="UploadResult" element={<UploadResult />} />
+
+              <Route path="StudentResult" element={<StudentResult />} />
+
+              <Route path="ChatPage" element={<ChatPage />} />
+
+              <Route path="Attendance" element={<Attendance />} />
+
+              <Route path="Calendar" element={<Calendar />} />
+              <Route path="AssessmentBuilder" element={<AssessmentBuilder />} />
+              <Route path="Chatbot" element={<Chatbot />} />
+              <Route path="FeedbackBot" element={<FeedbackBot />} />
+
+              <Route
+                path="FeedbackBotResponse"
+                element={<FeedbackBotResponse />}
+              />
+              <Route path="LessonPlan" element={<LessonPlan />} />
+              <Route path="LessonNote" element={<LessonNote />} />
+              <Route path="Settings" element={<Settings />} />
+              <Route path="TopicDetails" element={<TopicDetails />} />
+            </Route>
+          </Routes>
+        </AppContextProvider>
       </Router>
     </>
   );

@@ -4,6 +4,7 @@ import useTerms from "./useTerms";
 import toast from "react-hot-toast";
 import { addFirebaseData, updateFirebaseData } from "../utils/firebase";
 import { TopicError } from "../errors";
+import { useAppContext } from "../context/AppContext";
 
 const useTopicDetails = (topic?: any) => {
     const [ inputs, setInputs ] = React.useState({
@@ -25,10 +26,12 @@ const useTopicDetails = (topic?: any) => {
         }))
     }
 
+    const { currentSubject, handleSetCurrentTopic } = useAppContext();
+
     const validateInput = (customInput?: any) => {
         const { week, term, title, serial_no, lesson_plan } = customInput ?? inputs;
 
-        let subject = customInput ? customInput.subject : JSON.parse(sessionStorage.getItem("subject") || "null");
+        let subject = customInput ? customInput.subject : currentSubject;
 
         if(!subject) throw new TopicError("Subject could not be validated");
 
@@ -64,7 +67,7 @@ const useTopicDetails = (topic?: any) => {
 
     const updateTopics = (data) => {
         const currentTopic = { ...topic, ...data };
-        sessionStorage.setItem("currentTopic", JSON.stringify(currentTopic));
+        handleSetCurrentTopic(currentTopic);
     }
 
     const handleAddTopic = async (customInput?: any) => {

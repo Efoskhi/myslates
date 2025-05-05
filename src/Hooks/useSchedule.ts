@@ -17,6 +17,7 @@ import { enUS } from "date-fns/locale/en-US";
 import { getDateTimeRange } from "../utils";
 import { Timestamp } from "firebase/firestore";
 import transformToCalendarEvents from "../utils/transformToCalenderEvents";
+import { useAppContext } from "../context/AppContext";
 
 const useSchedule = () => {
     const [ isLoading, setLoading ] = React.useState(true);
@@ -38,8 +39,8 @@ const useSchedule = () => {
     const [ isModalOpen, setIsModalOpen ] = React.useState(false);
 
 
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
-
+    const { user } = useAppContext();
+    
     const toggleModal = () => setIsModalOpen(prev => !prev);
 
     const [view, setView] = React.useState("month");

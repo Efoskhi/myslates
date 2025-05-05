@@ -4,7 +4,7 @@ import { getFirebaseData } from "../utils/firebase";
 
 let fetchedTerms = [];
 
-const useTerms = ({ shouldGetTerms = false, pageSize = 10 } = {}) => {
+const useTerms = ({ shouldGetTerms = false, pageSize = 100 } = {}) => {
 
     const [ terms, setTerms ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);

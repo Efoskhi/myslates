@@ -8,6 +8,7 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useAddSubject from "./useAddSubject";
+import { useAppContext } from "../context/AppContext";
 
 interface SubjectProps {
     shouldGetSubjects?: boolean;
@@ -17,7 +18,7 @@ interface SubjectProps {
     filters?: [];
 }
 
-const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [] }: SubjectProps) => {
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [] }: SubjectProps = {}) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
     const [staticSubjects, setStaticSubjects] = React.useState([]);
@@ -27,8 +28,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
     const navigate = useNavigate();
     const { addSubject } = useAddSubject();
 
-    const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
+    const { currentSubject: subject, user } = useAppContext();
 
     const getSubjects = async () => {
         try {

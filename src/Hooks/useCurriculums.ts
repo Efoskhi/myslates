@@ -1,6 +1,7 @@
 import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
+import { useAppContext } from "../context/AppContext";
 
 interface Props {
     shouldGetCurriculums: boolean;
@@ -18,6 +19,8 @@ const useCurriculums = (props?: Props) => {
     const [ curriculums, setCurriculums ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
 
+    const { user } = useAppContext();
+
     const getCurriculums = async () => {
         try {
             if(fetchedCurriculums.length > 0){
@@ -25,7 +28,8 @@ const useCurriculums = (props?: Props) => {
             }
             
             const { status, message, data } = await getFirebaseData({
-                collection: "Curriculum"
+                collection: "Curriculum",
+                query: [["name", "==", user.school.curriculum]]
             });
 
             if(status === "error") throw new Error(message);

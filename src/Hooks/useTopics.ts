@@ -1,12 +1,15 @@
 import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
+import { useAppContext } from "../context/AppContext";
 
 let fetchedTopics = [];
 
 const useTopics = () => {
     const [ topics, setTopics ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
+
+    const { currentSubject: subject } = useAppContext();
 
     const getTopics = async () => {
         try {
@@ -15,8 +18,6 @@ const useTopics = () => {
             }
 
             setLoading(true);
-
-            const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
 
             if(!subject) throw new Error;
 

@@ -6,6 +6,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import SubjectDeleteModal from "../../../components/Subjects/SubjectDeleteModal";
+import { useAppContext } from "../../../context/AppContext";
+
 
 const SubjectDetails = () => {
   const [ isVisibleDeleteModal, setVisibleDeleteModal ] = React.useState(false);
@@ -20,8 +22,7 @@ const SubjectDetails = () => {
     navigate("/ResultManagement"); // Navigate to the ResultManagement page
   };
 
-  // Get the subject data from session storage and parse it as JSON
-  const subject = JSON.parse(sessionStorage.getItem("subject") || "null");
+  const { currentSubject: subject } = useAppContext();
 
   const toggleDeleteVisibleModal = () => setVisibleDeleteModal(prev => !prev);
 

@@ -2,12 +2,13 @@ import React from "react";
 import toast from "react-hot-toast";
 import { deleteFileFromFirebase, updateFirebaseData, uploadFileToFirebase } from "../utils/firebase";
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import { useAppContext } from "../context/AppContext";
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 const useSettings = () => {
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
-
+    const { user, handleSetUser } = useAppContext();
+    
     const [ inputs, setInputs ] = React.useState({
         profile: {
             display_name: user.display_name,
@@ -73,8 +74,7 @@ const useSettings = () => {
             newUser.phone_number = phone_number;
             newUser.photo_url = newPhotoUrl;
 
-            sessionStorage.setItem("user", JSON.stringify(newUser));
-
+            handleSetUser(newUser)
             toast.success("Profile has been updated");
 
         } catch(error){

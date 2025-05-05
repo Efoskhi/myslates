@@ -50,16 +50,16 @@ const features = [
     gradient: "bg-gradient-to-r from-purple-100 to-white",
     path: "/FeedbackBot",
   },
-  {
-    title: "Chatbot",
-    description:
-      "Start chatting with Wazzer for any requests or to brainstorm new ideas using AI with ease.",
-    icon: Teach4,
-    IconComponent: FaRocket,
-    iconColor: "text-green-500",
-    gradient: "bg-gradient-to-r from-blue-100 to-white",
-    path: "/Chatbot",
-  },
+  // {
+  //   title: "Chatbot",
+  //   description:
+  //     "Start chatting with Wazzer for any requests or to brainstorm new ideas using AI with ease.",
+  //   icon: Teach4,
+  //   IconComponent: FaRocket,
+  //   iconColor: "text-green-500",
+  //   gradient: "bg-gradient-to-r from-blue-100 to-white",
+  //   path: "/Chatbot",
+  // },
 ];
 
 const TeachingTools = () => {

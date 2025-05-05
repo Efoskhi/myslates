@@ -3,6 +3,7 @@ import { addFirebaseData, getFirebaseData, updateFirebaseData } from "../utils/f
 import { toast } from 'react-hot-toast';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
+import { useAppContext } from "../context/AppContext";
 
 let fetchedStudents = [];
 
@@ -32,12 +33,7 @@ const useResultManagement = ({
         { id: 1, student: "", ca1: "", ca2: "", exam: "", remarks: "" },
     ]);
 
-    const currentSubject = JSON.parse(
-        sessionStorage.getItem("subject") || "null"
-    );
-
-    if (!currentSubject) {
-    }
+    const { currentSubject, user } = useAppContext();
     
     const addMoreStudentResult = () => {
         setStudentResults([
@@ -112,16 +108,6 @@ const useResultManagement = ({
         try {
             setSaving(true);
     
-            const teacher = JSON.parse(
-                sessionStorage.getItem("user") || "null"
-            );
-    
-            if (!teacher) {
-                throw new Error(
-                    "You are not logged in, kindly login to add result"
-                );
-            }
-    
             for (const item of studentResults) {
                 const { ca1, ca2, exam, remarks, student } = item;
     
@@ -139,11 +125,11 @@ const useResultManagement = ({
                 return {
                     cleanData: {
                         class_teacher_comment: "",
-                        class_teacher_name: teacher.display_name,
+                        class_teacher_name: user.display_name,
                         is_approved: false,
                         number_in_class: students.length,
                         result_status: "Pending",
-                        school_id: teacher.school_id,
+                        school_id: user.school_id,
                         totalScore: ca1 + ca2 + exam,
                         student_class: studentDetails.student_class,
                         student_ref: {

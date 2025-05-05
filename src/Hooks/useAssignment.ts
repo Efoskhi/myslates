@@ -12,6 +12,7 @@ import { v4 as uuid } from "uuid";
 import useClasses from "./useClasses";
 import { Timestamp } from "firebase/firestore";
 import { AssignmentError } from "../errors";
+import { useAppContext } from "../context/AppContext";
 
 const defaultInputs = {
     assignment_no: "",
@@ -38,8 +39,7 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         pageSize: 100
     });
 
-    const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
+    const { currentTopic: topic, user } = useAppContext();
 
     const getAssignments = async () => {
         try {

@@ -17,6 +17,8 @@ import {
     TopicError,
 } from "../errors";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
+
 
 interface DeleteDataParams {
     id: string;
@@ -96,6 +98,8 @@ const useAddSubject = () => {
 
     const navigate = useNavigate();
 
+    const { user } = useAppContext();
+
     const handleInput = (fieldKey: string, value: any) => {
         const [parentKey, childKey] = fieldKey.split(".");
 
@@ -118,10 +122,7 @@ const useAddSubject = () => {
                 thumbnail,
                 title,
             } = fields ?? inputs.subject;
-            const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
-            if (!user)
-                throw new SubjectError("User session expired, please relogin");
             if (!curriculum)
                 throw new SubjectError("Select subject curriculum");
             if (!className) throw new SubjectError("Select subject class");

@@ -9,6 +9,8 @@ import Lines from "../../assets/Lines.png"; // Import your background image
 import { Link, useNavigate } from "react-router-dom";
 import { app } from "../../firebase.config";
 import { docQr } from "../../Logics/docQr";
+import useLogin from "../../Hooks/useLogin";
+
 const auth=getAuth(app);
 
 export default function Login() {
@@ -33,6 +35,13 @@ export default function Login() {
 
   const [index, setIndex] = useState(0);
 
+  const {
+    inputs,
+    isLoading,
+    handleInput,
+    handleLogin,
+} = useLogin();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % slides.length);
@@ -40,81 +49,7 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
-  const navigate = useNavigate(); // React Router DOM hook for navigation
-const [loading,setLoading]=useState(false);
-const [inputs,setInputs]=useState({
-  password:"",
-  email:""
-})
-  const handleSubmit =async () => {
-    try{
-      if(inputs.email=="" || inputs.password=="")return console.log("data not completed",inputs)
-      setLoading(true);
-      const {email,password}=inputs;
-      signInWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log("user::",user.uid)
-      const userRes=await docQr("users",{
-        max:1,
-        whereClauses:[
-          {
-            field:"uid",
-            operator:"==",
-            value:user.uid
-          }
-        ]
-      })
-
-      console.log("result",userRes[0]);
-      if(!userRes[0])return alert("user not found");
-       sessionStorage.setItem("user",JSON.stringify(userRes[0]));
-  if(user){
-    navigate("/Dashboard")
-console.log("Login successful!")
-  }
-    })//QFTQBUXzijSe1olJrZ8eP6PAD9D2
-    .catch((error) => {
-      // const errorCode = error.code;
-      const errorMessage = error.message;
-      setLoading(false);
-      alert(errorMessage);
   
-    });
-
-//     createUserWithEmailAndPassword(auth, email, password)
-//     .then(async (userCredential) => {
-//       // Signed up 
-//       const user = userCredential.user;
-//       console.log(user);
-//      if((await UserIsBlocked(user))){
-// window.localStorage.href='/'
-//      }
-
-//      // console.log(user)
-//       localStorage.setItem("user",JSON.stringify(user));
-//       ;
-//       route.push("/SetupProfile")
-
-//      //verifyUser(user);
-//       // ...
-//     })
-//     .catch((error) => {
-//       const errorCode = error.code;
-//       const errorMessage = error.message;
-//       setIsLoading(false);
-//       console.log(error);
-//       toast.error(errorMessage);
-//       // ..
-//     });
-    }
-    
-    catch(err){
-      console.log(err);
-    }
-  
-  };
   return (
     <div className="flex h-screen w-full p-2">
       {/* Left Side */}
@@ -183,11 +118,9 @@ console.log("Login successful!")
             </label>
             <div className="relative border px-2 rounded-md">
               <input
-              type="email"
-              onChange={(e)=>{
-                const {target:{value}}=e;
-                setInputs({...inputs,email:value})
-              }}
+                type="email"
+                value={inputs.email}
+                onChange={e => handleInput("email", e.target.value)}
                 placeholder="Enter your Email"
                 className="px-2 border-none outline-none  text-sm py-2 rounded-md font-semibold w-full"
               />
@@ -198,10 +131,8 @@ console.log("Login successful!")
             <label className="text-xs text-black font-semibold">Password</label>
             <div className="relative border px-2 rounded-md">
               <input
-              onChange={(e)=>{
-                const {target:{value}}=e;
-                setInputs({...inputs,password:value})
-              }}
+                value={inputs.password}
+                onChange={e => handleInput("password", e.target.value)}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 className="px-2 border-none outline-none  text-sm py-2 rounded-md font-semibold w-full"
@@ -216,11 +147,11 @@ console.log("Login successful!")
           </div>
 
           <button
-            onClick={handleSubmit}
-            disabled={loading}
+            onClick={handleLogin}
+            disabled={isLoading}
             className="w-full bg-[#047aa5] text-white py-2 rounded-md font-semibold"
           >
-            {loading ? "Please wait..":"Login"}
+            {isLoading ? "Please wait..":"Login"}
           </button>
 
           <p className="text-center text-sm">

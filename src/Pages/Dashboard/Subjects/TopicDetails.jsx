@@ -6,6 +6,8 @@ import QuizCard from "../../../components/Subjects/QuizCard";
 import AssignmentCard from "../../../components/Subjects/AssignmentCard";
 import StartTeaching from "../../../components/Subjects/StartTeaching";
 import LessonPlan from "../../../components/Subjects/LessonPlan";
+import { useAppContext } from "../../../context/AppContext";
+
 
 const tabClasses = (active) =>
   `px-4 py-2 rounded-t-md font-medium transition ${
@@ -25,7 +27,7 @@ const TopicDetails = () => {
   const openLessonPlanModal = () => setIsOpenLessonPlan(true);
   const closeLessonPlanModal = () => setIsOpenLessonPlan(false);
 
-  const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+  const { currentTopic: topic } = useAppContext();
 
   if (!topic) {
     return (

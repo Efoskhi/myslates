@@ -19,6 +19,7 @@ import {
 import { useEffect, useRef, useState, useCallback } from "react";
 import { db } from "../firebase.config";
 import toast from "react-hot-toast";
+import { useAppContext } from "../context/AppContext";
 
 const PAGE_SIZE = 10;
 
@@ -31,6 +32,8 @@ export default function useChatMessages(chatId: string) {
     );
     const latestDoc = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
+
+    const { user } = useAppContext();
     
 
     // Helper to hydrate sender_ref → sender
@@ -155,12 +158,6 @@ export default function useChatMessages(chatId: string) {
     // 4) sendMessage unchanged
     const sendMessage = useCallback(
         async (text: string) => {
-          const user = JSON.parse(sessionStorage.getItem("user") || "null");
-          if (!user) {
-            toast.error("User is not logged in");
-            return;
-          }
-      
           try {
             // 1) Add the message
             await addDoc(collection(db, "pts_chats", chatId, "pts_messages"), {

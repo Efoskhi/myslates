@@ -2,6 +2,7 @@ import React from "react";
 import toast from "react-hot-toast";
 import { addFirebaseData, deleteFileFromFirebase, deleteFirebaseData, updateFirebaseData, uploadFileToFirebase } from "../utils/firebase";
 import { LessonError } from "../errors";
+import { useAppContext } from "../context/AppContext";
 
 const defaultInputs = {
     lesson_number: "",
@@ -20,7 +21,7 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
     const [ isSaving, setSaving ] = React.useState(false);
     const section = React.useRef("");
 
-    const topic = JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+    const { currentTopic: topic, handleSetCurrentTopic } = useAppContext();
 
     const getLessons = () => {
         try {
@@ -59,15 +60,15 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
 
     const updateTopics = (updatedLessons) => {
         topic.Lessons = updatedLessons;
-        sessionStorage.setItem("currentTopic", JSON.stringify(topic));
+        handleSetCurrentTopic(topic);
     }
 
     const validateInput = (customInput?: any) => {
         const { activities, content, examples, img_content, img_example } = customInput ?? inputs;
 
-        const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+        const newTopic = customInput ? customInput.topic : topic;
 
-        if (!topic) throw new LessonError("Topic data was not found");
+        if (!newTopic) throw new LessonError("Topic data was not found");
         // if (!activities) throw new LessonError("Enter lesson activities");
         if (!content) throw new LessonError("Enter lesson content");
         // if (!examples) throw new LessonError("Enter lesson examples");
@@ -88,7 +89,7 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
         let errorMessage = "Something went wrong adding lesson";
 
         try {
-            const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
+            const newTopic = customInput ? customInput.topic : topic;
 
             const validatedInput = validateInput(customInput);
 
@@ -127,7 +128,7 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
                 subCollectionData: {
                     Lessons: lesson,
                 },
-                id: topic.id
+                id: newTopic.id
             })
 
             if(status === "error") throw new LessonError(errorMessage);

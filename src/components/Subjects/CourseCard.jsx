@@ -4,13 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
 import ConfirmDuplicateSubjectModal from "./ConfirmDuplicateSubjectModal";
 import React from "react";
+import { useAppContext } from "../../context/AppContext";
+
 
 export const CourseCard = ({ subject, isOwnSubject, handleDuplicateSubject, isSaving, handleDuplicateSubjectCallback }) => {
   const [ isVisibleModal, setVisibleModal ] = React.useState(false);
   const navigate = useNavigate();
 
+  const { handleSetCurrentSubject } = useAppContext();
+
   const handleClick = () => {
-    sessionStorage.setItem("subject", JSON.stringify({ ...subject, isOwnSubject }));
+    handleSetCurrentSubject({ ...subject, isOwnSubject })
     navigate("/SubjectDetails"); // Update the route as needed
   };
 

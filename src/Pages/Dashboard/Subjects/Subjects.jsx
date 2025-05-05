@@ -12,6 +12,8 @@ import useSubject from "../../../Hooks/useSubject";
 import GradesModal from "../../../components/Subjects/GradesModal";
 import { doc } from "firebase/firestore";
 import { db } from "../../../firebase.config";
+import { useAppContext } from "../../../context/AppContext";
+
 
 const Subjects = () => {
   const [ title, setTitle ] = React.useState("My Subjects");
@@ -22,8 +24,9 @@ const Subjects = () => {
 
   const { subjects, isLoading, searchTerm, isSaving, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "Duplicate Subject", filters })
   
-  const user = JSON.parse(sessionStorage.getItem("user") || "null");
 
+  const { user } = useAppContext();
+  
   // Number of skeleton cards to show while loading
   const skeletonCards = Array.from({ length: 3 });
 

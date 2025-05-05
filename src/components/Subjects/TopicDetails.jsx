@@ -3,9 +3,13 @@ import useTopicDetails from "../../Hooks/useTopicDetails";
 import Header from "../Layout/Header";
 import Loading from "../Layout/Loading";
 import { IoClose } from "react-icons/io5";
+import { useAppContext } from "../../context/AppContext";
+
 
 const TopicDetails = ({ section, handleCloseModal }) => {
-    const topic = section === "Update" ? JSON.parse(sessionStorage.getItem("currentTopic") || "null") : null;
+    const { currentTopic } = useAppContext();
+
+    const topic = section === "Update" ? currentTopic : null;
 
     if (!topic && section === "Update") {
         return (

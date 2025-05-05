@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
 import useStudents from "../Hooks/useStudents";
 import useSubjects from "../Hooks/useSubject";
+import { useAppContext } from "../context/AppContext";
 
 
 const useDashboard = () => {
@@ -24,7 +25,7 @@ const useDashboard = () => {
         subjects: "last 30 days",
     });
 
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
+    const { user } = useAppContext();
 
     const { getTotalStudents } = useStudents();
     const { getTotalSubjects } = useSubjects();

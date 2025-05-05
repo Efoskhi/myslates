@@ -6,7 +6,7 @@ import useSubjects from "../../Hooks/useSubject";
 const AttendanceCard = ({ student }) => {
 
     const hooks = useStudentAttendance(student);
-    const { subjects } = useSubjects({ shouldGetSubjects: true })
+    const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100 })
 
     return (
         <>

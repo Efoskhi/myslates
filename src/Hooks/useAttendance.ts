@@ -5,6 +5,7 @@ import { doc, Timestamp } from "firebase/firestore";
 import { addBulkFirebaseData, deleteFirebaseData, getFirebaseData } from "../utils/firebase";
 import { getCurrentWeekRange } from "../utils";
 import { db } from "../firebase.config";
+import { useAppContext } from "../context/AppContext";
 
 interface GetAttendanceFilter {
     grade: string;
@@ -40,7 +41,7 @@ const useAttendance = ({ shouldGetAttendance = true }) => {
         reload: reload, 
     });
 
-    const user = JSON.parse(sessionStorage.getItem("user") || "null");
+    const { user } = useAppContext();
 
     const handleInput = (field: string, value: any) => {
         setInputs(prev => ({
