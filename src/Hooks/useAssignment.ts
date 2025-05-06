@@ -136,10 +136,14 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
                 );
             }
 
-            const assignment = {
+            let assignment = {
                 ...validatedInput,
                 image: image_url,
-            };
+            } as any;
+
+            assignment = Object.fromEntries(
+                Object.entries(assignment).filter(([_, v]) => v !== undefined)
+            );
 
             const { status, message, data } = await addFirebaseData({
                 collection: "Assignment",

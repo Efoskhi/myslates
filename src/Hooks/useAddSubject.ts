@@ -63,6 +63,7 @@ const useAddSubject = () => {
             week: "",
             serial_no: "",
             title: "",
+            lesson_plan: "",
         },
         lesson: {
             lesson_number: "",

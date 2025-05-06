@@ -73,6 +73,15 @@ const AddTopic = ({ hooks }) => {
                         value={inputs.topic.serial_no}
                     />
                 </div>
+                <div className="mt-4">
+                    <label className="block text-gray-700 text-xs">Lesson Plan</label>
+                    <textarea
+                        className="w-full p-2 border rounded-lg"
+                        placeholder="Tell us about the lesson plan"
+                        onChange={e => handleInput("topic.lesson_plan", e.target.value)}
+                        value={inputs.topic.lesson_plan}
+                    />
+                </div>
             </div>
         </div>
     );

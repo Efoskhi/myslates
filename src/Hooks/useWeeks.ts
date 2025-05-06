@@ -18,7 +18,8 @@ const useWeeks = ({ shouldGetWeeks = false, pageSize = 100 }) => {
             const { status, message, data } = await getFirebaseData({
                 collection: "Weeks",
                 page: 1,
-                pageSize
+                pageSize,
+                orderBy: ['id', 'asc'],
             });
 
             if(status === "error") throw new Error(message);

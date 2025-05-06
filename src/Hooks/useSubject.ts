@@ -43,6 +43,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
                 query: filters.length ? filters : [["teacher_id", "==", user.teacher_id]],
                 page: 1,
                 pageSize: filters.length ? 100 : pageSize,
+                // orderBy: ['created_date', 'desc'],
             });
 
             if (response.status === "error") throw new Error(response.message);

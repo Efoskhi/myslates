@@ -188,14 +188,14 @@ export default function AddQuizzes({ hooks }) {
             <p className="text-sm">{tab.description}</p>
           </div>
         ))}
-        <div>
+        {/* <div>
           <p className="font-medium">
             Click on the button below to add more Quiz questions
           </p>
           <div className="border-2 font-semibold cursor-pointer text-sm p-2 inline-flex rounded-md mt-4">
             Add more questions
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Content */}
