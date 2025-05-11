@@ -17,6 +17,11 @@ import {
     getDoc,
     addDoc,
     writeBatch,
+    Query,
+    OrderByDirection,
+    CollectionReference,
+    DocumentData,
+    QueryDocumentSnapshot,
 } from "firebase/firestore";
 import {
     ref,
@@ -97,6 +102,15 @@ interface GetFirebaseDataResponse {
     data?: any;
 }
 
+interface GetFirebaseInnerCollectionDataOptions {
+    collection: string;
+    query?: Array<[string, WhereFilterOp, any, string?]>;
+    innerCollection: string;
+    page: number;
+    pageSize: number;
+    refFields?: string[];     // any fields in the inner docs that are DocumentReferences
+  }
+
 const getFirebaseData = async (
     options: GetFirebaseDataOptions
 ): Promise<GetFirebaseDataResponse> => {
@@ -144,11 +158,9 @@ const getFirebaseData = async (
         }
 
         // Apply ordering if provided.
-        if (order) {
-            const [field, direction] = order;
-            fbQueryRef = query(fbQueryRef, orderBy(field, direction));
+        if(order){
+            fbQueryRef = query(fbQueryRef, orderBy(order[0], order[1] as OrderByDirection));
         }
-
         // At this point, firebase query (fbQueryRef) holds our base query.
         // We'll define a final query that differs if we want to count documents or limit results.
         let finalQuery = countDocuments
@@ -169,10 +181,17 @@ const getFirebaseData = async (
         // Handle pagination: if a page number is provided beyond page 1,
         // fetch the last document of the previous "page" to then use startAfter.
         if (page && page > 1) {
-            const previousSnapshot = await getDocs(finalQuery);
-            const lastVisible =
-                previousSnapshot.docs[previousSnapshot.docs.length - 1];
-            finalQuery = query(finalQuery, startAfter(lastVisible));
+            // fetch the last doc of the *previous* page
+            const prevPageQuery = query(fbQueryRef, limit(pageSize * (page - 1)));
+            const prevSnap = await getDocs(prevPageQuery);
+            const lastVisible = prevSnap.docs[prevSnap.docs.length - 1];
+            finalQuery = query(
+                finalQuery,
+                startAfter(lastVisible),
+                limit(pageSize)
+            );
+        } else {
+            finalQuery = query(finalQuery, limit(pageSize));
         }
 
         // If we only need the document count, use getCountFromServer.
@@ -290,6 +309,118 @@ const getFirebaseData = async (
         return {
             status: "error",
             message: "An error occurred: " + e.message,
+        };
+    }
+};
+
+const getFirebaseInnerCollectionData = async ({
+    collection: coll,
+    query: queryConditions,
+    innerCollection,
+    page,
+    pageSize,
+    refFields = [],
+  }: GetFirebaseInnerCollectionDataOptions): Promise<GetFirebaseDataResponse> => {
+    try {
+
+        console.log("queryConditions", { coll, innerCollection, queryConditions })
+
+        const collectionRef = collection(db, coll);
+        let fbQueryRef = collectionRef as any;
+
+        if (queryConditions && Array.isArray(queryConditions)) {
+            queryConditions.forEach(([field, operator, value, timestamp]) => {
+                const transformedValue =
+                    timestamp === "timestamp"
+                        ? Timestamp.fromDate(new Date(value))
+                        : value;
+
+                fbQueryRef = query(
+                    fbQueryRef,
+                    where(field, operator, transformedValue)
+                );
+            });
+        }
+
+        const parentQ = query(
+            fbQueryRef,
+            limit(1)
+        );
+
+        const parentSnap = await getDocs(parentQ);
+        console.log("parentSnap.empty", parentSnap.empty)
+        if (parentSnap.empty) {
+            return {
+                status: "success",
+                message: "Data fetched",
+                data: {
+                    [innerCollection]: [],
+                    pagination: { page, pageSize, totalResult: 0, totalPages: 0 },
+                },
+            };
+        }
+
+        const parentDoc = parentSnap.docs[0];
+    
+        // 2) Build a reference to the inner collection
+        const innerColRef = collection(
+            db,
+            coll,
+            parentDoc.id,
+            innerCollection
+        ) as CollectionReference<DocumentData>;
+    
+        // 3) Pagination setup
+        let pageQuery = query(innerColRef, limit(pageSize));
+    
+        if (page > 1) {
+            // fetch up to the end of the previous page
+            const prevQ = query(innerColRef, limit(pageSize * (page - 1)));
+            const prevSnap = await getDocs(prevQ);
+            const lastVisible = prevSnap.docs[prevSnap.docs.length - 1];
+            pageQuery = query(innerColRef, startAfter(lastVisible), limit(pageSize));
+        }
+    
+        // 4) Total count for pagination
+        const countSnap = await getCountFromServer(query(innerColRef));
+        const totalResult = countSnap.data().count;
+        const totalPages = Math.ceil(totalResult / pageSize);
+    
+        // 5) Fetch the page of inner docs
+        const snap = await getDocs(pageQuery);
+        const data = await Promise.all(
+            snap.docs.map(async (docSnap: QueryDocumentSnapshot<DocumentData>) => {
+            const docData: any = { id: docSnap.id, ...docSnap.data() };
+    
+            // 6) Resolve any DocumentReference fields
+            for (const refField of refFields) {
+                const refDoc = docData[refField];
+                if (refDoc) {
+                    const refSnapshot = await getDoc(refDoc);
+                    if (refSnapshot.exists()) {
+                        docData[refField] = { id: refSnapshot.id, ...refSnapshot.data()};
+                    }
+                }
+            }
+    
+            return docData;
+            })
+        );
+    
+        return {
+            status: "success",
+            message: "Data fetched",
+            data: {
+                [innerCollection]: data,
+                pagination: { page, pageSize, totalResult, totalPages },
+            },
+        };
+    } catch (error: any) {
+        console.error("Error in getFirebaseInnerCollectionData:", error);
+        return {
+            status: "error",
+            message: error.message,
+            data: null,
         };
     }
 };
@@ -557,4 +688,5 @@ export {
     updateFirebaseData,
     deleteFileFromFirebase,
     addBulkFirebaseData,
+    getFirebaseInnerCollectionData,
 };

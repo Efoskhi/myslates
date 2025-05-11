@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { docQr } from './../../Logics/docQr_ORGate';
 import {ClipLoader} from "react-spinner";
 import useStudents from "../../Hooks/useStudents";
+import Pagination from "../Layout/Pagination";
 
 const SubjectTag = ({ subject }) => {
   const getTagColor = (subject) => {
@@ -39,32 +40,13 @@ const StudentsTable = () => {
     navigate("/StudentDetails"); // Update the route as needed
   };
 
-  const { loading, students } = useStudents({shouldGetStudentSubjects: true});
-
-  const [currentPage, setCurrentPage] = useState(3);
-  const totalPages = 6;
+  const { loading, students, pagination, handlePaginate } = useStudents({shouldGetStudentSubjects: true, shouldStoreCache: false});
 
   const STUDENTS_DATA=useMemo(() => students.map((e)=>{
     return {
       ...e,
     }
   }), [students])
-  const renderPaginationButton = (pageNumber) => {
-    const isActive = pageNumber === currentPage;
-    return (
-      <button
-        key={pageNumber}
-        onClick={() => setCurrentPage(pageNumber)}
-        className={`w-8 h-8 flex items-center justify-center rounded-full ${
-          isActive
-            ? "bg-blue-50 text-blue-600"
-            : "text-gray-600 hover:bg-gray-50"
-        }`}
-      >
-        {pageNumber}
-      </button>
-    );
-  };
 
   return (
     <div className="bg-[#fcfeff] mx-auto p-6">
@@ -73,10 +55,10 @@ const StudentsTable = () => {
           <h2 className="text-lg font-semibold text-[#101828]">
             List of Students
           </h2>
-          <button className="inline-flex items-center px-3 py-1.5 text-sm text-gray-800 border rounded-lg hover:bg-gray-50">
+          {/* <button className="inline-flex items-center px-3 py-1.5 text-sm text-gray-800 border rounded-lg hover:bg-gray-50">
             <IoFilter className="w-4 h-4 mr-2" />
             Apply filter
-          </button>
+          </button> */}
         </div>
 {loading && <span>Loading...</span> }
         <div className="overflow-x-auto">
@@ -139,10 +121,10 @@ const StudentsTable = () => {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      {student.subjects.map((subject, index) => (
+                      {student?.subjects?.map((subject, index) => (
                         <SubjectTag key={index} subject={subject.title.split("by")[0]} />
                       ))}
-                      {student.additionalScore && (
+                      {student?.additionalScore && (
                         <span className="text-xs text-gray-500">
                           {student.additionalScore}
                         </span>
@@ -155,27 +137,13 @@ const StudentsTable = () => {
           </table>
         </div>
 
-        <div className="flex items-center justify-center gap-1 p-4 border-t">
-          <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-50"
-          >
-            <MdChevronLeft className="w-4 h-4" />
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            renderPaginationButton
-          )}
-
-          <button
-            onClick={() =>
-              setCurrentPage(Math.min(totalPages, currentPage + 1))
-            }
-            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-50"
-          >
-            <MdChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+        {students.length > 0 && 
+          <Pagination
+            onPageChange={handlePaginate}
+            page={pagination.page}
+            totalPages={pagination.totalPages} 
+          />
+        }
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { IoFilter } from "react-icons/io5";
 import { FaSearch } from "react-icons/fa";
 import { CourseCard } from "../../../components/Subjects/CourseCard";
-import Pagination from "../../../components/Subjects/Pagination";
+import Pagination from "../../../components/Layout/Pagination";
 import Skeleton from "@mui/material/Skeleton";
 import { docQr } from "../../../Logics/docQr"; // Adjust the import based on your project
 import { getFirebaseData } from "../../../utils/firebase";
@@ -22,7 +22,7 @@ const Subjects = () => {
 
   const oppositeTitle = title === "Duplicate Subject" ? "My Subjects" : "Duplicate Subject";
 
-  const { subjects, isLoading, searchTerm, isSaving, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "Duplicate Subject", filters })
+  const { subjects, isLoading, searchTerm, isSaving, pagination, setFilter, handlePaginate, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "Duplicate Subject", filters })
   
 
   const { user } = useAppContext();
@@ -30,47 +30,52 @@ const Subjects = () => {
   // Number of skeleton cards to show while loading
   const skeletonCards = Array.from({ length: 3 });
 
+  const isOwnSubject = false; // title === "My Subjects"
+
   // Filter subjects based on search term (case-insensitive)
   const filteredSubjects = subjects.filter((subject) =>
     subject.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const toggleGradeModal = () => setVisibleGradeModal(prev => !prev);
+  // const toggleGradeModal = () => setVisibleGradeModal(prev => !prev);
 
-  const gradeModalCallback = (id) => {
+  // const gradeModalCallback = (id) => {
 
-    const classRef = doc(db, "Classes", id);
+  //   setFilter(prev => ({ ...prev, page: 1 }));
 
-    setFilters([
-      ["teacher_id", "!=", user.teacher_id],
-      ["classRef", "==", classRef],
-      // ["school_id", "==", "000000"],
-    ])
+  //   const classRef = doc(db, "Classes", id);
 
-    setTitle(oppositeTitle);
-    toggleGradeModal();
-  }
+  //   setFilters([
+  //     ["teacher_id", "!=", user.teacher_id],
+  //     ["classRef", "==", classRef],
+  //     // ["school_id", "==", "000000"],
+  //   ])
+
+  //   setTitle(oppositeTitle);
+  //   toggleGradeModal();
+  // }
 
   const duplicateSubjectCallback = () => {
+    return ;
+
     setFilters([]);
-    
   }
 
   return (
     <div>
       <Header />
-      {isVisibleGradeModal && <GradesModal toggleModal={toggleGradeModal} callback={gradeModalCallback}/>}
+      {/* {isVisibleGradeModal && <GradesModal toggleModal={toggleGradeModal} callback={gradeModalCallback}/>} */}
       <div className="p-6 flex items-center justify-between">
         <p className="text-2xl font-bold">{title}</p>
         <div className="inline-flex gap-6">
-          <div
+          {/* <div
             onClick={() => window.location.assign("/AddSubject")}
             className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
           >
             <CiCirclePlus className="text-xl" />
             Add Subject
-          </div>
-          {title === "Duplicate Subject" && 
+          </div> */}
+          {/* {title === "Duplicate Subject" && 
             <div
               onClick={() => setTitle(oppositeTitle)}
               className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
@@ -78,18 +83,18 @@ const Subjects = () => {
               <CiCirclePlus className="text-xl" />
               My Subjects
             </div>
-          }
-          <div
+          } */}
+          {/* <div
             onClick={toggleGradeModal}
             className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
           >
             Duplicate Subject
-          </div>
+          </div> */}
         </div>
       </div>
 
       <div className="bg-white rounded-lg border">
-        <div className="flex items-center justify-end gap-6 p-4 border-b">
+        {/* <div className="flex items-center justify-end gap-6 p-4 border-b">
           <div className="relative lg:w-96 w-1/2">
             <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
             <input
@@ -104,7 +109,7 @@ const Subjects = () => {
             <IoFilter className="w-4 h-4 mr-2" />
             Apply filter
           </button>
-        </div>
+        </div> */}
 
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 p-4">
           {isLoading
@@ -113,14 +118,20 @@ const Subjects = () => {
                 <CourseCard 
                   key={subject.subject_id} 
                   subject={subject} 
-                  isOwnSubject={title === "My Subjects"}
+                  isOwnSubject={isOwnSubject}
                   handleDuplicateSubject={handleDuplicateSubject}
                   handleDuplicateSubjectCallback={duplicateSubjectCallback}
                   isSaving={isSaving}
                 />
               ))}
         </div>
-        <Pagination />
+        {filteredSubjects.length > 0 && 
+          <Pagination 
+            onPageChange={handlePaginate}
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+          />
+        }
       </div>
     </div>
   );

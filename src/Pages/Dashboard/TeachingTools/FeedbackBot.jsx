@@ -83,6 +83,7 @@ const FeedbackBot = () => {
             generatedResponse={generatedResponses.feedback} 
             isLoading={isLoading}
             title="Feedback response will appear here"
+            pdfDownloadFilename="feedback"
           />
         </div>
       </div>

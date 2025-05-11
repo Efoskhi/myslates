@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { docQr } from "../Logics/docQr_ORGate";
-import { getFirebaseData } from "../utils/firebase";
+import { getFirebaseData, getFirebaseInnerCollectionData } from "../utils/firebase";
 import toast from "react-hot-toast";
-import { doc } from "firebase/firestore";
+import { collection, doc, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useAppContext } from "../context/AppContext";
 
@@ -15,10 +15,12 @@ const useStudents = ({
     shouldGetStudentSubjects = false,
     shouldStoreCache = true,
     reload = false,
+    searchFilter = {}
 } = {}) => {
     const [students, setStudents] = useState<any>([]);
     const [loading, setLoading] = useState(false);
-    const [ pagination, setPagination ] = useState({})
+    const [ pagination, setPagination ] = useState({});
+    const [ filter, setFilter ] = React.useState({ page, pageSize })
 
     const { user } = useAppContext();
     
@@ -34,64 +36,83 @@ const useStudents = ({
                 return setStudents(fetchedStudents);
             }
 
-            const { status, data } = await getFirebaseData({
-                collection: "users",
-                query: [
-                    ["school_id", "==", user.school_id],
-                    ["role", "==", "learner"],
-                ],
-                page,
-                pageSize,
-            });
+            page= filter.page,
+            pageSize=  filter.pageSize
+            const { subject_id } = searchFilter;
 
-            if (status === "error") throw new Error();
+            const subjectRef = doc(db, "Subjects", "Governments_SSS 3");
 
-            let students = data.users;
+            const { status, data } = await getFirebaseInnerCollectionData({
+                collection: 'Topics',
+                query: [['subjectRef', '==', subjectRef]],
+                innerCollection: 'EnrolledTopics',
+                page: filter.page,
+                pageSize: filter.pageSize,
+                refFields: ['studentRef']
+            })
 
-            if (shouldGetStudentSubjects) {
-                const comboMap = new Map<string, any[]>(); // key = combo string, value = subjects
+            console.log("EnrolledTopics", data.EnrolledTopics)
 
-                // Step 1: Get unique combos
-                const uniqueCombos = Array.from(
-                    new Set(
-                        data.users.map(
-                            ({ curriculum, student_class, student_dept }) =>
-                                `${curriculum}|${student_class}|${student_dept}`
-                        )
-                    )
-                );
+            return;
 
-                // Step 2: Fetch subjects for each unique combo
-                await Promise.all(
-                    uniqueCombos.map(async (combo: any) => {
-                        const [curriculum, classId, deptId] = combo.split("|");
+            // const { status, data } = await getFirebaseData({
+            //     collection: "users",
+            //     query: [
+            //         ["school_id", "==", user.school_id],
+            //         ["role", "==", "learner"],
+            //     ],
+            //     page: filter.page,
+            //     pageSize: filter.pageSize,
+            // });
 
-                        const classRef = doc(db, "Classes", classId);
-                        const deptRef = doc(db, "Department", deptId);
+            // if (status === "error") throw new Error();
 
-                        const subjects = await getFirebaseData({
-                            collection: "Subjects",
-                            query: [
-                                ["curriculum", "==", curriculum],
-                                ["classRef", "==", classRef],
-                                ["deptRef", "==", deptRef],
-                            ],
-                        });
+            // let students = data.users;
 
-                        comboMap.set(combo, subjects.data.Subjects);
-                    })
-                );
+            // if (shouldGetStudentSubjects) {
+            //     const comboMap = new Map<string, any[]>(); // key = combo string, value = subjects
 
-                // Step 3: Attach subjects to each user
-                students = data.users.map((user) => {
-                    const { curriculum, student_class, student_dept } = user;
-                    const key = `${curriculum}|${student_class}|${student_dept}`;
-                    return {
-                        ...user,
-                        subjects: comboMap.get(key) || [],
-                    };
-                });
-            }
+            //     // Step 1: Get unique combos
+            //     const uniqueCombos = Array.from(
+            //         new Set(
+            //             data.users.map(
+            //                 ({ curriculum, student_class, student_dept }) =>
+            //                     `${curriculum}|${student_class}|${student_dept}`
+            //             )
+            //         )
+            //     );
+
+            //     // Step 2: Fetch subjects for each unique combo
+            //     await Promise.all(
+            //         uniqueCombos.map(async (combo: any) => {
+            //             const [curriculum, classId, deptId] = combo.split("|");
+
+            //             const classRef = doc(db, "Classes", classId);
+            //             const deptRef = doc(db, "Department", deptId);
+
+            //             const subjects = await getFirebaseData({
+            //                 collection: "Subjects",
+            //                 query: [
+            //                     ["curriculum", "==", curriculum],
+            //                     ["classRef", "==", classRef],
+            //                     ["deptRef", "==", deptRef],
+            //                 ],
+            //             });
+
+            //             comboMap.set(combo, subjects.data.Subjects);
+            //         })
+            //     );
+
+            //     // Step 3: Attach subjects to each user
+            //     students = data.users.map((user) => {
+            //         const { curriculum, student_class, student_dept } = user;
+            //         const key = `${curriculum}|${student_class}|${student_dept}`;
+            //         return {
+            //             ...user,
+            //             subjects: comboMap.get(key) || [],
+            //         };
+            //     });
+            // }
 
             setPagination(data.pagination);
             setStudents(students);
@@ -127,15 +148,27 @@ const useStudents = ({
         return response;
     };
 
+    const handlePaginate = (page) => {
+        setFilter(prev => ({
+            ...prev,
+            page
+        }))
+    }
+
     useEffect(() => {
         if (shouldGetStudents) getStudents();
-    }, [reload]);
+    }, [reload, filter]);
+
+    useEffect(() => {
+        setFilter({ page, pageSize })
+    }, [page, pageSize])
 
     return {
         students,
         loading,
         pagination,
         getTotalStudents,
+        handlePaginate,
     };
 };
 

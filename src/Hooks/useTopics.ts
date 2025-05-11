@@ -5,7 +5,7 @@ import { useAppContext } from "../context/AppContext";
 
 let fetchedTopics = [];
 
-const useTopics = () => {
+const useTopics = ({ toggleReloadTopic }) => {
     const [ topics, setTopics ] = React.useState([]);
     const [ isLoading, setLoading ] = React.useState(true);
 
@@ -13,9 +13,9 @@ const useTopics = () => {
 
     const getTopics = async () => {
         try {
-            if(fetchedTopics?.length){
-                return setTopics(fetchedTopics);
-            }
+            // if(fetchedTopics?.length){
+            //     return setTopics(fetchedTopics);
+            // }
 
             setLoading(true);
 
@@ -33,9 +33,12 @@ const useTopics = () => {
             });
 
             if(status === "error") throw new Error(message);
-
-            setTopics(data.Subjects);
-            fetchedTopics = data.subjects;
+            const subjects = data.Subjects
+                ?.filter(item => item.termRef.is_active)
+                .sort((a, b) => a.serial_no - b.serial_no);
+                      
+            setTopics(subjects);
+            fetchedTopics = subjects;
 
         } catch(error) {
             console.log("error", error)
@@ -47,7 +50,7 @@ const useTopics = () => {
 
     React.useEffect(() => {
         getTopics();
-    }, [])
+    }, [toggleReloadTopic])
 
     return {
         isLoading,

@@ -27,7 +27,7 @@ const AddTopic = ({ hooks }) => {
                         >
                             <option option="">Select Week</option>
                             {weeks.map((week, key) => (
-                                <option option={week.title} key={key}>{week.title}</option>
+                                <option option={JSON.stringify(week)} key={key}>{week.title}</option>
                             ))}
                         </select>
                     </div>

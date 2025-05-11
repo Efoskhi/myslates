@@ -38,6 +38,8 @@ import UploadResult from "./Pages/Dashboard/Subjects/UploadResult";
 import StudentResult from "./Pages/Dashboard/Students/StudentResult";
 import TopicDetails from "./Pages/Dashboard/Subjects/TopicDetails";
 import AppContextProvider from "./context/AppContext";
+import Topics from "./Pages/Dashboard/Subjects/Topics";
+import Assignment from "./Pages/Dashboard/Subjects/Assignment";
 
 function App() {
   return (
@@ -75,10 +77,12 @@ function App() {
               <Route path="StudentDetails" element={<StudentDetails />} />
 
               <Route path="Subjects" element={<Subjects />} />
+              <Route path="subject/topics" element={<Topics />} />
+              <Route path="subject/assignment" element={<Assignment />} />
 
               <Route path="SubjectDetails" element={<SubjectDetails />} />
 
-              <Route path="AddSubject" element={<AddSubject />} />
+              {/* <Route path="AddSubject" element={<AddSubject />} /> */}
               <Route path="TeachingTools" element={<TeachingTools />} />
 
               <Route path="CommunicationTools" element={<CommuncationTools />} />

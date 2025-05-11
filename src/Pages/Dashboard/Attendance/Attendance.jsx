@@ -17,9 +17,15 @@ import Pagination from "../../../components/Layout/Pagination";
 import FilterDropdown from "../../../components/Attendance/FilterDropdown";
 import convertToCSV from "../../../utils/convertToCSV";
 import { getCurrentWeekRange, getLastWeekRange } from "../../../utils";
+import { useAppContext } from "../../../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const Attendance = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const { user } = useAppContext();
   
   const hooks = useAttendance({ shouldGetAttendance: true })
   const { 
@@ -64,7 +70,16 @@ const Attendance = () => {
     // 3. Export to CSV
     convertToCSV(dataForCSV, "Weekly_Attendance.csv");
   };
+
   
+  useEffect(() => {
+    if (user && !user.is_class_teacher) {
+      navigate(-1);
+    }
+  }, [user, navigate]);
+
+  
+  if (!user?.is_class_teacher) return null
 
   return (
     <div>

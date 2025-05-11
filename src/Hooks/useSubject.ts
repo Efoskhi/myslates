@@ -16,14 +16,17 @@ interface SubjectProps {
     shouldGetStaticSubjects?: boolean;
     shouldGetNonCreatedSubjects?: boolean;
     filters?: [];
+    shouldGetDistinctSubjects?: boolean;
 }
 
-const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [] }: SubjectProps = {}) => {
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [], shouldGetDistinctSubjects = false }: SubjectProps = {}) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
     const [staticSubjects, setStaticSubjects] = React.useState([]);
     const [isLoading, setLoading] = React.useState(true);
     const [searchTerm, setSearchTerm] = React.useState("");
+    const [ filter, setFilter ] = React.useState({ page: 1, pageSize })
+    const [ pagination, setPagination ] = React.useState({});
 
     const navigate = useNavigate();
     const { addSubject } = useAddSubject();
@@ -37,20 +40,34 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
                 throw new Error("User is not logged in " + user);
             }
 
+            const subjects = user?.tutoring_subjects;
+            const formattedSubjects = subjects?.map(item =>
+                item.toLowerCase().replace(" - ", "_").replace(/\s+/g, "_")
+            );
+
             const response = await getFirebaseData({
                 collection: "Subjects",
                 refFields: ["classRef", "deptRef"],
-                query: filters.length ? filters : [["teacher_id", "==", user.teacher_id]],
-                page: 1,
-                pageSize: filters.length ? 100 : pageSize,
+                query: filters.length ? filters : [["subject_id", "in", formattedSubjects]],
+                page: filter.page,
+                pageSize: filter.pageSize,
                 // orderBy: ['created_date', 'desc'],
             });
 
             if (response.status === "error") throw new Error(response.message);
 
-            // Replace with your actual fetch logic
-            // const subjectsData = await docQr("Subjects", { max: 5000, whereClauses: [{ field: "teacher_id", operator: "==", value: user.teacher_id }] });
-            setSubjects(response.data.Subjects);
+            let allSubjects = response.data.Subjects;
+            if(shouldGetDistinctSubjects){
+                const uniqueByTitle = Array.from(
+                    new Map(allSubjects.map(subject => [subject.title, subject])).values()
+                );
+                  
+                allSubjects = uniqueByTitle;
+            }
+
+            setSubjects(allSubjects);
+            setPagination(response.data.pagination);
+
         } catch (error) {
             console.error("Error fetching subjects:", error);
         } finally {
@@ -175,13 +192,24 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         }
     }
 
+    const handlePaginate = (page) => {
+        setFilter(prev => ({
+            ...prev,
+            page
+        }))
+    }
+
     React.useEffect(() => {
         if(shouldGetStaticSubjects) getStaticSubjects();
     }, [])
 
     React.useEffect(() => {
         if(shouldGetSubjects) getSubjects();
-    }, [shouldGetNonCreatedSubjects])
+    }, [shouldGetNonCreatedSubjects, filter])
+
+    React.useEffect(() => {
+        setFilter(prev => ({ ...prev, pageSize }));
+    }, [pageSize])
 
     return {
         isSaving,
@@ -189,6 +217,9 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         subjects,
         staticSubjects,
         searchTerm,
+        pagination,
+        setFilter,
+        handlePaginate,
         setSearchTerm,
         handleDeleteSubject,
         getTotalSubjects,

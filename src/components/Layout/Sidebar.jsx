@@ -6,9 +6,12 @@ import { GoStack } from "react-icons/go";
 import { MdOutlineLogout, MdOutlineSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { LuUsers } from "react-icons/lu";
+import { useAppContext } from "../../context/AppContext";
 
 const Sidebar = () => {
   const location = useLocation();
+
+  const { user } = useAppContext();
 
   const getLinkClassName = (path) => {
     const baseClasses =
@@ -55,10 +58,12 @@ const Sidebar = () => {
               <GoStack className="text-lg" />
               <span className="text-sm font-medium">Communication Tools</span>
             </Link>
-            <Link to="/Attendance" className={getLinkClassName("/Attendance")}>
-              <GoStack className="text-lg" />
-              <span className="text-sm font-medium">Attendances</span>
-            </Link>
+            {user?.is_class_teacher && 
+              <Link to="/Attendance" className={getLinkClassName("/Attendance")}>
+                <GoStack className="text-lg" />
+                <span className="text-sm font-medium">Attendances</span>
+              </Link>
+            }
             <Link to="/Calendar" className={getLinkClassName("/Calendar")}>
               <GoStack className="text-lg" />
               <span className="text-sm font-medium">Calendar & Schedule</span>

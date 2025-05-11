@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { IoIosArrowRoundForward } from "react-icons/io";
 
-const Pagination = ({ page, totalPages, onPageChange }) => {
+const Pagination = ({ page, totalPages: initalTotalPages, onPageChange }) => {
   const [currentPage, setCurrentPage] = useState(page);
+  const [ totalPages, setTotalPages ] = useState(initalTotalPages)
+
 
   // Generate pages dynamically based on the current page and totalPages
-  useEffect(() => {
+  useEffect(() => {    
     const generatePages = () => {
       let pageNumbers = [];
       const maxPagesToShow = 5; // Maximum number of page links to display
@@ -60,6 +62,11 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
     }
   };
 
+  useEffect(() => {
+    setCurrentPage(page);
+    setTotalPages(initalTotalPages);
+  }, [initalTotalPages, page])
+
   return (
     <div className="mx-auto p-4 text-gray-600">
       <div className="hidden items-center justify-between text-sm md:flex">
@@ -76,9 +83,9 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
                   <a
                     href="javascript:void(0)"
                     aria-current={currentPage === item ? "page" : false}
-                    className={`px-3 py-2 rounded-lg duration-150 hover:text-[#ff6875] hover:bg-[#fff0f1] ${
+                    className={`px-3 py-2 rounded-lg duration-150 hover:text-white hover:bg-blue-300 ${
                       currentPage === item
-                        ? "bg-[#fff0f1] text-[#ff6875] font-medium"
+                        ? "bg-blue-500 text-white font-medium"
                         : ""
                     }`}
                     onClick={() => handlePageClick(item)}

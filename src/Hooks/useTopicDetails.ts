@@ -2,13 +2,13 @@ import React from "react";
 import useWeeks from "./useWeeks";
 import useTerms from "./useTerms";
 import toast from "react-hot-toast";
-import { addFirebaseData, updateFirebaseData } from "../utils/firebase";
+import { addFirebaseData, deleteFirebaseData, updateFirebaseData } from "../utils/firebase";
 import { TopicError } from "../errors";
 import { useAppContext } from "../context/AppContext";
 
 const useTopicDetails = (topic?: any) => {
     const [ inputs, setInputs ] = React.useState({
-        week: topic?.weekRef?.title ?? "",
+        week: JSON.stringify(topic?.weekRef) ?? "",
         term: topic?.termRef?.title ?? "",
         title: topic?.title ?? "",
         serial_no: topic?.serial_no ?? "",
@@ -41,6 +41,11 @@ const useTopicDetails = (topic?: any) => {
         if(!serial_no || isNaN(serial_no)) throw new TopicError("Topic serial number must be a number");
         if(!lesson_plan) throw new TopicError("Enter topic lesson plan");
 
+
+        const parsedWeek = JSON.parse(week);
+        const weekSegments = parsedWeek.ref?._key?.path?.segments;
+        const weekID = weekSegments[weekSegments.length - 1];
+
         const validatedInput = {
             title,
             lesson_plan,
@@ -48,7 +53,7 @@ const useTopicDetails = (topic?: any) => {
             weekRef: {
                 isRef: true,
                 collection: "Weeks",
-                id: week,
+                id: weekID,
             },
             termRef: {
                 isRef: true,
@@ -70,7 +75,7 @@ const useTopicDetails = (topic?: any) => {
         handleSetCurrentTopic(currentTopic);
     }
 
-    const handleAddTopic = async (customInput?: any) => {
+    const handleAddTopic = async (customInput?: any, callback?: () => void) => {
         let errorMessage = "Something went wrong adding topic";
 
         try {
@@ -94,10 +99,12 @@ const useTopicDetails = (topic?: any) => {
             })
 
             if(!customInput) toast.success("Topic has been created");
+            if(callback) callback();
 
             return response;
 
         } catch(error) {
+            console.error(error)
             if(error instanceof TopicError){
                 errorMessage = error.message;
             }
@@ -146,6 +153,26 @@ const useTopicDetails = (topic?: any) => {
             setSaving(false)
         }
     }
+
+    const handleDeleteTopic = async () => {
+        let errorMessage = "Something went wrong deleting topic";
+        try {
+
+            const { status } = await deleteFirebaseData({
+                collection: "Topics",
+                id: "",
+            })
+
+        } catch (error) {
+            if(error instanceof TopicError){
+                errorMessage = error.message;
+            }
+
+            toast.error(errorMessage);
+        } finally {
+            setSaving(false)
+        }
+    }
     
     return {
         weeks,
@@ -156,7 +183,8 @@ const useTopicDetails = (topic?: any) => {
         isSaving,
         handleInput,
         handleAddTopic,
-        handleUpdateTopic
+        handleUpdateTopic,
+        handleDeleteTopic,
     }
 }
 

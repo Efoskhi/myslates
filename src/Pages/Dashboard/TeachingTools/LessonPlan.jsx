@@ -15,8 +15,8 @@ import GeneratedQuestions from "../../../components/TeachingTools/GeneratedQuest
 
 const LessonPlan = () => {
   const { inputs, isLoading, generatedResponses, handleInput, handleGenerateLessonPlan } = useTeachingTools();
-  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100 });
-  const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100 });
+  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
+  const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
   const { weeks } = useWeeks({ shouldGetWeeks: true, pageSize: 100 });
   const { terms } = useTerms({ shouldGetTerms: true, pageSize: 100 });
 
@@ -123,6 +123,7 @@ const LessonPlan = () => {
             isLoading={isLoading}
             title="Lesson plans will appear here"
             renderDownloadPDFButton={true}
+            pdfDownloadFilename="lesson_plan"
           />
         </div>
       </div>

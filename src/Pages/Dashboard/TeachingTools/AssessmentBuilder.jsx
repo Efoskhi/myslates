@@ -8,8 +8,8 @@ import Loading from "../../../components/Layout/Loading";
 
 const AssessmentBuilder = () => {
   const { inputs, isLoading, generatedResponses, handleInput, handleGenerateAssesmentBuilder } = useTeachingTools();
-  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100 });
-  const { classes, isLoading: isLoadingClasses } = useClasses({ shouldGetClasses: true, pageSize: 100 });
+  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
+  const { classes, isLoading: isLoadingClasses } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
 
   return (
     <>
@@ -149,6 +149,8 @@ const AssessmentBuilder = () => {
               generatedResponse={generatedResponses.assessmentBuilder} 
               isLoading={isLoading}
               title="Assessment questions will appear here"
+              renderDownloadPDFButton={true}
+              pdfDownloadFilename="assesment_builder"
             />
           </div>
         </div>

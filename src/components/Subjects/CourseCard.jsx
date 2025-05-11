@@ -51,7 +51,7 @@ export const CourseCard = ({ subject, isOwnSubject, handleDuplicateSubject, isSa
         <div className="p-4">
           <p className="text-sm text-gray-500">{classRef.student_class}</p>
           <h2 className="text-lg font-bold">{title}</h2>
-          {!isOwnSubject && 
+          {false && !isOwnSubject && 
             <button onClick={handleAddSubject} class="flex items-center gap-1 bg-blue-600 my-2 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200">
               <CiCirclePlus className="text-xl" /> Add
             </button>

@@ -3,9 +3,11 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import AssignmentDetailsModal from "./AssignmentDetailsModal";
 import useAssignment from "../../Hooks/useAssignment";
 import Loading from "../Layout/Loading";
+import { useAppContext } from "../../context/AppContext";
 
 const AssignmentCard = ({ isOwnSubject }) => {
 
+    const { currentSubject } = useAppContext();
     const hooks = useAssignment();
     const {
         isLoading,
@@ -16,11 +18,11 @@ const AssignmentCard = ({ isOwnSubject }) => {
     } = hooks;
     
     return (
-        <div>
-            <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2 text-blue-700 text-lg font-semibold">
-                    📂 <span>Assignment</span>
-                </div>
+        <div className="p-1">
+            <div className="flex items-center justify-end mb-5">
+                {/* <p className="text-lg font-semibold text-gray-800">
+                    Subject: <span className="font-normal text-gray-600">{currentSubject.title}</span>
+                </p> */}
                 {isOwnSubject && 
                     <button onClick={() => toggleAssignmentModalVisible("Add")} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
                         Add Assignment

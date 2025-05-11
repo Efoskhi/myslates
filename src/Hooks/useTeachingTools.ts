@@ -163,6 +163,8 @@ const useTeachingTools = () => {
 
             const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
 
+            // const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text.`;
+
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,
                 image: file,
@@ -170,6 +172,19 @@ const useTeachingTools = () => {
             })
 
             const text = await getAIResponse(payload);
+
+//             const text = `1. Evaluate the integral of the function \\( f(x) = 3x^2 \\) with respect to \\( x \\) over the interval [1, 4].
+
+// **Answer:** The integral of \( f(x) = 3x^2 \) from 1 to 4 is calculated as follows:
+
+// $$
+// \\int_{1}^{4} 3x^2 \\, dx = \\left[ x^3 \\right]_{1}^{4} = 4^3 - 1^3 = 64 - 1 = 63
+// $$
+
+// Therefore, the answer is **63**.
+// `;
+
+            console.log("text", text)
 
             setGeneratedResponses(prev => ({
                 ...prev,

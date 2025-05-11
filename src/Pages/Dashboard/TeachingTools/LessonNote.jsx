@@ -15,8 +15,8 @@ import GeneratedQuestions from "../../../components/TeachingTools/GeneratedQuest
 
 const LessonNote = () => {
   const { inputs, isLoading, generatedResponses, handleInput, handleGenerateLessonNote } = useTeachingTools();
-  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100 });
-  const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100 });
+  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
+  const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
   const { weeks } = useWeeks({ shouldGetWeeks: true, pageSize: 100 });
   const { terms } = useTerms({ shouldGetTerms: true, pageSize: 100 });
 
@@ -122,6 +122,8 @@ const LessonNote = () => {
             generatedResponse={generatedResponses.lessonNote} 
             isLoading={isLoading}
             title="Lesson note will appear here"
+            renderDownloadPDFButton={true}
+            pdfDownloadFilename="lesson_note"
           />
         </div>
       </div>
