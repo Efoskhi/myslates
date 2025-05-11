@@ -16,8 +16,10 @@ export default function QuizPerformanceChart() {
     <div className="bg-[#f5f8fc] p-4 rounded-lg shadow-md w-full">
       <h2 className="text-lg font-semibold mb-2">Quiz Performance</h2>
       <div className="flex items-center">
+      <p>No data available</p>
+
         {/* Pie Chart */}
-        <PieChart width={120} height={120}>
+        {/* <PieChart width={120} height={120}>
           <Pie
             data={data}
             cx="50%"
@@ -30,10 +32,10 @@ export default function QuizPerformanceChart() {
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
           </Pie>
-        </PieChart>
+        </PieChart> */}
 
         {/* Legend */}
-        <div className="ml-12 space-y-2">
+        {/* <div className="ml-12 space-y-2">
           {data.map((entry, index) => (
             <div key={index} className="flex items-center">
               <span
@@ -43,7 +45,7 @@ export default function QuizPerformanceChart() {
               <span className="ml-2 text-sm">{entry.name}</span>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -66,13 +66,14 @@ const StudentEngagement = () => {
         {/* Added fixed height and padding */}
         <div className="flex items-center gap-2 mb-4 px-8">
           <h3 className="text-base font-medium text-gray-800">Attendance</h3>
-          <button className="ml-auto p-1.5 text-gray-400 hover:bg-gray-100 rounded-full">
+          {/* <button className="ml-auto p-1.5 text-gray-400 hover:bg-gray-100 rounded-full">
             ⓘ
-          </button>
+          </button> */}
         </div>
         <div className="h-64 ">
           {/* Added container with fixed height for the chart */}
-          <ResponsiveContainer width="100%" height="100%">
+          <p className="mx-5">No data available</p>
+          {/* <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
               margin={{ top: 10, right: 0, bottom: 20, left: 0 }}
@@ -106,7 +107,7 @@ const StudentEngagement = () => {
                 barSize={30}
               />
             </BarChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer> */}
         </div>
       </div>
     </div>
