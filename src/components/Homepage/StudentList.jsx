@@ -40,9 +40,9 @@ export default function StudentList() {
       {/* Table Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">List of Students</h2>
-        <button className="flex items-center border text-xs px-3 py-2 rounded-lg">
+        {/* <button className="flex items-center border text-xs px-3 py-2 rounded-lg">
           <IoFilterSharp className="mr-2" /> Apply filter
-        </button>
+        </button> */}
       </div>
 
       {/* Table */}

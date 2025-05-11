@@ -28,13 +28,13 @@ const StudentEngagement = () => {
           <h2 className="text-lg font-semibold text-gray-800">
             Students Engagement
           </h2>
-          <div className="border inline-flex gap-3 p-2 rounded-md cursor-pointer">
+          {/* <div className="border inline-flex gap-3 p-2 rounded-md cursor-pointer">
             <p className="text-xs">English</p>
             <MdOutlineKeyboardArrowDown />
-          </div>
+          </div> */}
         </div>
 
-        <div className="flex items-center mb-6">
+        {/* <div className="flex items-center mb-6">
           <button
             className={`px-4 py-1.5 rounded-l-lg text-sm border flex items-center ${
               activeTab === "This month"
@@ -58,7 +58,7 @@ const StudentEngagement = () => {
           <button className="ml-auto p-1.5 text-gray-400 hover:bg-gray-100 rounded-full">
             +
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="h-80 bg-[#f5f8fc] rounded-lg ">
