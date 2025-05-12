@@ -20,6 +20,9 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
             }
 
             const classes = user?.classes_handled ?? [];
+
+            if(!classes.length) return;
+
             let query = [["student_class", "in", classes]] as any;
 
             if(shouldGetAllClassess){
@@ -42,7 +45,6 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
             return data.classes;
 
         } catch(error) {
-            console.log(error)
             toast.error("Something went wrong getting classes");
             return [];
         } finally {

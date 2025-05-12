@@ -111,6 +111,10 @@ const Subjects = () => {
           </button>
         </div> */}
 
+        {!isLoading && filteredSubjects.length === 0 && 
+          <p className="text-center my-4">No subject found</p>
+        }
+
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 p-4">
           {isLoading
             ? skeletonCards.map((_, idx) => <SkeletonCourseCard key={idx} />)

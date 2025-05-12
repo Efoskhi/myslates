@@ -44,6 +44,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
             const formattedSubjects = subjects?.map(item =>
                 item.toLowerCase().replace(" - ", "_").replace(/\s+/g, "_")
             );
+            if(!filters.length && !formattedSubjects.length) return;
 
             const response = await getFirebaseData({
                 collection: "Subjects",
