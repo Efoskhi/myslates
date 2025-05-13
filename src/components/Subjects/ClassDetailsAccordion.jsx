@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaBook, FaClipboard, FaQuestionCircle, FaUsers } from "react-icons/fa";
 import StudentList from "./StudentList";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ClassDetailsAccordion = ({ isOwnSubject }) => {
     const [openSection, setOpenSection] = useState(null);
@@ -31,7 +32,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
             <div>
                 <div
                     className="flex items-center justify-between py-4 border-b cursor-pointer"
-                    onClick={() => navigate("/subject/topics")}
+                    onClick={() => toast.error("CBT is coming soon")}
                 >
                     <div className="flex items-center gap-3">
                         <FaBook className="text-blue-400" />
