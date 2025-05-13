@@ -21,13 +21,13 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
 
             const classes = user?.classes_handled ?? [];
 
-            if(!classes.length) return;
-
             let query = [["student_class", "in", classes]] as any;
 
             if(shouldGetAllClassess){
                 query = [["category", "==", user.school.curriculum]]
             }
+
+            if(!classes.length && !shouldGetAllClassess) return;
             
             const { status, message, data } = await getFirebaseData({
                 collection: "Classes",

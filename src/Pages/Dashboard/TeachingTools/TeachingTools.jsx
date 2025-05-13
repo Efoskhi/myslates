@@ -50,6 +50,26 @@ const features = [
     gradient: "bg-gradient-to-r from-purple-100 to-white",
     path: "/FeedbackBot",
   },
+  {
+    title: "Assignment Builder",
+    description:
+      "This tool helps you generate assignments and test answers of your students in an instant.",
+    icon: Teach3,
+    IconComponent: BsStars,
+    iconColor: "text-purple-500",
+    gradient: "bg-gradient-to-r from-purple-100 to-white",
+    path: "/AssignmentBuilder",
+  },
+  {
+    title: "Rubric Builder",
+    description:
+      "This tool helps you generate rubric on questions for your students in an instant.",
+    icon: Teach4,
+    IconComponent: FaRocket,
+    iconColor: "text-[#0598ce]",
+    gradient: "bg-gradient-to-r from-blue-100 to-white",
+    path: "/RubricBuilder",
+  },
   // {
   //   title: "Chatbot",
   //   description:

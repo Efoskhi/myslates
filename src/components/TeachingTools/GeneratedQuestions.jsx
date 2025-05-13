@@ -96,6 +96,15 @@ const GeneratedQuestions = ({
         );
     }
 
+    const config = {
+        loader: { load: ["[tex]/html"] },
+        tex: {
+          packages: { "[+]": ["html"] },
+          inlineMath: [["$", "$"]],
+          displayMath: [["$$", "$$"]]
+        }
+      };
+
     return (
         <div className="bg-white shadow-md px-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">

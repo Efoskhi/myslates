@@ -40,20 +40,37 @@ const useStudents = ({
             pageSize=  filter.pageSize
             const { subject_id } = searchFilter;
 
-            const subjectRef = doc(db, "Subjects", "Governments_SSS 3");
+            // const subjectRef = doc(db, "Subjects", "Governments_SSS 3");
 
-            const { status, data } = await getFirebaseInnerCollectionData({
-                collection: 'Topics',
-                query: [['subjectRef', '==', subjectRef]],
-                innerCollection: 'EnrolledTopics',
+            // const { status, data } = await getFirebaseInnerCollectionData({
+            //     collection: 'Topics',
+            //     query: [['subjectRef', '==', subjectRef]],
+            //     innerCollection: 'EnrolledTopics',
+            //     page: filter.page,
+            //     pageSize: filter.pageSize,
+            //     refFields: ['studentRef']
+            // })
+
+            // console.log("EnrolledTopics", data.EnrolledTopics)
+
+            const classes = user?.classes_handled ?? [];
+            if(!user.is_class_teacher) return;
+            if(!classes.length) return;
+
+
+            const { status, data } = await getFirebaseData({
+                collection: "users",
+                query: [
+                    ["student_class", "in", classes],
+                    ["role", "==", "learner"],
+                    ["school_id", "==", user.school_id],
+                ],
                 page: filter.page,
                 pageSize: filter.pageSize,
-                refFields: ['studentRef']
-            })
+            });
 
-            console.log("EnrolledTopics", data.EnrolledTopics)
+            const students = data.users;
 
-            return;
 
             // const { status, data } = await getFirebaseData({
             //     collection: "users",

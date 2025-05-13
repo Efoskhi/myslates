@@ -40,6 +40,8 @@ import TopicDetails from "./Pages/Dashboard/Subjects/TopicDetails";
 import AppContextProvider from "./context/AppContext";
 import Topics from "./Pages/Dashboard/Subjects/Topics";
 import Assignment from "./Pages/Dashboard/Subjects/Assignment";
+import RubricBuilder from "./Pages/Dashboard/TeachingTools/RubricBuilder";
+import AssignmentBuilder from "./Pages/Dashboard/TeachingTools/AssignmentBuilder";
 
 function App() {
   return (
@@ -99,6 +101,8 @@ function App() {
 
               <Route path="Calendar" element={<Calendar />} />
               <Route path="AssessmentBuilder" element={<AssessmentBuilder />} />
+              <Route path="AssignmentBuilder" element={<AssignmentBuilder />} />
+              <Route path="RubricBuilder" element={<RubricBuilder />} />
               <Route path="Chatbot" element={<Chatbot />} />
               <Route path="FeedbackBot" element={<FeedbackBot />} />
 

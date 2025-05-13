@@ -35,6 +35,20 @@ const useTeachingTools = () => {
             description: "",
             file: null,
         },
+        rubricBuilder: {
+            questionType: "",
+            grade: "",
+            subject: "",
+            totalPoints: 0,
+            question: "",
+        },
+        assignmentBuilder: {
+            questionType: "",
+            grade: "",
+            subject: "",
+            numQuestions: 1,
+            topic: "",
+        },
     });
 
     const [ generatedResponses, setGeneratedResponses ] = React.useState({
@@ -42,6 +56,8 @@ const useTeachingTools = () => {
         lessonPlan: "",
         feedback: "",
         lessonNote: "",
+        rubricBuilder: "",
+        assignmentBuilder: "",
     });
 
     const handleInput = (field: string, value: any) => {
@@ -173,19 +189,6 @@ const useTeachingTools = () => {
 
             const text = await getAIResponse(payload);
 
-//             const text = `1. Evaluate the integral of the function \\( f(x) = 3x^2 \\) with respect to \\( x \\) over the interval [1, 4].
-
-// **Answer:** The integral of \( f(x) = 3x^2 \) from 1 to 4 is calculated as follows:
-
-// $$
-// \\int_{1}^{4} 3x^2 \\, dx = \\left[ x^3 \\right]_{1}^{4} = 4^3 - 1^3 = 64 - 1 = 63
-// $$
-
-// Therefore, the answer is **63**.
-// `;
-
-            console.log("text", text)
-
             setGeneratedResponses(prev => ({
                 ...prev,
                 assessmentBuilder: text,
@@ -307,6 +310,84 @@ const useTeachingTools = () => {
         }
     };
 
+    const handleGenerateRubricBuilder = async () => {
+        try {
+            setLoading(true);
+
+            validateFields(inputs.rubricBuilder);
+
+            const { 
+                totalPoints, 
+                questionType, 
+                subject, 
+                grade, 
+                question,
+            } = inputs.rubricBuilder;
+
+            
+
+            // const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
+
+            const generatedPrompt = `Generate the rubric, for the ${subject} subject for ${grade} level. The question is  a ${questionType} and is as follows: ${question}. The total points for the question is ${totalPoints} points."`;
+
+            const payload = await generateRequestBody({
+                userMessage: generatedPrompt,
+                image: null,
+                systemMessage: "You are a teaching assistant to help Nigerian teachers generate questions and answers based on the Nigerian curriculum. Your task is to generate rubric that fits the grade level in terms of complexity."
+            })
+
+            const text = await getAIResponse(payload);
+
+            setGeneratedResponses(prev => ({
+                ...prev,
+                rubricBuilder: text,
+            }))
+
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGenerateAssignmentBuilder = async () => {
+        try {
+            setLoading(true);
+
+            validateFields(inputs.assignmentBuilder);
+
+            const { 
+                numQuestions, 
+                questionType, 
+                subject, 
+                grade, 
+                topic,
+            } = inputs.assignmentBuilder;
+
+            // const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
+
+            const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions, for the ${subject} subject for ${grade} level on the ${topic} topic. Each question should have a corresponding answer.`;
+
+            const payload = await generateRequestBody({
+                userMessage: generatedPrompt,
+                image: null,
+                systemMessage: "You are a teaching assistant to help Nigerian teachers generate questions and answers based on the Nigerian curriculum. Your task is to generate assessments that fits the grade level in terms of complexity. Your response should be in markdown format. For example, if the grade level is nursery then the assessment should be suitable for nursery students. Similarly, the plan should be made accordingly if the grade level is a senior secondary school."
+            })
+
+            const text = await getAIResponse(payload);
+
+            setGeneratedResponses(prev => ({
+                ...prev,
+                assignmentBuilder: text,
+            }))
+
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         inputs,
         isLoading,
@@ -316,6 +397,8 @@ const useTeachingTools = () => {
         handleGenerateLessonPlan,
         handleGenerateFeedback,
         handleGenerateLessonNote,
+        handleGenerateRubricBuilder,
+        handleGenerateAssignmentBuilder,
     };
 };
 
