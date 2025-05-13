@@ -40,7 +40,16 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
                 throw new Error("User is not logged in " + user);
             }
 
-            const subjects = user?.tutoring_subjects;
+            const { status, data } = await getFirebaseData({
+                collection: "users",
+                query: [
+                    ["uid", "==", user.uid],
+                    ["role", "==", "teacher"]
+                ],
+                findOne: true,
+            })
+
+            const subjects = data.users?.tutoring_subjects;
             const formattedSubjects = subjects?.map(item =>
                 item.toLowerCase().replace(" - ", "_").replace(/\s+/g, "_")
             );

@@ -19,7 +19,16 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
                 return setClasses(fetchedClasses);
             }
 
-            const classes = user?.classes_handled ?? [];
+            const { data: userData } = await getFirebaseData({
+                collection: "users",
+                query: [
+                    ["uid", "==", user.uid],
+                    ["role", "==", "teacher"]
+                ],
+                findOne: true,
+            })
+
+            const classes = userData.users?.classes_handled ?? [];
 
             let query = [["student_class", "in", classes]] as any;
 
