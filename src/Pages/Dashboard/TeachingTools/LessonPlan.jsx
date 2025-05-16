@@ -15,7 +15,7 @@ import GeneratedQuestions from "../../../components/TeachingTools/GeneratedQuest
 
 const LessonPlan = () => {
   const { inputs, isLoading, generatedResponses, handleInput, handleGenerateLessonPlan } = useTeachingTools();
-  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
+  const { subjects, staticSubjects } = useSubjects({ shouldGetStaticSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
   const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
   const { weeks } = useWeeks({ shouldGetWeeks: true, pageSize: 100 });
   const { terms } = useTerms({ shouldGetTerms: true, pageSize: 100 });
@@ -70,8 +70,8 @@ const LessonPlan = () => {
               className="border rounded-lg p-2 w-full"
             >
               <option value="">Select Subject</option>
-              {subjects.map((item, key) => (
-                <option value={item.title.split("by")[0]} key={key}>{item.title.split("by")[0]}</option>
+              {staticSubjects.map((item, key) => (
+                <option value={item.name.split("by")[0]} key={key}>{item.name.split("by")[0]}</option>
               ))}
             </select>
             <input
