@@ -8,7 +8,7 @@ import Loading from "../../../components/Layout/Loading";
 
 const RubricBuilder = () => {
   const { inputs, isLoading, generatedResponses, handleInput, handleGenerateRubricBuilder } = useTeachingTools();
-  const { subjects } = useSubjects({ shouldGetSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
+  const { subjects, staticSubjects } = useSubjects({ shouldGetStaticSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
   const { classes, isLoading: isLoadingClasses } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
 
   return (
@@ -32,6 +32,8 @@ const RubricBuilder = () => {
                   <option value="Fill in the blanks">Fill in the Blanks</option>
                   <option value="Multiple choice">Multiple Choice</option>
                   <option value="True/False">True/False</option>
+                  <option value="Essay">Essay</option>
+                  <option value="Short Answer">Short Answer</option>
                 </select>
               </div>
               {/* Grade */}
@@ -62,8 +64,8 @@ const RubricBuilder = () => {
                     className="w-full p-2 border rounded"
                   >
                     <option value="">Select Subject</option>
-                    {subjects.map((item, key) => (
-                      <option value={item.title.split("by")[0]} key={key}>{item.title.split("by")[0]}</option>
+                    {staticSubjects.map((item, key) => (
+                      <option value={item.name.split("by")[0]} key={key}>{item.name.split("by")[0]}</option>
                     ))}
                   </select>
                 </div>

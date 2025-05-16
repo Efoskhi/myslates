@@ -11,9 +11,12 @@ import {
     DocumentData,
     DocumentReference,
     QueryDocumentSnapshot,
+    doc,
+    where,
   } from "firebase/firestore";
   import { useEffect, useState, useRef, useCallback } from "react";
   import { db } from "../firebase.config";
+  import { useAppContext } from "../context/AppContext";
   
   export type ChatListItem = {
     id: string;
@@ -38,6 +41,9 @@ import {
     // Cursor refs for pagination
     const lastVisible = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
     const firstVisible = useRef<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const teacherRef = useRef<DocumentReference<DocumentData, DocumentData> | null>(null);
+
+    const { user } = useAppContext();
   
     // hydrate a single chat doc into ChatListItem
     const hydrateChat = async (chatDoc: QueryDocumentSnapshot<DocumentData>) => {
@@ -74,10 +80,13 @@ import {
   
     // Initial load + live subscription for NEW chats
     useEffect(() => {
+      teacherRef.current = doc(db, "users", user.uid);
+
       setLoading(true);
       // 1) initial page
       const initialQ = query(
         collection(db, "pts_chats"),
+        where("teacher_ref", "==", teacherRef.current),
         // orderBy("updated_at", "desc"),
         orderBy("created_at", "desc"),
         limit(PAGE_SIZE)
@@ -100,6 +109,7 @@ import {
         if (firstVisible.current) {
           const liveQ = query(
             collection(db, "pts_chats"),
+            where("teacher_ref", "==", teacherRef.current),
             // orderBy("updated_at", "desc"),
             orderBy("created_at", "asc"),
             // startAfter(firstVisible.current)
@@ -163,6 +173,7 @@ import {
   
       const moreQ = query(
         collection(db, "pts_chats"),
+        where("teacher_ref", "==", teacherRef.current),
         orderBy("created_at", "desc"),
         startAfter(lastVisible.current),
         limit(PAGE_SIZE)
