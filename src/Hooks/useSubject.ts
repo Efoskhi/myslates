@@ -61,7 +61,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
                 query: filters.length ? filters : [["subject_id", "in", formattedSubjects]],
                 page: filter.page,
                 pageSize: filter.pageSize,
-                // orderBy: ['created_date', 'desc'],
+                orderBy: ['title', 'asc'],
             });
 
             if (response.status === "error") throw new Error(response.message);

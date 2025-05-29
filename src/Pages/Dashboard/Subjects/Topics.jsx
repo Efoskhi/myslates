@@ -19,7 +19,7 @@ const Topics = () => {
     const toggleTopicModalVisible = () => setAddTopicModalVisible((prev) => !prev);
 
     const handleTopicNavigate = (topic) => {
-        handleSetCurrentTopic({ ...topic, isOwnSubject: true });
+        handleSetCurrentTopic({ ...topic, isOwnSubject: currentSubject.isOwnSubject });
         navigate("/TopicDetails");
     };
 
@@ -38,20 +38,20 @@ const Topics = () => {
                         callback={addTopicCallback}
                     />
                 )}
-                {/* {isOwnSubject &&  */}
-                <div className="w-full items-center justify-between flex mt-12 mb-5">
-                    <p className="text-lg font-semibold text-gray-800">
-                        Subject: <span className="font-normal text-gray-600">{currentSubject.title}</span>
-                    </p>
-                    <div
-                        className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
-                        onClick={toggleTopicModalVisible}
-                    >
-                        <CiCirclePlus className="text-xl " />
-                        Add New Topic
+                {currentSubject.isOwnSubject && 
+                    <div className="w-full items-center justify-between flex mt-12 mb-5">
+                        <p className="text-lg font-semibold text-gray-800">
+                            Subject: <span className="font-normal text-gray-600">{currentSubject.title}</span>
+                        </p>
+                        <div
+                            className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
+                            onClick={toggleTopicModalVisible}
+                        >
+                            <CiCirclePlus className="text-xl " />
+                            Add New Topic
+                        </div>
                     </div>
-                </div>
-                {/* } */}
+                }
                 {isLoading && <Loading />}
                 {topics.map((topic, key) => (
                     <div

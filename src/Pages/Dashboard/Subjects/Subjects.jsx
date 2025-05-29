@@ -20,9 +20,9 @@ const Subjects = () => {
   const [ isVisibleGradeModal, setVisibleGradeModal ] = React.useState(false);
   const [ filters, setFilters ] = React.useState();
 
-  const oppositeTitle = title === "Duplicate Subject" ? "My Subjects" : "Duplicate Subject";
+  const oppositeTitle = title === "MySlates Subjects" ? "My Subjects" : "MySlates Subjects";
 
-  const { subjects, isLoading, searchTerm, isSaving, pagination, setFilter, handlePaginate, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "Duplicate Subject", filters })
+  const { subjects, isLoading, searchTerm, isSaving, pagination, setFilter, handlePaginate, setSearchTerm, handleDuplicateSubject } = useSubject({ shouldGetSubjects: true, shouldGetNonCreatedSubjects: title === "MySlates Subjects", filters, pageSize: 20 })
   
 
   const { user } = useAppContext();
@@ -30,7 +30,7 @@ const Subjects = () => {
   // Number of skeleton cards to show while loading
   const skeletonCards = Array.from({ length: 3 });
 
-  const isOwnSubject = false; // title === "My Subjects"
+  const isOwnSubject = title === "My Subjects"; // title === "My Subjects"
 
   // Filter subjects based on search term (case-insensitive)
   const filteredSubjects = subjects.filter((subject) =>
@@ -55,6 +55,22 @@ const Subjects = () => {
   //   toggleGradeModal();
   // }
 
+  const handleSubjectToggle = (type) => {
+    let filter = [];
+
+    if(type === "MySlates Subjects") {
+      filter = [
+        ["teacher_id", "!=", user.teacher_id],
+        ["curriculum", "==", user.school.curriculum],
+        ["school_id", "==", "000000"],
+      ]
+    }
+
+    setFilters(filter)
+
+    setTitle(oppositeTitle);
+  }
+
   const duplicateSubjectCallback = () => {
     return ;
 
@@ -68,6 +84,14 @@ const Subjects = () => {
       <div className="p-6 flex items-center justify-between">
         <p className="text-2xl font-bold">{title}</p>
         <div className="inline-flex gap-6">
+          <select
+            onChange={e => handleSubjectToggle(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          >
+            <option value="My Subjects">My School Subjects</option>
+            <option value="MySlates Subjects">MySlates Subjects</option>
+          </select>
+
           {/* <div
             onClick={() => window.location.assign("/AddSubject")}
             className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
@@ -75,7 +99,7 @@ const Subjects = () => {
             <CiCirclePlus className="text-xl" />
             Add Subject
           </div> */}
-          {/* {title === "Duplicate Subject" && 
+          {/* {title === "MySlates Subjects" && 
             <div
               onClick={() => setTitle(oppositeTitle)}
               className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
@@ -88,7 +112,7 @@ const Subjects = () => {
             onClick={toggleGradeModal}
             className="inline-flex items-center font-bold gap-2 cursor-pointer rounded-md p-2 text-xs bg-[#0598ce] text-white"
           >
-            Duplicate Subject
+            MySlates Subjects
           </div> */}
         </div>
       </div>
