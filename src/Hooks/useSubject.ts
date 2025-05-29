@@ -152,7 +152,24 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
     const getTotalSubjects = async (props = {}) => {
         const { startDate, endDate } = props as any;
 
-        let query = [["teacher_id", "==", user.teacher_id]] as any;
+         const { status, data } = await getFirebaseData({
+            collection: "users",
+            query: [
+                ["uid", "==", user.uid],
+                ["role", "==", "teacher"]
+            ],
+            findOne: true,
+        })
+
+        const subjects = data.users?.tutoring_subjects;
+        const formattedSubjects = subjects?.map(item =>
+            item.toLowerCase().replace(" - ", "_").replace(/\s+/g, "_")
+        );
+
+        let query = [
+            ["teacher_id", "==", user.teacher_id],
+            ["subject_id", "in", formattedSubjects],
+        ] as any;
 
         if(startDate && endDate){
 			query.push(
