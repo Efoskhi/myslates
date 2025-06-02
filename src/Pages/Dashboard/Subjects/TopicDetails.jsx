@@ -8,7 +8,6 @@ import StartTeaching from "../../../components/Subjects/StartTeaching";
 import LessonPlan from "../../../components/Subjects/LessonPlan";
 import { useAppContext } from "../../../context/AppContext";
 
-
 const tabClasses = (active) =>
   `px-4 py-2 rounded-t-md font-medium transition ${
     active
@@ -56,7 +55,7 @@ const TopicDetails = () => {
       case "lessons":
         return (
           <div className="p-4">
-            <LessonCard isOwnSubject={isOwnSubject}/>
+            <LessonCard isOwnSubject={isOwnSubject} />
           </div>
         );
       case "quizzes":
@@ -113,14 +112,14 @@ const TopicDetails = () => {
           >
             Start Teaching
           </button>
-          {isOpen && <StartTeaching closeModal={closeModal}/>}
+          {isOpen && <StartTeaching closeModal={closeModal} />}
           <button
             onClick={openLessonPlanModal}
             className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition "
           >
             View Lesson Plan
           </button>
-          {isOpenLessonPlan && <LessonPlan closeModal={closeLessonPlanModal}/>}
+          {isOpenLessonPlan && <LessonPlan closeModal={closeLessonPlanModal} />}
         </div>
 
         {/* Content */}

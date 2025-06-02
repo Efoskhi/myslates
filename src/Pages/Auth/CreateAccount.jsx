@@ -33,11 +33,11 @@ export default function CreateAccount() {
               Sign Up with School Code
             </button>
           </Link>
-          <Link to="/PersonalInformation">
+          {/* <Link to="/PersonalInformation">
             <button className="bg-[#047aa5] text-white text-sm py-3 rounded-md font-semibold w-full">
               Sign Up with Email
             </button>
-          </Link>
+          </Link> */}
           <div className="mt-4 flex items-center w-full">
             <div className="flex-1 h-px bg-gray-300"></div>
             <span className="px-4 text-gray-500 text-sm">OR</span>

@@ -1,4 +1,4 @@
-import  React, { useState } from "react";
+import React, { useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import GeneratedQuestions from "../../../components/TeachingTools/GeneratedQuestions";
 import useTeachingTools from "../../../Hooks/useTeachingTools";
@@ -7,9 +7,23 @@ import useClasses from "../../../Hooks/useClasses";
 import Loading from "../../../components/Layout/Loading";
 
 const AssessmentBuilder = () => {
-  const { inputs, isLoading, generatedResponses, handleInput, handleGenerateAssesmentBuilder } = useTeachingTools();
-  const { subjects, staticSubjects } = useSubjects({ shouldGetStaticSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
-  const { classes, isLoading: isLoadingClasses } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
+  const {
+    inputs,
+    isLoading,
+    generatedResponses,
+    handleInput,
+    handleGenerateAssesmentBuilder,
+  } = useTeachingTools();
+  const { subjects, staticSubjects } = useSubjects({
+    shouldGetStaticSubjects: true,
+    pageSize: 100,
+    shouldGetDistinctSubjects: true,
+  });
+  const { classes, isLoading: isLoadingClasses } = useClasses({
+    shouldGetClasses: true,
+    pageSize: 100,
+    shouldGetAllClassess: true,
+  });
 
   return (
     <>
@@ -17,7 +31,9 @@ const AssessmentBuilder = () => {
         <div className="max-w-5xl w-full bg-white shadow-lg p-6 rounded-lg grid grid-cols-2 gap-6">
           {/* Left Panel - Form */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Assessment Builder Prompt</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              Assessment Builder Prompt
+            </h2>
             <div className="space-y-4">
               {/* Question Type */}
               <div>
@@ -25,7 +41,12 @@ const AssessmentBuilder = () => {
                 <select
                   name="questionType"
                   value={inputs.assessmentBuilder.questionType}
-                  onChange={e => handleInput("assessmentBuilder.questionType", e.target.value)}
+                  onChange={(e) =>
+                    handleInput(
+                      "assessmentBuilder.questionType",
+                      e.target.value
+                    )
+                  }
                   className="w-full p-2 border rounded"
                 >
                   <option value="">Select Option</option>
@@ -42,33 +63,40 @@ const AssessmentBuilder = () => {
                 <select
                   name="grade"
                   value={inputs.assessmentBuilder.grade}
-                  onChange={e => handleInput("assessmentBuilder.grade", e.target.value)}
+                  onChange={(e) =>
+                    handleInput("assessmentBuilder.grade", e.target.value)
+                  }
                   className="w-full p-2 border rounded"
                 >
                   <option value="">Select Grade</option>
                   {classes.map((item, key) => (
-                    <option value={item.student_class} key={key}>{item.student_class}</option>
+                    <option value={item.student_class} key={key}>
+                      {item.student_class}
+                    </option>
                   ))}
                 </select>
               </div>
               {/* Subject */}
-      
-              {/* Question Type & No of Questions */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 items-center">
                 <div>
-                  <label className="text-xs">Subject</label>
+                  <label className="text-xs ">Subject</label>
                   <select
                     name="subject"
                     value={inputs.assessmentBuilder.subject}
-                    onChange={e => handleInput("assessmentBuilder.subject", e.target.value)}
+                    onChange={(e) =>
+                      handleInput("assessmentBuilder.subject", e.target.value)
+                    }
                     className="w-full p-2 border rounded"
                   >
                     <option value="">Select Subject</option>
                     {staticSubjects.map((item, key) => (
-                      <option value={item.name.split("by")[0]} key={key}>{item.name.split("by")[0]}</option>
+                      <option value={item.name.split("by")[0]} key={key}>
+                        {item.name.split("by")[0]}
+                      </option>
                     ))}
                   </select>
                 </div>
+
                 {/* <div className="flex flex-col">
                   <label className="text-xs">Question Type</label>
                   <select
@@ -82,15 +110,22 @@ const AssessmentBuilder = () => {
                     <option>True/False</option>
                   </select>
                 </div> */}
-                <div className="flex flex-col">
-                  <label className="text-xs">No of Questions (max 20)</label>
+
+                {/* Question Type & No of Questions */}
+                <div className="">
+                  <label className="text-xs ">No of Questions (max 20)</label>
                   <input
                     type="number"
                     name="numQuestions"
                     min="1"
                     max="20"
                     value={inputs.assessmentBuilder.numQuestions}
-                    onChange={e => handleInput("assessmentBuilder.numQuestions", e.target.value)}
+                    onChange={(e) =>
+                      handleInput(
+                        "assessmentBuilder.numQuestions",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-2 border rounded"
                   />
                 </div>
@@ -103,7 +138,9 @@ const AssessmentBuilder = () => {
                   name="topic"
                   value={inputs.assessmentBuilder.description}
                   placeholder="Topic, Keyword or Description"
-                  onChange={e => handleInput("assessmentBuilder.description", e.target.value)}
+                  onChange={(e) =>
+                    handleInput("assessmentBuilder.description", e.target.value)
+                  }
                   className="w-full p-2 border rounded"
                 />
               </div>
@@ -131,7 +168,9 @@ const AssessmentBuilder = () => {
                 </div>
               </div> */}
               {inputs.assessmentBuilder.file && (
-                <p className="text-sm mt-2">{inputs.assessmentBuilder.file.name}</p>
+                <p className="text-sm mt-2">
+                  {inputs.assessmentBuilder.file.name}
+                </p>
               )}
               {/* Generate Button */}
               <button
@@ -139,16 +178,22 @@ const AssessmentBuilder = () => {
                 onClick={handleGenerateAssesmentBuilder}
                 className="w-full p-3 bg-[#0598ce] text-white rounded hover:bg-blue-600"
               >
-                {isLoading ? <Loading/> : "Generate"}
+                {isLoading ? <Loading /> : "Generate"}
               </button>
             </div>
           </div>
 
           {/* Right Panel - Generated Questions */}
-          <div style={{maxHeight:"90vh",overflowY:"auto",overflowX:"hidden"}}>
-            <GeneratedQuestions 
-              onRegenerate={handleGenerateAssesmentBuilder} 
-              generatedResponse={generatedResponses.assessmentBuilder} 
+          <div
+            style={{
+              maxHeight: "90vh",
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            <GeneratedQuestions
+              onRegenerate={handleGenerateAssesmentBuilder}
+              generatedResponse={generatedResponses.assessmentBuilder}
               isLoading={isLoading}
               title="Assessment questions will appear here"
               renderDownloadPDFButton={true}
