@@ -48,7 +48,7 @@ interface AddFirebaseData {
     data?: Record<string, any>;
     id?: string;
     subCollectionData?: Record<string, any>;
-    successMessage: string;
+    successMessage?: string;
 }
 
 interface UpdateFirebaseData {
@@ -476,7 +476,7 @@ const addFirebaseData = async ({
 
         return {
             status: "success",
-            message: successMessage,
+            message: successMessage ?? "Data has been added",
             data: {
                 id: docRef.id,
                 ...newDocSnapshot.data(),

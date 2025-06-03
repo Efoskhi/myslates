@@ -60,6 +60,8 @@ const useTeachingTools = () => {
         assignmentBuilder: "",
     });
 
+    const generalPrompt = "For multiple choice, start each question with the question number in bold eg: '*1*' and then options A - D.";
+
     const handleInput = (field: string, value: any) => {
         const [parentKey, childKey] = field.split(".");
 
@@ -177,7 +179,7 @@ const useTeachingTools = () => {
                 file 
             } = inputs.assessmentBuilder;
 
-            const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
+            const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. ${generalPrompt} Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
 
             // const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text.`;
 
@@ -366,7 +368,7 @@ const useTeachingTools = () => {
 
             // const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions for the ${subject} subject at the ${grade} level on the topic: ${description}. Each question should include a corresponding answer. Generate exactly ${numQuestions} questions and answers, and do not add any introductory or closing text. Format the output clearly using Markdown, with numbered questions and answers immediately following each question. Use standard Markdown formatting only (e.g., numbered lists, bold, italics) and avoid LaTeX or escape characters like \\\\ or \\n.`;
 
-            const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions, for the ${subject} subject for ${grade} level on the ${topic} topic. Each question should have a corresponding answer.`;
+            const generatedPrompt = `Generate ${numQuestions} ${questionType} assignment questions, for the ${subject} subject for ${grade} level on the ${topic} topic. Each question should have a corresponding answer. ${generalPrompt}`;
 
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,

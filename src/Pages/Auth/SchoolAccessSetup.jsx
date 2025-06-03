@@ -5,8 +5,13 @@ import { CiSearch } from "react-icons/ci";
 
 import Lines from "../../assets/Lines.png";
 import { Link } from "react-router-dom";
+import useLogin from "../../Hooks/useLogin";
+import Loading from "../../components/Layout/Loading";
 
 export default function SchoolAccessSetup() {
+
+  const { inputs, isLoading, handleCreateAccount, handleInput } = useLogin();
+
   return (
     <div className="flex flex-col relative items-center justify-between py-8 h-screen w-full  text-black">
       <div
@@ -42,21 +47,51 @@ export default function SchoolAccessSetup() {
         <div className="mt-6 w-full flex flex-col space-y-4">
           <div>
             <label className="text-xs text-black font-semibold">
-              Enter School Passcode
+              Enter School ID
             </label>
             <div className="relative border px-2">
               <CiSearch className="absolute top-3 text-2xl" />
               <input
+                onChange={e => handleInput('school_id', e.target.value)}
                 placeholder="e.g VIBE2034"
                 className="px-8 border-none outline-none  text-sm py-3 rounded-md font-semibold w-full"
               />
             </div>
           </div>
-          <Link to="">
-            <button className="bg-[#047aa5] text-white text-sm py-3 rounded-md font-semibold w-full">
-              Enter
+          <div>
+            <label className="text-xs text-black font-semibold">
+              Enter Teacher ID
+            </label>
+            <div className="relative border px-2">
+              <CiSearch className="absolute top-3 text-2xl" />
+              <input
+                onChange={e => handleInput('teacher_id', e.target.value)}
+                placeholder="e.g VIBE2034"
+                className="px-8 border-none outline-none  text-sm py-3 rounded-md font-semibold w-full"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-black font-semibold">
+              Enter Password
+            </label>
+            <div className="relative border px-2">
+              <CiSearch className="absolute top-3 text-2xl" />
+              <input
+                type="password"
+                onChange={e => handleInput('password', e.target.value)}
+                placeholder=""
+                className="px-8 border-none outline-none  text-sm py-3 rounded-md font-semibold w-full"
+              />
+            </div>
+          </div>
+            <button 
+              disabled={isLoading}
+              onClick={handleCreateAccount}
+              className="bg-[#047aa5] text-white text-sm py-3 rounded-md font-semibold w-full"
+            >
+              {isLoading ? <Loading/> : "Enter"}
             </button>
-          </Link>
           <div className="mt-4 flex items-center w-full">
             <div className="flex-1 h-px bg-gray-300"></div>
             <span className="px-4 text-gray-500 text-sm">OR</span>
