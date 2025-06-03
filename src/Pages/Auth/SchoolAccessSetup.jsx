@@ -1,7 +1,7 @@
 import Logo from "../../assets/Logo3.png";
 import Key from "../../assets/Key.png";
 import { IoIosArrowBack } from "react-icons/io";
-import { CiSearch } from "react-icons/ci";
+import { CiHome, CiLock, CiUser } from "react-icons/ci";
 
 import Lines from "../../assets/Lines.png";
 import { Link } from "react-router-dom";
@@ -50,7 +50,7 @@ export default function SchoolAccessSetup() {
               Enter School ID
             </label>
             <div className="relative border px-2">
-              <CiSearch className="absolute top-3 text-2xl" />
+              <CiHome className="absolute top-3 text-2xl" />
               <input
                 onChange={e => handleInput('school_id', e.target.value)}
                 placeholder="e.g VIBE2034"
@@ -63,7 +63,7 @@ export default function SchoolAccessSetup() {
               Enter Teacher ID
             </label>
             <div className="relative border px-2">
-              <CiSearch className="absolute top-3 text-2xl" />
+              <CiUser className="absolute top-3 text-2xl" />
               <input
                 onChange={e => handleInput('teacher_id', e.target.value)}
                 placeholder="e.g VIBE2034"
@@ -76,7 +76,7 @@ export default function SchoolAccessSetup() {
               Enter Password
             </label>
             <div className="relative border px-2">
-              <CiSearch className="absolute top-3 text-2xl" />
+              <CiLock className="absolute top-3 text-2xl" />
               <input
                 type="password"
                 onChange={e => handleInput('password', e.target.value)}
