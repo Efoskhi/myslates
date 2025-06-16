@@ -9,10 +9,10 @@ import LessonPlan from "../../../components/Subjects/LessonPlan";
 import { useAppContext } from "../../../context/AppContext";
 
 const tabClasses = (active) =>
-  `px-4 py-2 rounded-t-md font-medium transition ${
+  `lg:px-4 px-2 py-2 rounded-t-md lg:text-base text-[10px] font-medium transition ${
     active
-      ? "bg-blue-600 text-white"
-      : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+      ? "bg-blue-600 text-white lg:text-base text-[10px]"
+      : "bg-blue-100 text-blue-600 hover:bg-blue-200 lg:text-base text-[10px]"
   }`;
 
 const TopicDetails = () => {
@@ -108,14 +108,14 @@ const TopicDetails = () => {
           </button>
           <button
             onClick={openModal}
-            className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition "
+            className="bg-blue-100  text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition lg:text-base text-[10px] "
           >
             Start Teaching
           </button>
           {isOpen && <StartTeaching closeModal={closeModal} />}
           <button
             onClick={openLessonPlanModal}
-            className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition "
+            className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-4 py-2 rounded-t-md font-medium transition lg:text-base text-[10px]"
           >
             View Lesson Plan
           </button>

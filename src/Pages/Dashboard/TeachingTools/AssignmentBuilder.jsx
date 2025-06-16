@@ -1,5 +1,4 @@
-
-import  React, { useState } from "react";
+import React, { useState } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import GeneratedQuestions from "../../../components/TeachingTools/GeneratedQuestions";
 import useTeachingTools from "../../../Hooks/useTeachingTools";
@@ -8,17 +7,33 @@ import useClasses from "../../../Hooks/useClasses";
 import Loading from "../../../components/Layout/Loading";
 
 const AssignmentBuilder = () => {
-  const { inputs, isLoading, generatedResponses, handleInput, handleGenerateAssignmentBuilder } = useTeachingTools();
-  const { subjects, staticSubjects } = useSubjects({ shouldGetStaticSubjects: true, pageSize: 100, shouldGetDistinctSubjects: true });
-  const { classes, isLoading: isLoadingClasses } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
+  const {
+    inputs,
+    isLoading,
+    generatedResponses,
+    handleInput,
+    handleGenerateAssignmentBuilder,
+  } = useTeachingTools();
+  const { subjects, staticSubjects } = useSubjects({
+    shouldGetStaticSubjects: true,
+    pageSize: 100,
+    shouldGetDistinctSubjects: true,
+  });
+  const { classes, isLoading: isLoadingClasses } = useClasses({
+    shouldGetClasses: true,
+    pageSize: 100,
+    shouldGetAllClassess: true,
+  });
 
   return (
     <>
       <div className="w-full min-h-screen flex justify-center items-center bg-gradient-to-b from-white to-blue-100 p-6">
-        <div className="max-w-5xl w-full bg-white shadow-lg p-6 rounded-lg grid grid-cols-2 gap-6">
+        <div className="max-w-5xl w-full bg-white shadow-lg p-6 rounded-lg grid lg:grid-cols-2 gap-6">
           {/* Left Panel - Form */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Assignment Builder Prompt</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              Assignment Builder Prompt
+            </h2>
             <div className="space-y-4">
               {/* Question Type */}
               <div>
@@ -26,7 +41,12 @@ const AssignmentBuilder = () => {
                 <select
                   name="questionType"
                   value={inputs.assignmentBuilder.questionType}
-                  onChange={e => handleInput("assignmentBuilder.questionType", e.target.value)}
+                  onChange={(e) =>
+                    handleInput(
+                      "assignmentBuilder.questionType",
+                      e.target.value
+                    )
+                  }
                   className="w-full p-2 border rounded"
                 >
                   <option value="">Select Option</option>
@@ -43,17 +63,21 @@ const AssignmentBuilder = () => {
                 <select
                   name="grade"
                   value={inputs.assignmentBuilder.grade}
-                  onChange={e => handleInput("assignmentBuilder.grade", e.target.value)}
+                  onChange={(e) =>
+                    handleInput("assignmentBuilder.grade", e.target.value)
+                  }
                   className="w-full p-2 border rounded"
                 >
                   <option value="">Select Grade</option>
                   {classes.map((item, key) => (
-                    <option value={item.student_class} key={key}>{item.student_class}</option>
+                    <option value={item.student_class} key={key}>
+                      {item.student_class}
+                    </option>
                   ))}
                 </select>
               </div>
               {/* Subject */}
-      
+
               {/* Question Type & No of Questions */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -61,12 +85,16 @@ const AssignmentBuilder = () => {
                   <select
                     name="subject"
                     value={inputs.assignmentBuilder.subject}
-                    onChange={e => handleInput("assignmentBuilder.subject", e.target.value)}
+                    onChange={(e) =>
+                      handleInput("assignmentBuilder.subject", e.target.value)
+                    }
                     className="w-full p-2 border rounded"
                   >
                     <option value="">Select Subject</option>
                     {staticSubjects.map((item, key) => (
-                      <option value={item.name.split("by")[0]} key={key}>{item.name.split("by")[0]}</option>
+                      <option value={item.name.split("by")[0]} key={key}>
+                        {item.name.split("by")[0]}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -91,7 +119,12 @@ const AssignmentBuilder = () => {
                     min="1"
                     max="20"
                     value={inputs.assignmentBuilder.numQuestions}
-                    onChange={e => handleInput("assignmentBuilder.numQuestions", e.target.value)}
+                    onChange={(e) =>
+                      handleInput(
+                        "assignmentBuilder.numQuestions",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-2 border rounded"
                   />
                 </div>
@@ -104,7 +137,9 @@ const AssignmentBuilder = () => {
                   name="topic"
                   value={inputs.assignmentBuilder.topic}
                   placeholder="Topic"
-                  onChange={e => handleInput("assignmentBuilder.topic", e.target.value)}
+                  onChange={(e) =>
+                    handleInput("assignmentBuilder.topic", e.target.value)
+                  }
                   className="w-full p-2 border rounded"
                 />
               </div>
@@ -132,7 +167,9 @@ const AssignmentBuilder = () => {
                 </div>
               </div> */}
               {inputs.assignmentBuilder.file && (
-                <p className="text-sm mt-2">{inputs.assignmentBuilder.file.name}</p>
+                <p className="text-sm mt-2">
+                  {inputs.assignmentBuilder.file.name}
+                </p>
               )}
               {/* Generate Button */}
               <button
@@ -140,16 +177,22 @@ const AssignmentBuilder = () => {
                 onClick={handleGenerateAssignmentBuilder}
                 className="w-full p-3 bg-[#0598ce] text-white rounded hover:bg-blue-600"
               >
-                {isLoading ? <Loading/> : "Generate"}
+                {isLoading ? <Loading /> : "Generate"}
               </button>
             </div>
           </div>
 
           {/* Right Panel - Generated Questions */}
-          <div style={{maxHeight:"90vh",overflowY:"auto",overflowX:"hidden"}}>
-            <GeneratedQuestions 
-              onRegenerate={handleGenerateAssignmentBuilder} 
-              generatedResponse={generatedResponses.assignmentBuilder} 
+          <div
+            style={{
+              maxHeight: "90vh",
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            <GeneratedQuestions
+              onRegenerate={handleGenerateAssignmentBuilder}
+              generatedResponse={generatedResponses.assignmentBuilder}
               isLoading={isLoading}
               title="Assignment questions will appear here"
               renderDownloadPDFButton={true}

@@ -28,7 +28,7 @@ const AssessmentBuilder = () => {
   return (
     <>
       <div className="w-full min-h-screen flex justify-center items-center bg-gradient-to-b from-white to-blue-100 p-6">
-        <div className="max-w-5xl w-full bg-white shadow-lg p-6 rounded-lg grid grid-cols-2 gap-6">
+        <div className="max-w-5xl w-full bg-white shadow-lg p-6 rounded-lg grid lg:grid-cols-2 gap-6">
           {/* Left Panel - Form */}
           <div>
             <h2 className="text-lg font-semibold mb-4">

@@ -19,7 +19,6 @@ const ProfileSettings = () => {
     }
   };
 
-
   return (
     <div>
       {/* Profile Picture */}
@@ -57,21 +56,23 @@ const ProfileSettings = () => {
       <hr className="pb-8" />
 
       {/* Form */}
-      <div className=" flex justify-between pb-12">
+      <div className=" flex lg:flex-row flex-col w-full lg:justify-between pb-12">
         <div className="">
           <h3 className="text-lg font-semibold">Teacher Information</h3>
           <p className="text-gray-500 text-sm mb-4">Find your details here.</p>
         </div>
 
         {/* Form Fields */}
-        <div className="grid grid-cols-2 gap-4 w-2/3">
-          <div>
+        <div className="grid grid-cols-2 gap-4 lg:w-2/3 w-full">
+          <div className="col-span-2">
             <label className="text-sm text-gray-600">Fullname</label>
             <input
               type="text"
               name="firstName"
               value={inputs.profile.display_name}
-              onChange={e => handleInput("profile.display_name", e.target.value)}
+              onChange={(e) =>
+                handleInput("profile.display_name", e.target.value)
+              }
               className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:ring-2 focus:ring-blue-400"
             />
           </div>
@@ -93,16 +94,18 @@ const ProfileSettings = () => {
               type="text"
               name="phone"
               value={inputs.profile.phone_number}
-              onChange={e => handleInput("profile.phone_number", e.target.value)}
+              onChange={(e) =>
+                handleInput("profile.phone_number", e.target.value)
+              }
               className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-500 "
             />
           </div>
           <div />
-          <button 
+          <button
             onClick={handleUpdateProfile}
             className="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded-md items-end"
           >
-            {isSaving ? <Loading/> : "Save Changes"}
+            {isSaving ? <Loading /> : "Save Changes"}
           </button>
         </div>
 

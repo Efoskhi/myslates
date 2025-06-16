@@ -10,12 +10,12 @@ import Loading from "../Layout/Loading";
 import LessonDeleteModal from "./LessonDeleteModal";
 
 const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
-  const [ deleteModalVisible, setDeleteModalVisible ] = React.useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
 
-  const { 
-    inputs, 
-    handleInputs, 
-    section, 
+  const {
+    inputs,
+    handleInputs,
+    section,
     isSaving,
     toggleLessonModalVisible,
     handleAddLesson,
@@ -23,20 +23,20 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
     handleDeleteLesson,
   } = hooks;
 
-  const toggleDeleteModal = () => setDeleteModalVisible(prev => !prev);
+  const toggleDeleteModal = () => setDeleteModalVisible((prev) => !prev);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end">
-      {section === "Update" && deleteModalVisible &&
-        <LessonDeleteModal 
+      {section === "Update" && deleteModalVisible && (
+        <LessonDeleteModal
           toggleModal={toggleDeleteModal}
           handleDeleteLesson={handleDeleteLesson}
           isSaving={isSaving}
           lesson={inputs}
         />
-      }
+      )}
 
-      <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 h-full justify-end overflow-y-auto overscroll-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-lg lg:w-1/3 w-5/6 h-full justify-end overflow-y-auto overscroll-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3 ">
           <h2 className="text-xl font-semibold">Lesson Details</h2>
@@ -64,9 +64,8 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
               className="w-full mt-1 p-2 border rounded-md"
               maxLength={200}
               value={inputs.activities}
-              onChange={e => handleInputs("activities", e.target.value)}
-            >
-            </textarea>
+              onChange={(e) => handleInputs("activities", e.target.value)}
+            ></textarea>
           </div>
 
           {/* Lesson Content */}
@@ -76,9 +75,8 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
               placeholder="Tell us about the Lesson"
               className="w-full mt-1 p-2 border rounded-md"
               value={inputs.content}
-              onChange={e => handleInputs("content", e.target.value)}
-            >
-            </textarea>
+              onChange={(e) => handleInputs("content", e.target.value)}
+            ></textarea>
           </div>
 
           {/* Lesson Content */}
@@ -88,9 +86,8 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
               placeholder="Examples of lesson"
               className="w-full mt-1 p-2 border rounded-md"
               value={inputs.examples}
-              onChange={e => handleInputs("examples", e.target.value)}
-            >
-            </textarea>
+              onChange={(e) => handleInputs("examples", e.target.value)}
+            ></textarea>
           </div>
 
           {/* Resource File Upload */}
@@ -101,7 +98,7 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
                 type="file"
                 className="hidden"
                 id="fileUpload"
-                onChange={e => handleInputs('img_content', e.target.files[0])}
+                onChange={(e) => handleInputs("img_content", e.target.files[0])}
               />
               <label
                 htmlFor="fileUpload"
@@ -112,9 +109,10 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
                 ) : (
                   <span className="text-gray-500">Tap to Upload</span>
                 )}
-                {typeof inputs.img_content === "string" && inputs.img_content && 
-                  <img src={inputs.img_content} className="w-full" />
-                }
+                {typeof inputs.img_content === "string" &&
+                  inputs.img_content && (
+                    <img src={inputs.img_content} className="w-full" />
+                  )}
               </label>
               <button className="bg-blue-500 text-white px-4 py-1 rounded-md">
                 Upload
@@ -129,7 +127,7 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
                 type="file"
                 className="hidden"
                 id="fileUpload_example"
-                onChange={e => handleInputs('img_example', e.target.files[0])}
+                onChange={(e) => handleInputs("img_example", e.target.files[0])}
               />
               <label
                 htmlFor="fileUpload_example"
@@ -140,9 +138,10 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
                 ) : (
                   <span className="text-gray-500">Tap to Upload</span>
                 )}
-                {typeof inputs.img_example === "string" && inputs.img_example && 
-                  <img src={inputs.img_example} className="w-full" />
-                }
+                {typeof inputs.img_example === "string" &&
+                  inputs.img_example && (
+                    <img src={inputs.img_example} className="w-full" />
+                  )}
               </label>
               <button className="bg-blue-500 text-white px-4 py-1 rounded-md">
                 Upload
@@ -180,21 +179,32 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
 
           {/* Action Buttons */}
           {section === "Update" ? (
-              <>
-                {isOwnSubject && 
-                  <div className="flex justify-between mt-4">
-                    <button disabled={isSaving} onClick={handleUpdateLesson} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
-                      {isSaving ? <Loading/> : "Edit Lesson"}
-                    </button>
-                    <button onClick={toggleDeleteModal} className="border border-red-500 text-red-500 px-4 py-2 rounded-md">
-                      Delete Lesson
-                    </button>
-                  </div>
-                }
-              </>
+            <>
+              {isOwnSubject && (
+                <div className="flex justify-between mt-4">
+                  <button
+                    disabled={isSaving}
+                    onClick={handleUpdateLesson}
+                    className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
+                  >
+                    {isSaving ? <Loading /> : "Edit Lesson"}
+                  </button>
+                  <button
+                    onClick={toggleDeleteModal}
+                    className="border border-red-500 text-red-500 px-4 py-2 rounded-md"
+                  >
+                    Delete Lesson
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            <button disabled={isSaving} onClick={() => handleAddLesson()} className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md">
-              {isSaving ? <Loading/> : "Add Lesson"}
+            <button
+              disabled={isSaving}
+              onClick={() => handleAddLesson()}
+              className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md"
+            >
+              {isSaving ? <Loading /> : "Add Lesson"}
             </button>
           )}
         </div>
