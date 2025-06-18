@@ -42,6 +42,7 @@ import Topics from "./Pages/Dashboard/Subjects/Topics";
 import Assignment from "./Pages/Dashboard/Subjects/Assignment";
 import RubricBuilder from "./Pages/Dashboard/TeachingTools/RubricBuilder";
 import AssignmentBuilder from "./Pages/Dashboard/TeachingTools/AssignmentBuilder";
+import CBT from "./Pages/Dashboard/CBT/CBT";
 
 function App() {
   return (
@@ -85,9 +86,14 @@ function App() {
               <Route path="SubjectDetails" element={<SubjectDetails />} />
 
               {/* <Route path="AddSubject" element={<AddSubject />} /> */}
+
+              <Route path="CBT" element={<CBT />} />
               <Route path="TeachingTools" element={<TeachingTools />} />
 
-              <Route path="CommunicationTools" element={<CommuncationTools />} />
+              <Route
+                path="CommunicationTools"
+                element={<CommuncationTools />}
+              />
 
               <Route path="ResultManagement" element={<ResultManagement />} />
 

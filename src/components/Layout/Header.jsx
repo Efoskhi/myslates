@@ -1,4 +1,4 @@
-import { FaSearch } from "react-icons/fa";
+import { FaBookReader, FaSearch } from "react-icons/fa";
 import { useState } from "react";
 import { IoNotificationsOutline } from "react-icons/io5";
 import Face from "../../assets/Face.png";
@@ -10,8 +10,13 @@ import { Link } from "react-router-dom";
 import { BsFileBarGraph } from "react-icons/bs";
 import { RiCheckboxMultipleLine } from "react-icons/ri";
 import { GoStack } from "react-icons/go";
-import { MdOutlineLogout, MdOutlineSettings } from "react-icons/md";
+import {
+  MdOutlineLogout,
+  MdOutlineSettings,
+  MdOutlineWifiTethering,
+} from "react-icons/md";
 import { LuUsers } from "react-icons/lu";
+import { TbTools } from "react-icons/tb";
 
 export default function Header() {
   const { user } = useAppContext();
@@ -126,35 +131,28 @@ export default function Header() {
                       </Link>
                     </>
 
-                    <>
-                      <Link
-                        to="/TeachingTools"
-                        className={`${getLinkClassName(
-                          "/TeachingTools"
-                        )} flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors`}
-                        onClick={closeMobileMenu}
-                      >
-                        <GoStack className="text-lg" />
-                        <span className="text-sm font-medium">
-                          Teaching Tools
-                        </span>
-                      </Link>
-                    </>
-
-                    <>
-                      <Link
-                        to="/ChatPage"
-                        className={`${getLinkClassName(
-                          "/ChatPage"
-                        )} flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors`}
-                        onClick={closeMobileMenu}
-                      >
-                        <GoStack className="text-lg" />
-                        <span className="text-sm font-medium">
-                          Communication Tools
-                        </span>
-                      </Link>
-                    </>
+                    <Link to="/CBT" className={getLinkClassName("/CBT")}>
+                      <FaBookReader className="text-lg" />
+                      <span className="text-sm font-medium">CBT</span>
+                    </Link>
+                    <Link
+                      to="/TeachingTools"
+                      className={getLinkClassName("/TeachingTools")}
+                    >
+                      <TbTools className="text-lg" />
+                      <span className="text-sm font-medium">
+                        Teaching Tools
+                      </span>
+                    </Link>
+                    <Link
+                      to="/ChatPage"
+                      className={getLinkClassName("/ChatPage")}
+                    >
+                      <MdOutlineWifiTethering className="text-lg" />
+                      <span className="text-sm font-medium">
+                        Communication Tools
+                      </span>
+                    </Link>
 
                     {user?.is_class_teacher && (
                       <>

@@ -45,7 +45,7 @@ const LessonCard = ({ isOwnSubject }) => {
           onClick={() => handleLessonClick(lesson)}
         >
           <div className="flex align-center gap-10">
-            <img src={lesson.img_example} className="w-[100px] h-[100px]" />
+            {/* <img src={lesson.img_example} className="w-[100px] h-[100px]" /> */}
 
             <div>
               <p className="text-gray-700">{lesson.id}</p>

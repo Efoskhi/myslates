@@ -7,6 +7,9 @@ import { MdOutlineLogout, MdOutlineSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { LuUsers } from "react-icons/lu";
 import { useAppContext } from "../../context/AppContext";
+import { FaBookReader } from "react-icons/fa";
+import { TbTools } from "react-icons/tb";
+import { MdOutlineWifiTethering } from "react-icons/md";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -47,23 +50,30 @@ const Sidebar = () => {
               <LuUsers className="text-lg" />
               <span className="text-sm font-medium">Students</span>
             </Link>
+            <Link to="/CBT" className={getLinkClassName("/CBT")}>
+              <FaBookReader className="text-lg" />
+              <span className="text-sm font-medium">CBT</span>
+            </Link>
             <Link
               to="/TeachingTools"
               className={getLinkClassName("/TeachingTools")}
             >
-              <GoStack className="text-lg" />
+              <TbTools className="text-lg" />
               <span className="text-sm font-medium">Teaching Tools</span>
             </Link>
             <Link to="/ChatPage" className={getLinkClassName("/ChatPage")}>
-              <GoStack className="text-lg" />
+              <MdOutlineWifiTethering className="text-lg" />
               <span className="text-sm font-medium">Communication Tools</span>
             </Link>
-            {user?.is_class_teacher && 
-              <Link to="/Attendance" className={getLinkClassName("/Attendance")}>
+            {user?.is_class_teacher && (
+              <Link
+                to="/Attendance"
+                className={getLinkClassName("/Attendance")}
+              >
                 <GoStack className="text-lg" />
                 <span className="text-sm font-medium">Attendances</span>
               </Link>
-            }
+            )}
             <Link to="/Calendar" className={getLinkClassName("/Calendar")}>
               <GoStack className="text-lg" />
               <span className="text-sm font-medium">Calendar & Schedule</span>
@@ -88,9 +98,9 @@ const Sidebar = () => {
         {/* User Info */}
         <Link
           to="/Login"
-          onClick={()=>{
+          onClick={() => {
             sessionStorage.clear();
-            localStorage.clear()
+            localStorage.clear();
           }}
           className={getLinkClassName("/Login")}
           //</div>  className="flex items-center justify-start gap-3 border-t  pt-4"
