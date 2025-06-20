@@ -50,7 +50,10 @@ const Sidebar = () => {
               <LuUsers className="text-lg" />
               <span className="text-sm font-medium">Students</span>
             </Link>
-            <Link to="/CBT" className={getLinkClassName("/CBT")}>
+            <Link
+              to="/CBTInstance"
+              className={getLinkClassName("/CBTInstance")}
+            >
               <FaBookReader className="text-lg" />
               <span className="text-sm font-medium">CBT</span>
             </Link>

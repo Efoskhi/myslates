@@ -42,7 +42,8 @@ import Topics from "./Pages/Dashboard/Subjects/Topics";
 import Assignment from "./Pages/Dashboard/Subjects/Assignment";
 import RubricBuilder from "./Pages/Dashboard/TeachingTools/RubricBuilder";
 import AssignmentBuilder from "./Pages/Dashboard/TeachingTools/AssignmentBuilder";
-import CBT from "./Pages/Dashboard/CBT/CBT";
+import CBTInstance from "./Pages/Dashboard/CBT/CBTInstance";
+import QuestionsList from "./Pages/Dashboard/CBT/QuestionsList";
 
 function App() {
   return (
@@ -87,7 +88,9 @@ function App() {
 
               {/* <Route path="AddSubject" element={<AddSubject />} /> */}
 
-              <Route path="CBT" element={<CBT />} />
+              <Route path="CBTInstance" element={<CBTInstance />} />
+              <Route path="QuestionsList" element={<QuestionsList />} />
+
               <Route path="TeachingTools" element={<TeachingTools />} />
 
               <Route
