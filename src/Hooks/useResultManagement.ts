@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useAppContext } from "../context/AppContext";
+import useSubject from "./useSubject";
 
 let fetchedStudents = [];
 
@@ -34,6 +35,8 @@ const useResultManagement = ({
     ]);
 
     const { currentSubject, user } = useAppContext();
+
+    const { subjectStudents, isLoadingSubjectStudents } = useSubject({ shouldGetSubjectStudents: true })
     
     const addMoreStudentResult = () => {
         setStudentResults([
@@ -66,34 +69,8 @@ const useResultManagement = ({
     };
 
     const getSubjectStudents = async () => {
-        try {
-            setLoading(true);
-
-            const response = await getFirebaseData({
-                collection: "users",
-                query: [
-                    [
-                        "student_class",
-                        "==",
-                        currentSubject.classRef.student_class,
-                    ],
-                    ["student_dept", "==", currentSubject.deptRef.title],
-                    ["curriculum", "==", currentSubject.curriculum],
-                ],
-                page: filters.page,
-                pageSize: filters.pageSize,
-            });
-
-            if (response.status === "error") throw new Error(response.message);
-
-            const students = response.data.users;
-            fetchedStudents = students;
-            setStudents(students);
-            setPagination(response.data.pagination);
-        } catch (error) {
-        } finally {
-            setLoading(false);
-        }
+        setLoading(isLoadingSubjectStudents);
+        setStudents(subjectStudents);
     };
 
     const getPrefetchedStudents = async () => {
@@ -240,9 +217,12 @@ const useResultManagement = ({
     
 
     React.useEffect(() => {
-        if (shouldGetStudents) getSubjectStudents();
         if (shouldGetPrefetchedStudents) getPrefetchedStudents();
     }, []);
+
+    React.useEffect(() => {
+        if (shouldGetStudents) getSubjectStudents();
+    }, [isLoadingSubjectStudents])
 
     return {
         isLoading,

@@ -89,7 +89,7 @@ function App() {
               {/* <Route path="AddSubject" element={<AddSubject />} /> */}
 
               <Route path="CBTInstance" element={<CBTInstance />} />
-              <Route path="QuestionsList" element={<QuestionsList />} />
+              <Route path="QuestionsList/:id" element={<QuestionsList />} />
 
               <Route path="TeachingTools" element={<TeachingTools />} />
 

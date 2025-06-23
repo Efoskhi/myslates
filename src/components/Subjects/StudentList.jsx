@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import Face from "../../assets/Avatar.png";
+import useSubject from "../../Hooks/useSubject";
+import Loading from "../Layout/Loading";
 
 const users = [
   {
@@ -21,13 +23,13 @@ const users = [
 
 const UserCard = ({ user }) => (
   <div className="bg-white shadow-md rounded-2xl p-4 flex flex-col items-center w-full sm:w-1/2 md:w-1/3">
-    <img src={user.avatar} alt={user.name} className="w-20 h-20 rounded-full" />
-    <h3 className="mt-2 text-lg font-semibold">{user.name}</h3>
+    <img src={user.photo_url} alt={user.name} className="w-20 h-20 rounded-full" />
+    <h3 className="mt-2 text-lg font-semibold">{user.display_name}</h3>
     <p className="flex items-center gap-2 text-gray-600">
       <FaEnvelope className="text-blue-400" /> {user.email}
     </p>
     <p className="flex items-center gap-2 text-gray-600">
-      <FaPhone className="text-blue-400" /> {user.phone}
+      <FaPhone className="text-blue-400" /> {user.phone_number}
     </p>
   </div>
 );
@@ -35,12 +37,17 @@ const UserCard = ({ user }) => (
 const StudentList = () => {
   const [search, setSearch] = useState("");
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
+  const { subjectStudents, isLoadingSubjectStudents } = useSubject({ shouldGetSubjectStudents: true })
+
+  const filteredUsers = subjectStudents.filter((user) =>
+    user.display_name.toLowerCase().includes(search.toLowerCase()) || 
+    user.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="max-w-3xl mx-auto p-4">
+      {isLoadingSubjectStudents && <Loading/> }
+
       <div className="mb-4 border rounded-lg p-2 flex items-center">
         <input
           type="text"

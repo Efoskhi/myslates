@@ -29,7 +29,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
                     <div className="w-10 h-1 bg-blue-400 rounded-full"></div>
                 </div>
             </div>
-            <div>
+            {/* <div>
                 <div
                     className="flex items-center justify-between py-4 border-b cursor-pointer"
                     onClick={() => toast.error("CBT is coming soon")}
@@ -40,7 +40,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
                     </div>
                     <div className="w-10 h-1 bg-blue-400 rounded-full"></div>
                 </div>
-            </div>
+            </div> */}
             {/* <div>
                 <div
                     className="flex items-center justify-between py-4 border-b cursor-pointer"

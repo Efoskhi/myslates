@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { collection, doc, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useAppContext } from "../context/AppContext";
+import useSubject from "./useSubject";
 
 let fetchedStudents = [];
 
@@ -23,6 +24,30 @@ const useStudents = ({
     const [ filter, setFilter ] = React.useState({ page, pageSize })
 
     const { user } = useAppContext();
+
+    const getTeacherClasses = async () => {
+        const { data: userData } = await getFirebaseData({
+            collection: "users",
+            query: [
+                ["uid", "==", user.uid],
+                ["role", "==", "teacher"]
+            ],
+            findOne: true,
+        })
+
+        const teacher = userData.users;
+
+        let classes = teacher?.classes_handled ?? [];
+
+        if(teacher.is_subject_teacher) {
+            const subjects = teacher?.tutoring_subjects;
+            classes = subjects?.map(item =>
+                item.split(" - ")[1]
+            );
+        };
+
+        return classes;
+    }
     
     const getStudents = async () => {
         try {
@@ -40,23 +65,9 @@ const useStudents = ({
             pageSize=  filter.pageSize
             const { subject_id } = searchFilter;
 
-            // const subjectRef = doc(db, "Subjects", "Governments_SSS 3");
+            const classes = await getTeacherClasses();
 
-            // const { status, data } = await getFirebaseInnerCollectionData({
-            //     collection: 'Topics',
-            //     query: [['subjectRef', '==', subjectRef]],
-            //     innerCollection: 'EnrolledTopics',
-            //     page: filter.page,
-            //     pageSize: filter.pageSize,
-            //     refFields: ['studentRef']
-            // })
-
-            // console.log("EnrolledTopics", data.EnrolledTopics)
-
-            const classes = user?.classes_handled ?? [];
-            if(!user.is_class_teacher) return;
             if(!classes.length) return;
-
 
             const { status, data } = await getFirebaseData({
                 collection: "users",
@@ -144,9 +155,14 @@ const useStudents = ({
     const getTotalStudents = async (props = {}) => {
         const { startDate, endDate } = props as any;
 
+        const classes = await getTeacherClasses();
+
+        if(!classes.length) return 0;
+
         let query = [
             ["school_id", "==", user.school_id],
             ["role", "==", "learner"],
+            ["student_class", "in", classes],
         ] as any;
 
         if (startDate && endDate) {

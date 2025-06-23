@@ -49,6 +49,7 @@ interface AddFirebaseData {
     id?: string;
     subCollectionData?: Record<string, any>;
     successMessage?: string;
+    addCreateTimestamp?: boolean;
 }
 
 interface UpdateFirebaseData {
@@ -323,7 +324,7 @@ const getFirebaseInnerCollectionData = async ({
   }: GetFirebaseInnerCollectionDataOptions): Promise<GetFirebaseDataResponse> => {
     try {
 
-        console.log("queryConditions", { coll, innerCollection, queryConditions })
+        // console.log("queryConditions", { coll, innerCollection, queryConditions })
 
         const collectionRef = collection(db, coll);
         let fbQueryRef = collectionRef as any;
@@ -431,12 +432,13 @@ const addFirebaseData = async ({
     id,
     subCollectionData,
     successMessage,
+    addCreateTimestamp,
 }: AddFirebaseData) => {
     try {
         const preparedData = data
             ? {
-                  ...prepareDataWithReferences(data),
-                  created_date: Timestamp.fromDate(new Date()),
+                ...prepareDataWithReferences(data),
+                ...(addCreateTimestamp &&{ created_date: Timestamp.fromDate(new Date())}),
               }
             : null;
 
@@ -465,7 +467,7 @@ const addFirebaseData = async ({
 
                     const preparedSubData = {
                         ...prepareDataWithReferences(item),
-                        created_time: Timestamp.fromDate(new Date()),
+                        ...(addCreateTimestamp &&{ created_time: Timestamp.fromDate(new Date())}),
                     };
                     await setDoc(subRef, preparedSubData);
                 }

@@ -15,11 +15,12 @@ interface SubjectProps {
     pageSize?: number;
     shouldGetStaticSubjects?: boolean;
     shouldGetNonCreatedSubjects?: boolean;
-    filters?: [];
+    filters?: any[];
     shouldGetDistinctSubjects?: boolean;
+    shouldGetSubjectStudents?: boolean;
 }
 
-const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [], shouldGetDistinctSubjects = false }: SubjectProps = {}) => {
+const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticSubjects = false, shouldGetNonCreatedSubjects = false, filters = [], shouldGetDistinctSubjects = false, shouldGetSubjectStudents = false }: SubjectProps = {}) => {
     const [isSaving, setSaving] = React.useState(false);
     const [subjects, setSubjects] = React.useState([]);
     const [staticSubjects, setStaticSubjects] = React.useState([]);
@@ -27,6 +28,8 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
     const [searchTerm, setSearchTerm] = React.useState("");
     const [ filter, setFilter ] = React.useState({ page: 1, pageSize })
     const [ pagination, setPagination ] = React.useState({});
+    const [ subjectStudents, setSubjectStudents ] = React.useState([]);
+    const [ isLoadingSubjectStudents, setIsLoadingSubjectStudents ] = React.useState(false);
 
     const navigate = useNavigate();
     const { addSubject } = useAddSubject();
@@ -226,8 +229,37 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         }))
     }
 
+    const getSubjectStudents = async () => {
+        try {
+            setIsLoadingSubjectStudents(true);
+
+            const student_class = subject.classRef.student_class;
+            const department = subject.deptRef;
+
+            const { data } = await getFirebaseData({
+                collection: 'users',
+                query: [
+                    ['student_class', '==', student_class],
+                    ['school_id', '==', user.school_id],
+                    ['role', '==', 'learner'],
+                    ['student_dept', '==', department.title]
+                ]
+            })
+
+            const students = data.users;
+
+            setSubjectStudents(students);
+        } catch(error) {
+            toast.error("Error getting subject students");
+        } finally {
+            setIsLoadingSubjectStudents(false)
+        }
+
+    }
+
     React.useEffect(() => {
         if(shouldGetStaticSubjects) getStaticSubjects();
+        if(shouldGetSubjectStudents) getSubjectStudents();
     }, [])
 
     React.useEffect(() => {
@@ -238,6 +270,7 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         setFilter(prev => ({ ...prev, pageSize }));
     }, [pageSize])
 
+
     return {
         isSaving,
         isLoading,
@@ -245,6 +278,8 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
         staticSubjects,
         searchTerm,
         pagination,
+        isLoadingSubjectStudents,
+        subjectStudents,
         setFilter,
         handlePaginate,
         setSearchTerm,

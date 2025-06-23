@@ -1,19 +1,37 @@
 import React from "react";
 import { useState, useRef } from "react";
 import { FaImage, FaTrash } from "react-icons/fa";
+// import { UseCBTReturnType } from "../../Hooks/useCBT";
+import Loading from "../Layout/Loading";
 
-const AddCBTModal = ({ setIsOpen }) => {
+const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
   const [questionType, setQuestionType] = useState("Multiple Choice");
   const [thumbnail, setThumbnail] = useState(null);
   const fileInputRef = useRef();
 
+  const { isSaving, inputs, subjects, classes, handleInput, handleCreateInstance, handleUpdateInstance } = hooks;
+
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
+      handleInput("instance.thumbnail", file);
+
       const imageURL = URL.createObjectURL(file);
       setThumbnail(imageURL);
     }
   };
+
+  const sectionText = isAddInstance ? "Add" : "Update";
+
+  const generateImgUrl = (field, fallback) => {
+    const resolvedImageSrc =
+    typeof inputs.instance[field] === 'string' && inputs.instance[field]
+      ? inputs.instance[field]
+      : fallback;
+
+    return resolvedImageSrc;
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -27,8 +45,8 @@ const AddCBTModal = ({ setIsOpen }) => {
           </button>
           <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow-md">
             <div className="border-b  pb-2 mb-6">
-              <p className="text-3xl font-extrabold">Add CBT</p>
-              <p className="text-xs">Add new CBT Instance</p>
+              <p className="text-3xl font-extrabold">{sectionText} CBT</p>
+              <p className="text-xs">{sectionText} new CBT Instance</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -38,22 +56,26 @@ const AddCBTModal = ({ setIsOpen }) => {
                 </label>
                 <select
                   className="w-full border rounded p-2"
-                  value={questionType}
-                  onChange={(e) => setQuestionType(e.target.value)}
+                  onChange={(e) => handleInput("instance.subject_id", e.target.value)}
+                  value={inputs.instance.subject_id}
                 >
-                  <option>English</option>
-                  <option>Maths</option>
+                  <option value="" selected disabled>Select Subject</option>
+                  {subjects.map((item, key) => (
+                    <option value={item.id} key={key}>{ item.name }</option>
+                  ))}
                 </select>
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Class</label>
                 <select
                   className="w-full border rounded p-2"
-                  value={questionType}
-                  onChange={(e) => setQuestionType(e.target.value)}
+                  onChange={(e) => handleInput("instance.class_id", e.target.value)}
+                  value={inputs.instance.class_id}
                 >
-                  <option>JSS1</option>
-                  <option>SS3</option>
+                  <option value="" selected disabled>Select Class</option>
+                   {classes.map((item, key) => (
+                    <option value={item.id} key={key}>{ item.student_class }</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -64,6 +86,8 @@ const AddCBTModal = ({ setIsOpen }) => {
                 placeholder=""
                 className="w-full border rounded p-2"
                 type="text"
+                onChange={(e) => handleInput("instance.title", e.target.value)}
+                value={inputs.instance.title}
               />
             </div>
 
@@ -76,6 +100,8 @@ const AddCBTModal = ({ setIsOpen }) => {
                 className="w-full border rounded p-2"
                 type="text"
                 rows={4}
+                onChange={(e) => handleInput("instance.instruction", e.target.value)}
+                value={inputs.instance.instruction}
               />
             </div>
 
@@ -87,9 +113,9 @@ const AddCBTModal = ({ setIsOpen }) => {
                 className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-md flex items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-200"
                 onClick={() => fileInputRef.current.click()}
               >
-                {thumbnail ? (
+                {thumbnail || inputs.instance.thumbnail ? (
                   <img
-                    src={thumbnail}
+                    src={generateImgUrl('thumbnail', thumbnail)}
                     alt="Thumbnail"
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -118,7 +144,9 @@ const AddCBTModal = ({ setIsOpen }) => {
               <input
                 placeholder="in Minutes"
                 className="w-full border rounded p-2"
-                type="number"
+                type="text"
+                onChange={(e) => handleInput("instance.allowed_time", Number(e.target.value))}
+                value={inputs.instance.allowed_time}
               />
             </div>
             <div className="mb-4">
@@ -132,12 +160,17 @@ const AddCBTModal = ({ setIsOpen }) => {
               <input
                 type="datetime-local"
                 className="w-full border rounded p-2"
+                onChange={(e) => handleInput("instance.closing_date", e.target.value)}
+                value={inputs.instance.closing_date}
               />
             </div>
 
             {/* Submit */}
-            <button className="bg-cyan-500 text-white w-full py-2 rounded mt-4">
-              Save
+            <button 
+              className="bg-cyan-500 text-white w-full py-2 rounded mt-4" 
+              onClick={isAddInstance ? handleCreateInstance : handleUpdateInstance}
+            >
+              {isSaving ? <Loading/> : sectionText}
             </button>
           </div>
         </div>

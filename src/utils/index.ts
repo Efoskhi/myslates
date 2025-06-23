@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 const getCurrentWeekRange = () => {
     const now = new Date();
     const day = now.getDay();
@@ -144,7 +146,32 @@ const getDateTimeRange = (
   
     return `${hourStr} ${minStr}`.trim();
   }
+
+  function formatFirestoreTimestamp(timestamp: { seconds: number; nanoseconds: number }): string {
+    const date = new Date(timestamp.seconds * 1000); // convert seconds to ms
+    return date.toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'medium',
+    });
+  }
   
+
+  function formatFirebaseDateToInputString(timestamp: { seconds: number, nanoseconds: number }): string {
+    const date = new Date(timestamp.seconds * 1000); // Convert Firestore timestamp to JS Date
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  function convertToFirestoreTimestamp(datetimeStr: string): Timestamp {
+    const date = new Date(datetimeStr); // e.g. "2025-06-23T03:04"
+    return Timestamp.fromDate(date);
+  }
 
 export {
     getCurrentWeekRange,
@@ -154,4 +181,7 @@ export {
     getMonthRange,
     getDateTimeRange,
     getDuration,
+    formatFirestoreTimestamp,
+    formatFirebaseDateToInputString,
+    convertToFirestoreTimestamp,
 };

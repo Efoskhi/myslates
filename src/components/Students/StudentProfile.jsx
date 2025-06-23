@@ -45,7 +45,7 @@ export default function StudentProfile({student}) {
           </label>
           <input
             type="text"
-            value={student?.subjects.length}
+            // value={student?.subjects.length}
             disabled
             className="w-full p-2 mt-1 bg-gray-100 border border-gray-300 rounded-lg text-gray-500"
           />

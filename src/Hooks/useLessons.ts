@@ -28,7 +28,10 @@ const useLessons = ({shouldGetLesson = true} = {}) => {
             
             if(!topic) throw new LessonError;
 
-            setLessons(topic.Lessons);
+            // sort based on lesson number
+            const lessons = topic.Lessons?.sort((a, b) => a.lesson_number - b.lesson_number);
+
+            setLessons(lessons);
 
         } catch(error){
             toast.error("Something went wrong getting lessons");
