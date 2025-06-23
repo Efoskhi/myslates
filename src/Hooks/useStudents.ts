@@ -63,7 +63,7 @@ const useStudents = ({
 
             page= filter.page,
             pageSize=  filter.pageSize
-            const { subject_id } = searchFilter;
+            // const { subject_id } = searchFilter;
 
             const classes = await getTeacherClasses();
 
