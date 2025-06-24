@@ -453,12 +453,15 @@ const addFirebaseData = async ({
             }
         }
 
+        const subCollectionResult: Record<string, any[]> = {};
+
         // Handle subcollections
         if (subCollectionData && typeof subCollectionData === "object") {
             for (const [subCollName, subData] of Object.entries(
                 subCollectionData
             )) {
                 const subDocs = Array.isArray(subData) ? subData : [subData];
+                const results: any[] = [];
 
                 for (const item of subDocs) {
                     const subRef = item.id
@@ -470,7 +473,13 @@ const addFirebaseData = async ({
                         ...(addCreateTimestamp &&{ created_time: Timestamp.fromDate(new Date())}),
                     };
                     await setDoc(subRef, preparedSubData);
+                    const newDocSnapshot = await getDoc(subRef);
+                    results.push({
+                        id: subRef.id,
+                        ...newDocSnapshot.data()
+                    });
                 }
+                subCollectionResult[subCollName] = results;
             }
         }
 
@@ -482,6 +491,7 @@ const addFirebaseData = async ({
             data: {
                 id: docRef.id,
                 ...newDocSnapshot.data(),
+                subCollectionResult,
             }
         };
     } catch (error) {

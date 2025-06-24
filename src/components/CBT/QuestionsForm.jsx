@@ -304,6 +304,19 @@ const QuestionsForm = ({ hooks, isAddModal, callback }) => {
         </>
       )}
 
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">
+          Score Point
+        </label>
+        <input
+          type="text"
+          placeholder="Enter score point"
+          className="w-full border rounded p-2"
+          onChange={e => handleInput("question.score_point", e.target.value)}
+          value={inputs.question.score_point}
+        />
+      </div>
+
       {/* Submit */}
       <button 
         className="bg-cyan-500 text-white w-full py-2 rounded mt-4" 

@@ -348,6 +348,13 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
 
     const validateInstanceQuestion = async () => {
         const question = inputs.question;
+        let score_point = question.score_point;
+
+        if(isNaN(score_point)) {
+            throw new Error("Enter a valid score point");
+        }
+
+        score_point = Number(score_point);
 
         if(question.question_type === "Multiple Choice") {
             const {
@@ -403,6 +410,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
                 img_option_d,
                 question_type: question.question_type,
                 ...uploadedUrls,
+                score_point,
             } as QuestionInputs;
 
             if(id) validated.id = id;
@@ -435,6 +443,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
                 essay_answer,
                 question_type: question.question_type,
                 ...uploadedUrls,
+                score_point,
             } as QuestionInputs;
 
             if(id) validated.id = id;
@@ -468,6 +477,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
                 fillblank_answer,
                 question_type: question.question_type,
                 ...uploadedUrls,
+                score_point,
             } as QuestionInputs;
 
             if(id) validated.id = id;
@@ -483,7 +493,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
 
             const validated = await validateInstanceQuestion();
 
-             const { status, message } = await addFirebaseData({
+            const { status, data } = await addFirebaseData({
                 collection: "CBT",
                 successMessage: "",
                 subCollectionData: {
@@ -496,9 +506,11 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
                 return toast.error("Something went wrong, please try again");
             }
 
+            const createQuestionId = data?.subCollectionResult.CBT_Question[0].id as string;
+
             setInstanceData(prev => ({
                 ...prev,
-                CBT_Question: [...prev.CBT_Question, validated]
+                CBT_Question: [...prev.CBT_Question, { ...validated, id: createQuestionId }]
             }))
 
             if(callback) callback();
