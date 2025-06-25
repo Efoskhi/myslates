@@ -45,7 +45,7 @@ export default function Header() {
   return (
     <div className="flex items-center justify-between border-b bg-white px-6 py-3 shadow-sm">
       {/* Greeting Text */}
-      <h1 className="text-lg font-bold">Hello {user?.display_name}</h1>
+      <h1 className="text-lg font-bold">Hello, {user?.display_name}</h1>
 
       {/* Search Bar */}
       <div className="lg:inline-flex  gap-8 ">
