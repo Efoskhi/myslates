@@ -42,6 +42,7 @@ interface Instanceinputs {
     subject_id: string;
     thumbnail: File | string;
     title: string;
+    exam_url: string;
 
     id?: string;
   }
@@ -50,6 +51,8 @@ interface InputsState {
   instance: Instanceinputs;
   question: QuestionInputs;
 }
+
+type InstanceType = 'self' | 'external';
 
 const useCBT = ({ shouldGetInstances, cbtId }) => {
     const [ isOpenAddModal, setIsOpenAddModal ] = React.useState(false);
@@ -64,6 +67,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             subject_id: '',
             thumbnail: '',
             title: '',
+            exam_url: '',
         },
         question: {
             essay_question: '',
@@ -89,6 +93,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
     });
     const [ instances, setInstances ] = React.useState<any[]>([]);
     const [ instanceData, setInstanceData ] = React.useState({} as any);
+    const [ instanceType, setInstanceType ] = React.useState<InstanceType>('external');
 
     const { user } = useAppContext();
 
@@ -115,8 +120,25 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         }))
     }
 
-    const validateInstance = async () => {
+    const validateInstance = async (type: InstanceType) => {
         const { class_id, subject_id, closing_date, thumbnail, id, ...rest } = inputs.instance;
+        let exam_url = inputs.instance.exam_url;
+
+        if (type === 'external') {
+            const url = inputs.instance.exam_url;
+
+            if (!url) {
+                throw new Error("Enter exam URL");
+            }
+
+            try {
+                new URL(url);
+            } catch {
+                throw new Error("Enter a valid exam URL");
+            }
+        } else {
+            exam_url = '';
+        }
 
         if(!inputs.instance.subject_id) {
             throw new Error("Select a subject");
@@ -148,6 +170,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
 
         const instanceData = {
             ...rest,
+            exam_url,
             class_ref: {
                 isRef: true,
                 collection: 'Classes',
@@ -184,11 +207,11 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         return { instanceData, id: docId, rawData };
     }
 
-    const handleCreateInstance = async () => {
+    const handleCreateInstance = async (type: InstanceType) => {
         try {
             setIsSaving(true);
             
-            const { instanceData, id, rawData }  = await validateInstance();
+            const { instanceData, id, rawData }  = await validateInstance(type);
 
             const { status, data } = await addFirebaseData({
                 collection: 'CBT',
@@ -214,11 +237,11 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         }
     }
 
-    const handleUpdateInstance = async () => {
+    const handleUpdateInstance = async (type: InstanceType) => {
         try {
             setIsSaving(true);
 
-            const { instanceData, id, rawData }  = await validateInstance();
+            const { instanceData, id, rawData }  = await validateInstance(type);
 
             const { status } = await updateFirebaseData({
                 collection: 'CBT',
@@ -571,6 +594,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
     }
 
     const resetInstanceInput = () => {
+        setInstanceType('self');
         setInputs(prev => ({
             ...prev,
             instance: resetQuestionFields(inputs.instance) as any
@@ -695,6 +719,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         instances,
         isOpenAddModal,
         instanceData,
+        instanceType,
         setIsOpenAddModal,
         handleCreateInstance,
         handleInput,
@@ -706,6 +731,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         handleUpdateInstance,
         resetInstanceInput,
         handleConfirmInstanceDelete,
+        setInstanceType
     }
 }
 

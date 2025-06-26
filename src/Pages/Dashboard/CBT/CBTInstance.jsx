@@ -10,7 +10,17 @@ import Loading from "../../../components/Layout/Loading";
 const CBTInstance = () => {
 
   const hooks = useCBT({ shouldGetInstances: true })
-  const { isLoading, instances, isOpenAddModal, isSaving, setIsOpenAddModal, setInputs, resetInstanceInput, handleConfirmInstanceDelete } = hooks;
+  const { 
+    isLoading, 
+    instances, 
+    isOpenAddModal, 
+    isSaving, 
+    setInstanceType, 
+    setIsOpenAddModal, 
+    setInputs, 
+    resetInstanceInput, 
+    handleConfirmInstanceDelete 
+  } = hooks;
   const [ isAddInstance, setIsAddInstance ] = React.useState(true);
   const [ deleteModalData , setDeleteModalData] = useState(null);
 
@@ -92,6 +102,7 @@ const CBTInstance = () => {
                 setIsAddInstance={setIsAddInstance}
                 setInputs={setInputs}
                 setDeleteModalData={setDeleteModalData}
+                setInstanceType={setInstanceType}
               />
           ))}
 

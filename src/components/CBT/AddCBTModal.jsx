@@ -9,13 +9,13 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const fileInputRef = useRef();
 
-  const [activeTab, setActiveTab] = useState("external");
-
   const {
     isSaving,
     inputs,
     subjects,
     classes,
+    instanceType,
+    setInstanceType,
     handleInput,
     handleCreateInstance,
     handleUpdateInstance,
@@ -42,6 +42,11 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
     return resolvedImageSrc;
   };
 
+  const changeInstanceType = (type) => {
+    handleInput('instance.exam_url', type === 'external' ? inputs.instance.exam_url : '');
+    setInstanceType(type);
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-md p-6 w-full max-w-5xl shadow-lg relative overscroll-y-auto overflow-y-auto h-[90vh]">
@@ -63,9 +68,9 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
               {/* Tabs */}
               <div className="flex space-x-4  pb-2 mb-4">
                 <div
-                  onClick={() => setActiveTab("self")}
+                  onClick={() => changeInstanceType("self")}
                   className={`cursor-pointer px-4 py-2 font-medium ${
-                    activeTab === "self"
+                    instanceType === "self"
                       ? "border-b-2 border-cyan-500 text-cyan-600"
                       : "text-gray-600"
                   }`}
@@ -73,9 +78,9 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
                   Self Generated Questions
                 </div>
                 <div
-                  onClick={() => setActiveTab("external")}
+                  onClick={() => changeInstanceType("external")}
                   className={`cursor-pointer px-4 py-2 font-medium ${
-                    activeTab === "external"
+                    instanceType === "external"
                       ? "border-b-2 border-cyan-500 text-cyan-600"
                       : "text-gray-600"
                   }`}
@@ -86,7 +91,7 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
 
               {/* Tab Content */}
               <div>
-                {activeTab === "external" && (
+                {instanceType === "external" && (
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
                       External URL Link{" "}
@@ -99,10 +104,14 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
                       placeholder="Enter Url"
                       className="w-full border rounded p-2"
                       type="url"
+                      onChange={(e) =>
+                        handleInput("instance.exam_url", e.target.value)
+                      }
+                      value={inputs.instance.exam_url}
                     />
                   </div>
                 )}
-                {activeTab === "self" && (
+                {instanceType === "self" && (
                   <span className="text-[10px] text-cyan-600">
                     Incase the CBT test is Self Generated Questions..
                   </span>
@@ -248,7 +257,7 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
             <button
               className="bg-cyan-500 text-white w-full py-2 rounded mt-4"
               onClick={
-                isAddInstance ? handleCreateInstance : handleUpdateInstance
+                isAddInstance ? () => handleCreateInstance(instanceType) : () => handleUpdateInstance(instanceType)
               }
             >
               {isSaving ? <Loading /> : sectionText}

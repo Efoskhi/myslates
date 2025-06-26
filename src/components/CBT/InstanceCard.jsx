@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { formatFirebaseDateToInputString, formatFirestoreTimestamp } from "../../utils";
 
-const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs, setDeleteModalData }) => {
+const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs, setDeleteModalData, setInstanceType  }) => {
     const [menuOpen, setMenuOpen] = React.useState(false);
 
     const handleEditClick = () => {        
+        
         setInputs(prev => ({
             ...prev,
             instance: {
@@ -17,6 +18,7 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
             }
         }))
 
+        setInstanceType(instance.exam_url ? 'external' : 'self');
         setIsAddInstance(false);
         setMenuOpen(false);
         setIsOpenAddModal(true)
@@ -27,6 +29,28 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
             setMenuOpen(false);
         }
     }, [])
+
+    const CustomLink = ({ children }) => {
+        if(instance.exam_url) {
+            return (
+                <a
+                    href={instance.exam_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                >
+                    { children }
+                </a>
+            )
+        }
+
+        return (
+            <Link to={`/QuestionsList/${instance.id}`}>
+                { children }
+            </Link>
+        )
+    }
+
 
     return (
         <div className="relative">
@@ -58,7 +82,7 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
                     }}
                 />
 
-                <Link to={`/QuestionsList/${instance.id}`}>
+                <CustomLink>
                     <img
                         alt=""
                         src={ instance.thumbnail }
@@ -80,7 +104,7 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
                             <p>{ formatFirestoreTimestamp(instance.closing_date) }</p>
                         </div>
                     </div>
-                </Link>
+                </CustomLink>
             </div>
         </div>
     )
