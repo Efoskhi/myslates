@@ -36,12 +36,13 @@ const useTopics = ({ toggleReloadTopic }) => {
             const subjects = data.Subjects
                 ?.filter(item => item.termRef.is_active)
                 .sort((a, b) => a.serial_no - b.serial_no);
+
+            // console.log(subjects);
                       
             setTopics(subjects);
             fetchedTopics = subjects;
 
         } catch(error) {
-            console.log("error", error)
             toast.error("Something went wrong getting topic, please try again");
         } finally {
             setLoading(false);

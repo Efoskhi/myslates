@@ -44,6 +44,7 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
 
   const changeInstanceType = (type) => {
     handleInput('instance.exam_url', type === 'external' ? inputs.instance.exam_url : '');
+    handleInput('instance.allowed_time', type === 'self' ? inputs.instance.allowed_time : 0);
     setInstanceType(type);
   }
 
@@ -216,25 +217,27 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">
-                Exam Duration{" "}
-                <span className="text-cyan-600 text-[10px]">
-                  {" "}
-                  (that will appear on the student's app during the test and
-                  counts down, if it ends it automatically submit){" "}
-                </span>
-              </label>
-              <input
-                placeholder="in Minutes"
-                className="w-full border rounded p-2"
-                type="text"
-                onChange={(e) =>
-                  handleInput("instance.allowed_time", Number(e.target.value))
-                }
-                value={inputs.instance.allowed_time}
-              />
-            </div>
+            {instanceType === 'self' && 
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Exam Duration{" "}
+                  <span className="text-cyan-600 text-[10px]">
+                    {" "}
+                    (that will appear on the student's app during the test and
+                    counts down, if it ends it automatically submit){" "}
+                  </span>
+                </label>
+                <input
+                  placeholder="in Minutes"
+                  className="w-full border rounded p-2"
+                  type="text"
+                  onChange={(e) =>
+                    handleInput("instance.allowed_time", Number(e.target.value))
+                  }
+                  value={inputs.instance.allowed_time}
+                />
+              </div>
+            }
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">
                 Closing Date{" "}

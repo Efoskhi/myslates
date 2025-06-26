@@ -123,6 +123,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
     const validateInstance = async (type: InstanceType) => {
         const { class_id, subject_id, closing_date, thumbnail, id, ...rest } = inputs.instance;
         let exam_url = inputs.instance.exam_url;
+        let allowed_time = inputs.instance.allowed_time;
 
         if (type === 'external') {
             const url = inputs.instance.exam_url;
@@ -136,8 +137,11 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             } catch {
                 throw new Error("Enter a valid exam URL");
             }
+            allowed_time = 0;
+
         } else {
             exam_url = '';
+            
         }
 
         if(!inputs.instance.subject_id) {
@@ -150,9 +154,9 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             throw new Error("Enter instruction");
         } else if(!inputs.instance.thumbnail) {
             throw new Error("Please upload a thumbnail");
-        } else if(!inputs.instance.allowed_time) {
+        } else if(!inputs.instance.allowed_time && type === 'self') {
             throw new Error("Enter allowed time");
-        } else if(isNaN(inputs.instance.allowed_time)) {
+        } else if(isNaN(inputs.instance.allowed_time) && type === 'self') {
             throw new Error("Enter a valid allowed time");
         } else if(!inputs.instance.closing_date) {
             throw new Error("Enter closing date");
@@ -171,6 +175,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         const instanceData = {
             ...rest,
             exam_url,
+            allowed_time,
             class_ref: {
                 isRef: true,
                 collection: 'Classes',
