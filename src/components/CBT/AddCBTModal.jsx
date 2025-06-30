@@ -43,10 +43,16 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
   };
 
   const changeInstanceType = (type) => {
-    handleInput('instance.exam_url', type === 'external' ? inputs.instance.exam_url : '');
-    handleInput('instance.allowed_time', type === 'self' ? inputs.instance.allowed_time : 0);
+    handleInput(
+      "instance.exam_url",
+      type === "external" ? inputs.instance.exam_url : ""
+    );
+    handleInput(
+      "instance.allowed_time",
+      type === "self" ? inputs.instance.allowed_time : 0
+    );
     setInstanceType(type);
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -217,7 +223,7 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
               </div>
             </div>
 
-            {instanceType === 'self' && 
+            {instanceType === "self" && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">
                   Exam Duration{" "}
@@ -237,7 +243,18 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
                   value={inputs.instance.allowed_time}
                 />
               </div>
-            }
+            )}
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Starting Date{" "}
+                <span className="text-cyan-600 text-[10px]"></span>
+              </label>
+              <input
+                type="datetime-local"
+                className="w-full border rounded p-2"
+              />
+            </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">
                 Closing Date{" "}
@@ -260,7 +277,9 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
             <button
               className="bg-cyan-500 text-white w-full py-2 rounded mt-4"
               onClick={
-                isAddInstance ? () => handleCreateInstance(instanceType) : () => handleUpdateInstance(instanceType)
+                isAddInstance
+                  ? () => handleCreateInstance(instanceType)
+                  : () => handleUpdateInstance(instanceType)
               }
             >
               {isSaving ? <Loading /> : sectionText}
