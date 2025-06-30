@@ -44,6 +44,9 @@ import RubricBuilder from "./Pages/Dashboard/TeachingTools/RubricBuilder";
 import AssignmentBuilder from "./Pages/Dashboard/TeachingTools/AssignmentBuilder";
 import CBTInstance from "./Pages/Dashboard/CBT/CBTInstance";
 import QuestionsList from "./Pages/Dashboard/CBT/QuestionsList";
+import CBTResults from "./Pages/Dashboard/CBT/CBTResults";
+import AssignmentsRecord from "./Pages/Dashboard/Subjects/AssignmentsRecord";
+import Assignments from "./Pages/Dashboard/Subjects/Assignments";
 
 function App() {
   return (
@@ -84,11 +87,20 @@ function App() {
               <Route path="subject/topics" element={<Topics />} />
               <Route path="subject/assignment" element={<Assignment />} />
 
+              <Route path="subject/Assignments" element={<Assignments />} />
+
+              <Route
+                path="subject/AssignmentRecords"
+                element={<AssignmentsRecord />}
+              />
+
               <Route path="SubjectDetails" element={<SubjectDetails />} />
 
               {/* <Route path="AddSubject" element={<AddSubject />} /> */}
 
               <Route path="CBTInstance" element={<CBTInstance />} />
+
+              <Route path="CBTResults" element={<CBTResults />} />
               <Route path="QuestionsList/:id" element={<QuestionsList />} />
 
               <Route path="TeachingTools" element={<TeachingTools />} />
