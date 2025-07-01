@@ -252,6 +252,10 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
               <input
                 type="datetime-local"
                 className="w-full border rounded p-2"
+                onChange={(e) =>
+                  handleInput("instance.start_date", e.target.value)
+                }
+                value={inputs.instance.start_date}
               />
             </div>
 

@@ -100,7 +100,7 @@ function App() {
 
               <Route path="CBTInstance" element={<CBTInstance />} />
 
-              <Route path="CBTResults" element={<CBTResults />} />
+              <Route path="CBTResults/:id" element={<CBTResults />} />
               <Route path="QuestionsList/:id" element={<QuestionsList />} />
 
               <Route path="TeachingTools" element={<TeachingTools />} />

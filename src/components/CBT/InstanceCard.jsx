@@ -1,10 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { formatFirebaseDateToInputString, formatFirestoreTimestamp } from "../../utils";
 
 const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs, setDeleteModalData, setInstanceType  }) => {
     const [menuOpen, setMenuOpen] = React.useState(false);
+
+    const navigate = useNavigate();
 
     const handleEditClick = () => {        
         
@@ -15,6 +17,7 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
                 subject_id: instance.subject_ref.id,
                 class_id: instance.class_ref.id,
                 closing_date: formatFirebaseDateToInputString(instance.closing_date),
+                start_date: formatFirebaseDateToInputString(instance.start_date),
             }
         }))
 
@@ -57,6 +60,14 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
             {/* Options Dropdown */}
             {menuOpen && (
                 <div className="absolute top-8 right-2 bg-white border rounded shadow z-10 w-24">
+                    {!instance.exam_url && 
+                        <button
+                            onClick={() => navigate(`/CBTResults/${instance.id}`)}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm"
+                        >
+                            CBT Result
+                        </button>
+                    }
                     <button
                         onClick={handleEditClick}
                         className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm"
@@ -99,6 +110,10 @@ const InstanceCard = ({ instance, setIsOpenAddModal, setIsAddInstance, setInputs
                             </div>
                         </dl>
     
+                        <div className="mt-6 flex items-center justify-between text-xs w-full">
+                            <p>Start Date</p>
+                            <p>{ formatFirestoreTimestamp(instance.start_date) }</p>
+                        </div>
                         <div className="mt-6 flex items-center justify-between text-xs w-full">
                             <p>Closing Date</p>
                             <p>{ formatFirestoreTimestamp(instance.closing_date) }</p>

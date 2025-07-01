@@ -148,6 +148,8 @@ const getDateTimeRange = (
   }
 
   function formatFirestoreTimestamp(timestamp: { seconds: number; nanoseconds: number }): string {
+    if(!timestamp?.seconds) return "";
+
     const date = new Date(timestamp.seconds * 1000); // convert seconds to ms
     return date.toLocaleString('en-US', {
       dateStyle: 'medium',

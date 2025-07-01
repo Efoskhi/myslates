@@ -21,7 +21,7 @@ export default function QuestionsList() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const hooks = useCBT({ cbtId: id });
+  const hooks = useCBT({ cbtId: id, shoulGetQuestions: true });
   const { 
     instanceData, 
     isLoading, 

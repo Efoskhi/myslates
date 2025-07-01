@@ -38,6 +38,7 @@ interface Instanceinputs {
     allowed_time: number;
     class_id: string;
     closing_date: string;
+    start_date: string;
     instruction: string;
     subject_id: string;
     thumbnail: File | string;
@@ -54,7 +55,7 @@ interface InputsState {
 
 type InstanceType = 'self' | 'external';
 
-const useCBT = ({ shouldGetInstances, cbtId }) => {
+const useCBT = ({ shouldGetInstances, cbtId, shouldGetResults, shoulGetQuestions }) => {
     const [ isOpenAddModal, setIsOpenAddModal ] = React.useState(false);
     const [ isLoading, setIsLoading ] = React.useState(false);
     const [ isSaving, setIsSaving ] = React.useState(false);
@@ -63,6 +64,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             allowed_time: 0,
             class_id: '',
             closing_date: '',
+            start_date: '',
             instruction: '',
             subject_id: '',
             thumbnail: '',
@@ -94,6 +96,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
     const [ instances, setInstances ] = React.useState<any[]>([]);
     const [ instanceData, setInstanceData ] = React.useState({} as any);
     const [ instanceType, setInstanceType ] = React.useState<InstanceType>('external');
+    const [ cbtResults, setCbtResults ] = React.useState({} as any);
 
     const { user } = useAppContext();
 
@@ -121,7 +124,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
     }
 
     const validateInstance = async (type: InstanceType) => {
-        const { class_id, subject_id, closing_date, thumbnail, id, ...rest } = inputs.instance;
+        const { class_id, subject_id, closing_date, start_date, thumbnail, id, ...rest } = inputs.instance;
         let exam_url = inputs.instance.exam_url;
         let allowed_time = inputs.instance.allowed_time;
 
@@ -160,6 +163,8 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             throw new Error("Enter a valid allowed time");
         } else if(!inputs.instance.closing_date) {
             throw new Error("Enter closing date");
+        } else if(!inputs.instance.start_date) {
+            throw new Error("Enter closing date");
         } 
 
         if (!id && !thumbnail as any instanceof File) {
@@ -194,6 +199,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             school_id: user.school.school_id,
             created_time: Timestamp.fromDate(new Date()),
             closing_date: Timestamp.fromDate(new Date(closing_date)),
+            start_date: Timestamp.fromDate(new Date(start_date)),
             thumbnail: thumbnail_url,
             id: docId,
         }
@@ -206,7 +212,8 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
             thumbnail: thumbnail_url,
             subject_ref: selectedSubject || {},
             class_ref: selectedClass || {},
-            closing_date: convertToFirestoreTimestamp(inputs.instance.closing_date)
+            closing_date: convertToFirestoreTimestamp(inputs.instance.closing_date),
+            start_date: convertToFirestoreTimestamp(inputs.instance.start_date),
         }
 
         return { instanceData, id: docId, rawData };
@@ -709,10 +716,65 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         }
     }
 
+    const getResults = async () => {
+        try {
+            setIsLoading(true);
+
+            const teacherRef = doc(db, 'users', user.uid);  
+
+            const { status, data } = await getFirebaseData({
+                collection: 'CBT',
+                query: [
+                    ['school_id', '==', user.school.school_id],
+                    ['teacher_ref', '==', teacherRef],
+                    ['__name__', '==', cbtId],
+                ],
+                refFields: ['subject_ref'],
+                subcollections: ['CBT_Results'],
+                findOne: true,
+            });
+
+            if(status === "error") {
+                toast.error("Error getting results");
+            }
+
+            const cbtResults = await Promise.all(data.CBT?.CBT_Results?.map(async (item) => {
+                const studentRef = item.student_ref;
+
+                const { data } = await getFirebaseData({
+                    collection: 'users',
+                    query: [
+                        ['uid', '==', studentRef.id],
+                    ],
+                    findOne: true,
+                });
+
+                let student = null;
+
+                if(data.users) student = data.users;
+
+                return {
+                    ...item,
+                    student
+                };
+            }))
+
+            const results = { ...(data.CBT || {} ), CBT_Results: cbtResults || [] };
+            
+            setCbtResults(results);
+
+        } catch(error) {
+            toast.error("Failed to get results data");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
 
     React.useEffect(() => {
         if(shouldGetInstances) getInstances();
-        if(cbtId) getInstanceWithQuestions();
+        if(shoulGetQuestions) getInstanceWithQuestions();
+        if(shouldGetResults) getResults();
     }, [])
 
     return {
@@ -725,6 +787,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
         isOpenAddModal,
         instanceData,
         instanceType,
+        cbtResults,
         setIsOpenAddModal,
         handleCreateInstance,
         handleInput,
