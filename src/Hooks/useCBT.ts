@@ -312,7 +312,7 @@ const useCBT = ({ shouldGetInstances, cbtId }) => {
                 query: [
                     ['school_id', '==', user.school.school_id],
                     ['teacher_ref', '==', teacherRef],
-                    ['id', '==', cbtId],
+                    ['__name__', '==', cbtId],
                 ],
                 refFields: ['subject_ref'],
                 subcollections: ['CBT_Question'],

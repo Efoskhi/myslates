@@ -202,6 +202,7 @@ const useStudents = ({
         pagination,
         getTotalStudents,
         handlePaginate,
+        getTeacherClasses,
     };
 };
 

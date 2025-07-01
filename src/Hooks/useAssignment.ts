@@ -10,9 +10,11 @@ import {
 } from "../utils/firebase";
 import { v4 as uuid } from "uuid";
 import useClasses from "./useClasses";
-import { Timestamp } from "firebase/firestore";
+import { doc, Timestamp } from "firebase/firestore";
 import { AssignmentError } from "../errors";
 import { useAppContext } from "../context/AppContext";
+import { db } from "../firebase.config";
+import { useParams } from "react-router-dom";
 
 const defaultInputs = {
     assignment_no: "",
@@ -25,13 +27,14 @@ const defaultInputs = {
 
 let fetchedAssignments = {} as any;
 
-const useAssignments = ({shouldGetAssignment = true} = {}) => {
-    const [assignments, setAssignments] = React.useState([] as any);
-    const [isLoading, setLoading] = React.useState(true);
-    const [assignmentModalVisible, setAssignmentModalVisible] =
-        React.useState(false);
-    const [inputs, setInputs] = React.useState(defaultInputs);
-    const [isSaving, setSaving] = React.useState(false);
+const useAssignments = ({shouldGetAssignment = true, shouldGetSubjectAssignment = false, shouldGetAssignmentRecords = false} = {}) => {
+    const [ assignments, setAssignments ] = React.useState([] as any);
+    const [ subjectAssignments, setSubjectAssignments ] = React.useState([] as any);
+    const [ isLoading, setLoading ] = React.useState(true);
+    const [ assignmentModalVisible, setAssignmentModalVisible ] = React.useState(false);
+    const [ inputs, setInputs ] = React.useState(defaultInputs);
+    const [ isSaving, setSaving ] = React.useState(false);
+    const [ assignmentRecords, setAssignmentRecords ] = React.useState({});
     const section = React.useRef("");
 
     const { classes, isLoading: isLoadingClasses } = useClasses({
@@ -39,7 +42,9 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         pageSize: 100
     });
 
-    const { currentTopic: topic, user } = useAppContext();
+    const { currentTopic: topic, user, currentSubject } = useAppContext();
+
+    const { id } = useParams();
 
     const getAssignments = async () => {
         try {
@@ -66,12 +71,99 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
             setAssignments(data.Topics);
             fetchedAssignments[topic.id] = data.Topics;
         } catch (error) {
-            console.log("error", error);
             toast.error("Something went wrong getting assignments");
         } finally {
             setLoading(false);
         }
     };
+
+    const getSubjectAssignments = async () => {
+         try {
+            setLoading(true);
+
+            const subjectRef = doc(db, 'Subjects', currentSubject.id);
+
+            const { status, message, data } = await getFirebaseData({
+                collection: "Assignment",
+                query: [
+                    ['subject_ref', '==', subjectRef]
+                ]
+            });
+
+            if (status === "error") throw new AssignmentError(message);
+
+            // Add dummy sub collestion
+            // for(const assignment of data.Assignment){
+            //      const { status, data } = await addFirebaseData({
+            //         collection: "Assignment",
+            //         successMessage: "",
+            //         subCollectionData: {
+            //             SubmittedAnswer: {
+            //                 score: 10,
+            //                 date_submitted: Timestamp.fromDate(new Date()),
+            //                 image: "https://firebasestorage.googleapis.com/v0/b/my-slates-d05sfs.appspot.com/o/users%2FTc5HX7m7QmZJHAdurwK3SBvZ4Vn2%2Fuploads%2F1751117116140775.png?alt=media&token=41e04b81-a2d7-4e8b-97f3-85fecb837f7c",
+            //                 answer: 'This is the answer',
+            //                 student_ref: doc(db, 'users', user.uid)
+            //             },
+            //         },
+            //         id: assignment.id
+            //     })
+            // }
+
+            setSubjectAssignments(data.Assignment);
+        } catch (error) {
+            toast.error("Something went wrong getting subject assignments");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const getAssignmentRecords = async () => {
+        try {
+            setSaving(true);
+
+             const { status, data, message } = await getFirebaseData({
+                collection: 'Assignment',
+                query: [
+                    ['__name__', '==', id],
+                ],
+                subcollections: ['SubmittedAnswer'],
+                findOne: true,
+            });
+
+            if (status === "error") throw new AssignmentError(message);
+
+            const submittedAnwers = await Promise.all(data.Assignment?.SubmittedAnswer?.map(async (item) => {
+                const studentRef = item.student_ref;
+
+                const { data } = await getFirebaseData({
+                    collection: 'users',
+                    query: [
+                        ['uid', '==', studentRef.id],
+                    ],
+                    findOne: true,
+                });
+
+                let student = null;
+
+                if(data.users) student = data.users;
+
+                return {
+                    ...item,
+                    student
+                };
+            }))
+
+            const assignments = { ...(data.Assignment || {} ), SubmittedAnswer: submittedAnwers || [] };
+
+            setAssignmentRecords(assignments);
+
+        } catch(error) {
+            toast.error("Something went wrong getting subject assignments records");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const handleInputs = (field: string, value: any) => {
         setInputs((prev) => ({
@@ -274,10 +366,10 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
             assignment_no,
         } = customInput ?? inputs;
 
-        const topic = customInput ? customInput.topic : JSON.parse(sessionStorage.getItem("currentTopic") || "null");
-        const subject = customInput ? customInput.subject : JSON.parse(sessionStorage.getItem("subject") || "null");
+        const currentTopic = customInput ? customInput.topic : topic;
+        const subject = customInput ? customInput.subject : currentSubject;
 
-        if (!topic) throw new AssignmentError("Topic data was not found");
+        if (!currentTopic) throw new AssignmentError("Topic data was not found");
         if (!user) throw new AssignmentError("User data was not found");
         if (!subject) throw new AssignmentError("Subject was not found");
 
@@ -311,7 +403,7 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
             topic_ref: {
                 isRef: true,
                 collection: "Topics",
-                id: topic.id,
+                id: currentTopic.id,
             },
             due_date: Timestamp.fromDate(new Date(due_date)),
         };
@@ -323,8 +415,12 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         });
     };
 
+
+
     React.useEffect(() => {
         if(shouldGetAssignment) getAssignments();
+        if(shouldGetSubjectAssignment) getSubjectAssignments();
+        if(shouldGetAssignmentRecords) getAssignmentRecords();
     }, []);
 
     return {
@@ -336,6 +432,8 @@ const useAssignments = ({shouldGetAssignment = true} = {}) => {
         section: section.current,
         inputs,
         isSaving,
+        subjectAssignments,
+        assignmentRecords,
         handleAssignmentClick,
         toggleAssignmentModalVisible,
         handleInputs,

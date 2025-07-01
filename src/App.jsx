@@ -90,7 +90,7 @@ function App() {
               <Route path="subject/Assignments" element={<Assignments />} />
 
               <Route
-                path="subject/AssignmentRecords"
+                path="subject/AssignmentRecords/:id"
                 element={<AssignmentsRecord />}
               />
 

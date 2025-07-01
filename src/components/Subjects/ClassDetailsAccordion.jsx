@@ -41,10 +41,10 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
                     <div className="w-10 h-1 bg-blue-400 rounded-full"></div>
                 </div>
             </div> */}
-            {/* <div>
+            <div>
                 <div
                     className="flex items-center justify-between py-4 border-b cursor-pointer"
-                    onClick={() => navigate("/subject/assignment")}
+                    onClick={() => navigate("/subject/Assignments")}
                 >
                     <div className="flex items-center gap-3">
                         <FaBook className="text-blue-400" />
@@ -52,7 +52,7 @@ const ClassDetailsAccordion = ({ isOwnSubject }) => {
                     </div>
                     <div className="w-10 h-1 bg-blue-400 rounded-full"></div>
                 </div>
-            </div> */}
+            </div>
             {/** Accordion Item: Students */}
             <div>
                 <div

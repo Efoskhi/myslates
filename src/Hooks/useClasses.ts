@@ -2,6 +2,7 @@ import React from "react";
 import toast from "react-hot-toast";
 import { getFirebaseData } from "../utils/firebase";
 import { useAppContext } from "../context/AppContext";
+import useStudents from "./useStudents";
 
 let fetchedClasses = [];
 let fetchedPageSize = 10;
@@ -12,6 +13,7 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
     const [ isLoading, setLoading ] = React.useState(true);
 
     const { user } = useAppContext();
+    const { getTeacherClasses } = useStudents({ shouldGetStudents: false });
 
     const getClasses = async () => {
         try {
@@ -19,16 +21,7 @@ const useClasses = ({ shouldGetClasses = true, pageSize = 100, shouldGetAllClass
                 return setClasses(fetchedClasses);
             }
 
-            const { data: userData } = await getFirebaseData({
-                collection: "users",
-                query: [
-                    ["uid", "==", user.uid],
-                    ["role", "==", "teacher"]
-                ],
-                findOne: true,
-            })
-
-            const classes = userData.users?.classes_handled ?? [];
+            const classes = await getTeacherClasses();
 
             let query = [["student_class", "in", classes]] as any;
 
