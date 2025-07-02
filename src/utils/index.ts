@@ -159,6 +159,8 @@ const getDateTimeRange = (
   
 
   function formatFirebaseDateToInputString(timestamp: { seconds: number, nanoseconds: number }): string {
+    if(!timestamp?.seconds) return "";
+
     const date = new Date(timestamp.seconds * 1000); // Convert Firestore timestamp to JS Date
 
     const year = date.getFullYear();
