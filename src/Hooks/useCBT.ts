@@ -44,6 +44,7 @@ interface Instanceinputs {
     thumbnail: File | string;
     title: string;
     exam_url: string;
+    exam_limit: number;
 
     id?: string;
   }
@@ -70,6 +71,7 @@ const useCBT = ({ shouldGetInstances, cbtId, shouldGetResults, shoulGetQuestions
             thumbnail: '',
             title: '',
             exam_url: '',
+            exam_limit: 0,
         },
         question: {
             essay_question: '',
@@ -165,6 +167,8 @@ const useCBT = ({ shouldGetInstances, cbtId, shouldGetResults, shoulGetQuestions
             throw new Error("Enter closing date");
         } else if(!inputs.instance.start_date) {
             throw new Error("Enter closing date");
+        } else if(!inputs.instance.exam_limit || isNaN(inputs.instance.exam_limit)) {
+            throw new Error("Enter a valid exam linit");
         } 
 
         if (!id && !thumbnail as any instanceof File) {
@@ -417,7 +421,7 @@ const useCBT = ({ shouldGetInstances, cbtId, shouldGetResults, shoulGetQuestions
             } else if(!option_c && !img_option_c) {
                 throw new Error("Enter option C");
             } else if(!option_d && !img_option_d) {
-                throw new Error("Enter option D");
+                // throw new Error("Enter option D");
             } else if(!mc_answer) {
                 throw new Error("Enter Multiple Choice answer");
             } 

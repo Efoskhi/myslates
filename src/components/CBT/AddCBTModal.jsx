@@ -244,6 +244,21 @@ const AddCBTModal = ({ setIsOpen, hooks, isAddInstance }) => {
                 />
               </div>
             )}
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                Exam Limit{" "}
+                <span className="text-cyan-600 text-[10px]"></span>
+              </label>
+              <input
+                type="number"
+                className="w-full border rounded p-2"
+                onChange={(e) =>
+                  handleInput("instance.exam_limit", e.target.value)
+                }
+                value={inputs.instance.exam_limit}
+              />
+            </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">
                 Starting Date{" "}
