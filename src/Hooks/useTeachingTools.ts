@@ -290,8 +290,7 @@ const useTeachingTools = () => {
                 file,
             } = inputs.lessonNote;
 
-            const generatedPrompt = `Generate a lesson plan for ${grade} level for the ${subject} subject on the ${description} topic. The week is ${week} of the ${term} term. The class will last ${classDuration} minutes. Do not add any extra text or formatting outside the lesson notes. Format the output clearly using Markdown with appropriate section headings (e.g., ## Objectives) and bullet points or numbered lists where suitable. Avoid using LaTeX, backslashes, or escape characters.`;
-            
+            const generatedPrompt = `Generate a lesson plan for ${grade} level for the ${subject} subject on the ${description} topic. The week is ${week} of the ${term} term. The class will last ${classDuration} minutes. Do not add any extra text or formatting outside the lesson notes. Format the output clearly using Markdown with appropriate bullet points or numbered lists where suitable. Avoid using LaTeX, backslashes, or escape characters.`;
             const payload = await generateRequestBody({
                 userMessage: generatedPrompt,
                 image: file,
