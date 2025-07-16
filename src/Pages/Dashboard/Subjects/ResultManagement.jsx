@@ -8,7 +8,7 @@ const ResultManagement = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1); // This navigates back to the previous page
+    navigate(-1); // This navigates back to the previos page
   };
 
   const [showModal, setShowModal] = useState(false);
