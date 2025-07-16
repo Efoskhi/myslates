@@ -59,12 +59,14 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
             if(!filters.length && !formattedSubjects.length) return;
 
             const response = await getFirebaseData({
-                collection: "Subjects",
-                refFields: ["classRef", "deptRef"],
-                query: filters.length ? filters : [["subject_id", "in", formattedSubjects]],
-                page: filter.page,
-                pageSize: filter.pageSize,
-                orderBy: ['title', 'asc'],
+              collection: "Subjects",
+              refFields: ["classRef", "deptRef"],
+              query: filters.length
+                ? [["subject_id", "in", formattedSubjects]]
+                : [["subject_id", "in", formattedSubjects]],
+              page: filter.page,
+              pageSize: filter.pageSize,
+              orderBy: ["title", "asc"],
             });
 
             if (response.status === "error") throw new Error(response.message);
@@ -99,8 +101,13 @@ const useSubject = ({ shouldGetSubjects = false, pageSize = 10, shouldGetStaticS
             });
 
             if (response.status === "error") throw new Error(response.message);
-            
-            setStaticSubjects(response.data.StaticSubjects);
+            const subjectResponse = response.data.StaticSubjects;
+            const sortedSubjects = subjectResponse.sort((_a, _b) => {
+                let a = _a.name.split("by")[0];
+                let b = _b.name.split("by")[0]; 
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            })
+            setStaticSubjects(sortedSubjects);
 
         } catch (error) {
             console.error("Error fetching subjects:", error);

@@ -164,7 +164,6 @@ const useStudents = ({
             ["role", "==", "learner"],
             ["student_class", "in", classes],
         ] as any;
-
         if (startDate && endDate) {
             query.push(
                 ["created_time", ">=", startDate, "timestamp"],
