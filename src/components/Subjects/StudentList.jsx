@@ -22,8 +22,8 @@ const users = [
 ];
 
 const UserCard = ({ user }) => (
-  <div className="bg-white shadow-md rounded-2xl p-4 flex flex-col items-center w-full sm:w-1/2 md:w-1/3">
-    <img src={user.photo_url} alt={user.name} className="w-20 h-20 rounded-full" />
+  <div className="bg-white shadow-md rounded-2xl p-4 flex flex-col items-center w-full ">
+    <img src={user.photo_url} alt={user.name} className="object-filll w-40 h-40 rounded-full" />
     <h3 className="mt-2 text-lg font-semibold">{user.display_name}</h3>
     <p className="flex items-center gap-2 text-gray-600">
       <FaEnvelope className="text-blue-400" /> {user.email}
@@ -45,7 +45,7 @@ const StudentList = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="w-full p-4">
       {isLoadingSubjectStudents && <Loading/> }
 
       <div className="mb-4 border rounded-lg p-2 flex items-center">
@@ -58,7 +58,7 @@ const StudentList = () => {
         />
       </div>
 
-      <div className="flex flex-wrap gap-4 justify-center">
+      <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-4">
         {filteredUsers.map((user) => (
           <UserCard key={user.id} user={user} />
         ))}
