@@ -14,6 +14,7 @@ const GeneratedQuestions = ({
     title,
     renderDownloadPDFButton,
     pdfDownloadFilename,
+    from
 }) => {
     // Fallback static questions rendered as markdown
     const defaultQuestionsText = title;
@@ -108,7 +109,7 @@ const GeneratedQuestions = ({
     return (
         <div className="bg-white shadow-md px-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">
-                Generated Assignment Questions
+               {from !== "lessonNote" ? "Generated Assignment Questions" : "Generated Lesson Note"}
             </h2>
 
             <div id="pdf-content" className="border p-4 rounded-lg space-y-4">
