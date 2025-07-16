@@ -48,8 +48,9 @@ const TermlyResult = () => {
 
     navigate(
       `/UploadResult?${new URLSearchParams({
-        selectedClass,
-        selectedSession,
+        className: selectedClass,
+        term: selectedTerm,
+        session: selectedSession,
         studentLength: students.length,
         studentId,
         schoolId

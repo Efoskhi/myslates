@@ -11,6 +11,7 @@ import {
   getDoc,
   getDocs,
   query,
+  setDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebase.config";
@@ -127,37 +128,59 @@ const useResultManagement = ({
     await getSubjectStudents();
   };
   const handleAddStudentResults = async ({
-    ca1,
-    ca2,
-    headTeacherComment,
-    term,
-    subjectName,
-    exam,
-    remark,
+    result,
     classTeacherComment,
     className,
+    term,
     selectedSession,
     studentId,
     studentLength,
   }) => {
+    if (!result || result.length === 0) return;
+    console.log(result);
+    let total = 0;
+    let totalAverage = 0;
+    const realSubjectdata = [];
+
     const studentRef = doc(db, "users", studentId);
+
+    // 1. Get existing result for this student/term/session
     const studentPrevious = await getFirebaseData({
-      query: [["student_ref", "==", studentRef]],
+      query: [
+        ["student_ref", "==", studentRef],
+        ["term", "==", term],
+        ["session", "==", selectedSession],
+      ],
       collection: "StudentResults",
       subcollections: ["ResultSubjects"],
     });
-    const previousResult = studentPrevious.data?.StudentResults || [];
-    const previousSubjects = previousResult.map((result) => {
-      return (result.ResultSubjects || []).map((subject) => ({
-        ...subject,
-      }));
-    });
 
-    console.log("previousSubjects", previousSubjects);
+    const existingResult = studentPrevious?.data?.StudentResults?.[0];
+    const existingSubjects = existingResult?.ResultSubjects || [];
+    const existingResultId = existingResult?.id;
+    // 2. Calculate total + build subject data
+    for (let i = 0; i < result.length; i++) {
+      const { ca1, ca2, subjectName, exam, remark } = result[i];
+      const score = Number(ca1) + Number(ca2) + Number(exam);
+      total += score;
+
+      realSubjectdata.push({
+        subject_name: subjectName,
+        exam,
+        first_ca: ca1,
+        second_ca: ca2,
+        total: score,
+        grade: getGrade(score),
+        remark,
+      });
+    }
+
+    totalAverage = total / realSubjectdata.length;
+
     const studentData = {
       class_teacher_comment: classTeacherComment,
       class_teacher_name: user.display_name,
-      head_teacher_comment: headTeacherComment,
+      head_teacher_comment: "",
       is_approved: false,
       number_in_class: studentLength,
       result_status: "Pending",
@@ -168,16 +191,70 @@ const useResultManagement = ({
       term_ending: "",
       student_ref: studentRef,
       term,
+      totalScore: total,
+      finalAverage: totalAverage,
     };
-    const subjectData = {
-      exam,
-      first_ca: ca1,
-      second_ca: ca2,
-      remark,
-      grade: getGrade(Number(ca1) + Number(ca2) + Number(exam)),
-      total: Number(ca1) + Number(ca2) + Number(exam),
-      subject_name: subjectName,
-    };
+
+    // 3. Upsert StudentResult (no random ID)
+    let resultResponse;
+    if (existingResultId) {
+      console.log("here");
+
+      // Manually update using Firestore
+      const resultDocRef = doc(db, "StudentResults", existingResultId);
+      await setDoc(resultDocRef, studentData, { merge: true });
+
+      resultResponse = {
+        status: "success",
+        data: {
+          id: existingResultId,
+          ...studentData,
+        },
+      };
+    } else {
+      console.log("here 2");
+      // Create new one
+      resultResponse = await addFirebaseData({
+        collection: "StudentResults",
+        data: studentData,
+      });
+    }
+
+    const resultId = existingResultId || resultResponse?.data?.id;
+    console.log(resultId);
+    if (!resultId) return;
+
+    // 4. Add or Update each subject by subject_name
+    for (let subject of realSubjectdata) {
+      const existingSub = existingSubjects.find(
+        (s) => s.subject_name === subject.subject_name
+      );
+      const subjectDocId = existingSub?.id || subject.subject_name;
+
+      const subjectDocRef = doc(
+        db,
+        "StudentResults",
+        resultId,
+        "ResultSubjects",
+        subjectDocId
+      );
+
+      let response6 = await setDoc(subjectDocRef, subject, { merge: true });
+
+      console.log("Updated subject:", subjectDocId);
+
+      console.log(response6);
+    }
+  };
+
+  const getSubjectsList = async (school_id) => {
+    const response = await getFirebaseData({
+      collection: "Subjects",
+      refFields: ["classRef", "deptRef"],
+      query: [["school_id", "==", school_id]],
+      pageSize: Infinity,
+    });
+    return response.data;
   };
   const handleAddResults = async () => {
     try {
@@ -335,6 +412,8 @@ const useResultManagement = ({
     getStudents,
     allStudents,
     getClassesAndCategories,
+    getSubjectsList,
+    handleAddStudentResults,
   };
 };
 

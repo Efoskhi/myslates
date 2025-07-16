@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../components/Layout/Header";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -8,20 +8,67 @@ import Loading from "../../../components/Layout/Loading";
 
 export default function UploadResult2() {
   const navigate = useNavigate();
-
+  const [subjects, setSubjects] = useState([]);
+  const queryParams = new URLSearchParams(window.location.search);
+  const classId = queryParams.get("className");
+  const term = queryParams.get("term");
+  const session = queryParams.get("session");
+  const studentId = queryParams.get("studentId");
+  const studentLength = queryParams.get("studentLength");
+  const schoolId = queryParams.get("schoolId");
+  const [studentResults, setStudentResults] = useState([{}]);
+  const [classTeacherComment, setClassTeacherComment] = useState("");
+  const [loading, setLoading] = useState(false);
   const handleBack = () => {
     navigate(-1); // This navigates back to the previous page
   };
 
-  const {
-    students: allStudents,
-    studentResults,
-    isSaving,
-    handleAddResults,
-    handleStudentResultInputChange,
-    addMoreStudentResult,
-  } = useResultManagement({ shouldGetPrefetchedStudents: true });
+  const addMoreStudent = () => {
+    setStudentResults((value) => [...value, {}]);
+  };
+  const handleChange = (id, field, value) => {
+    setStudentResults((prev) => {
+      const val = [...prev];
+      val[id][field] = value;
+      return val;
+    });
+  };
+  const { getSubjectsList, handleAddStudentResults } = useResultManagement({});
+  useEffect(() => {
+    if (
+      !classId ||
+      !studentId ||
+      !session ||
+      !schoolId ||
+      !studentLength ||
+      !term
+    )
+      navigate(-1);
 
+    getSubjectsList(schoolId).then((data) => {
+      setSubjects(data.Subjects.map((subject) => subject.title));
+    });
+  }, []);
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    toast.success("lol")
+    handleAddStudentResults({
+      classTeacherComment,
+      className: classId,
+      term,
+      selectedSession: session,
+      studentId,
+      studentLength,
+      result: studentResults.map(({ ca1, ca2, subject, exam, remark }) => ({
+        ca1,
+        ca2,
+        exam,
+        subjectName: subject,
+        remark
+      })),
+    });
+  };
   return (
     <div>
       <Header />
@@ -44,11 +91,8 @@ export default function UploadResult2() {
         </div>
 
         <div className="space-y-4">
-          {studentResults.map((student) => (
-            <div
-              key={student.id}
-              className="grid grid-cols-12 gap-4 items-start"
-            >
+          {studentResults.map((student, index) => (
+            <div key={index} className="grid grid-cols-12 gap-4 items-start">
               <div className="col-span-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Select Subject
@@ -56,19 +100,15 @@ export default function UploadResult2() {
                 <div className="relative">
                   <select
                     className="block w-full border border-gray-300 rounded-md py-2 pl-3 pr-10 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={student.student}
+                    value={studentResults?.[index]?.["subject"]}
                     onChange={(e) =>
-                      handleStudentResultInputChange(
-                        student.id,
-                        "student",
-                        e.target.value
-                      )
+                      handleChange(index, "subject", e.target.value)
                     }
                   >
                     <option value="">Select subject</option>
-                    {allStudents.map((item, key) => (
-                      <option value={JSON.stringify(item)} key={key}>
-                        {item.display_name}
+                    {subjects.map((item, key) => (
+                      <option value={item} key={key}>
+                        {item}
                       </option>
                     ))}
                   </select>
@@ -83,14 +123,8 @@ export default function UploadResult2() {
                   type="text"
                   placeholder="e.g 10"
                   className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={student.ca1}
-                  onChange={(e) =>
-                    handleStudentResultInputChange(
-                      student.id,
-                      "ca1",
-                      Number(e.target.value)
-                    )
-                  }
+                  value={studentResults?.[index]?.["ca1"]}
+                  onChange={(e) => handleChange(index, "ca1", e.target.value)}
                 />
               </div>
 
@@ -102,14 +136,8 @@ export default function UploadResult2() {
                   type="text"
                   placeholder="e.g 20"
                   className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={student.ca2}
-                  onChange={(e) =>
-                    handleStudentResultInputChange(
-                      student.id,
-                      "ca2",
-                      Number(e.target.value)
-                    )
-                  }
+                  value={studentResults?.[index]?.["ca2"]}
+                  onChange={(e) => handleChange(index, "ca2", e.target.value)}
                 />
               </div>
 
@@ -121,14 +149,8 @@ export default function UploadResult2() {
                   type="text"
                   placeholder="e.g 70"
                   className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={student.exam}
-                  onChange={(e) =>
-                    handleStudentResultInputChange(
-                      student.id,
-                      "exam",
-                      Number(e.target.value)
-                    )
-                  }
+                  value={studentResults?.[index]?.["exam"]}
+                  onChange={(e) => handleChange(index, "exam", e.target.value)}
                 />
               </div>
 
@@ -140,13 +162,9 @@ export default function UploadResult2() {
                   type="text"
                   placeholder="e.g. B+"
                   className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  value={student.remarks}
+                  value={studentResults?.[index]?.["remark"]}
                   onChange={(e) =>
-                    handleStudentResultInputChange(
-                      student.id,
-                      "remarks",
-                      e.target.value
-                    )
+                    handleChange(index, "remark", e.target.value)
                   }
                 />
               </div>
@@ -157,7 +175,7 @@ export default function UploadResult2() {
         <div className="mt-4">
           <button
             className="inline-flex items-center px-4 py-2 bg-[#0598ce] text-white text-sm font-medium rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            onClick={addMoreStudentResult}
+            onClick={addMoreStudent}
           >
             <svg
               className="h-4 w-4 mr-1"
@@ -175,27 +193,41 @@ export default function UploadResult2() {
             Add more
           </button>
         </div>
-        <div className="mt-4">
+        <div className="mt-6">
           <p className="text-md font-semibold">Comments</p>
-          <p className="text-sm">Kindly enter your comments and submit result</p>
+          <p className="text-sm">
+            Kindly enter your comments and submit result
+          </p>
           <div className="col-span-2 mt-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              
+              Class teacher's comment
             </label>
-            <input
+            <textarea
               type="text"
-              placeholder="e.g. B+"
+              value={classTeacherComment}
+              onChange={(e) => setClassTeacherComment(e.target.value)}
+              placeholder="Enter your comment here"
               className="block w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              
             />
           </div>
         </div>
         <div className="mt-8 items-end flex-col flex w-full">
           <button
-            onClick={handleAddResults}
+            onClick={handleSubmit}
+            disabled={
+              classTeacherComment?.trim()?.length < 1 &&
+              !studentResults.every(
+                (student) =>
+                  student.subject &&
+                  student.ca1 &&
+                  student.ca2 &&
+                  student.exam &&
+                  student.remarks
+              )
+            }
             className="px-20 mt-[20vh] py-2 bg-[#0598ce] text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            {isSaving ? <Loading /> : "Submit Results"}
+            {loading ? <Loading /> : "Submit Results"}
           </button>
         </div>
       </div>
