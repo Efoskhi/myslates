@@ -12,10 +12,9 @@ const Topics = () => {
   const [toggleReloadTopic, setToggleReloadTopic] = React.useState(false);
   const { topics, isLoading } = useTopics({ toggleReloadTopic });
   const [addTopicModalVisible, setAddTopicModalVisible] = React.useState(false);
-
   const navigate = useNavigate();
   const { handleSetCurrentTopic, currentSubject } = useAppContext();
-
+  const [mergedTopics, setMergedTopics] = React.useState([]);
   const toggleTopicModalVisible = () =>
     setAddTopicModalVisible((prev) => !prev);
 
@@ -31,7 +30,38 @@ const Topics = () => {
     toggleTopicModalVisible();
     setToggleReloadTopic((prev) => !prev);
   };
+  const handleTopics = () => {
+    if (topics.length === 0) {
+      setMergedTopics([]);
+      return;
+    };
+    const weeksId = topics.map((topic) => topic.weekRef.title.split(" ")[1]).map(Number);
+    console.log(weeksId);
+    const realWeeks = ["123456789".split("").map(Number), 10].flat();
+    console.log(realWeeks);
+    const filteredWeeks = realWeeks.filter((week) => weeksId.includes(week));
+    const remainingWeeks = realWeeks.filter(
+      (week) => !filteredWeeks.includes(week)
+    ).map(week => {
+      return {
+        title: `Week ${week}`,
+        empty: true,
+      };
+    });
+    const merged = [...topics, ...remainingWeeks].sort((a, b) => {
+      console.log(a)
+      const _weekA = Number(a.empty ? a.title.split(" ")[1] : a.weekRef.title.split(" ")[1]);
+      const _weekB = Number(b.empty ? b.title.split(" ")[1] : b.weekRef.title.split(" ")[1]);
+      return _weekA - _weekB;
+    });
+    console.log(merged, remainingWeeks, filteredWeeks);
+    setMergedTopics(merged);
+    
 
+  }
+  React.useEffect(() => {
+    handleTopics();
+  }, [toggleReloadTopic, topics])
   return (
     <div>
       <Header />
@@ -60,24 +90,40 @@ const Topics = () => {
           </div>
         )}
         {isLoading && <Loading />}
-        {topics.map((topic, key) => (
-          <div
-            key={key}
-            className="inline-flex border rounded-md shadow-md p-2 mb-4 hover:bg-gray-200 items-center w-full justify-between cursor-pointer"
-            onClick={() => handleTopicNavigate(topic)}
-          >
-            <div className="inline-flex gap-6">
-              <img src={topic.weekRef.img} className="h-12" />
-              <div>
-                <p className="text-gray-700">{topic.weekRef.title}</p>
+        {mergedTopics  && mergedTopics.map((topic, key) => {
+          return topic.empty ? (
+            <div
+              key={key}
+              className="inline-flex border rounded-md shadow-md p-2 mb-4 hover:bg-gray-200 items-center w-full justify-between cursor-pointer"
+              
+            >
+              <div className="inline-flex gap-6">
+                <div>
+                  <p className="text-gray-700">{topic.title}</p>
 
-                <p className="font-semibold">{topic.title}</p>
+                </div>
               </div>
+              
             </div>
-            <MdKeyboardArrowRight />
-          </div>
-        ))}
-      </div>
+          ) : (
+            <div
+              key={key}
+              className="inline-flex border rounded-md shadow-md p-2 mb-4 hover:bg-gray-200 items-center w-full justify-between cursor-pointer"
+              onClick={() => handleTopicNavigate(topic)}
+            >
+              <div className="inline-flex gap-6">
+                <img src={topic.weekRef.img} className="h-12" />
+                <div>
+                  <p className="text-gray-700">{topic.weekRef.title}</p>
+
+                  <p className="font-semibold">{topic.title}</p>
+                </div>
+              </div>
+              <MdKeyboardArrowRight />
+            </div>
+          ); 
+})}
+      </div> 
     </div>
   );
 };
