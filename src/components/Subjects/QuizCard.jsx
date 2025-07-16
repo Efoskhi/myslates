@@ -36,7 +36,7 @@ const QuizCard = ({ isOwnSubject }) => {
                 </div>
             }
 
-            {quizes.map((quiz, key) => (
+            {quizes?.sort((a, b) => a.question_number - b.question_number).map((quiz, key) => (
                 <div
                     key={key}
                     className="inline-flex items-center w-full justify-between cursor-pointer mb-2"
