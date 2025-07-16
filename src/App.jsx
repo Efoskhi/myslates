@@ -47,6 +47,8 @@ import QuestionsList from "./Pages/Dashboard/CBT/QuestionsList";
 import CBTResults from "./Pages/Dashboard/CBT/CBTResults";
 import AssignmentsRecord from "./Pages/Dashboard/Subjects/AssignmentsRecord";
 import Assignments from "./Pages/Dashboard/Subjects/Assignments";
+import TermlyResult from "./Pages/Dashboard/TeachingTools/TermlyResult";
+import UploadResult2 from "./Pages/Dashboard/TeachingTools/UploadResult2";
 
 function App() {
   return (
@@ -112,8 +114,10 @@ function App() {
 
               <Route path="ResultManagement" element={<ResultManagement />} />
 
+              
+              <Route path="UploadResult2" element={<UploadResult2 />} />
               <Route path="UploadResult" element={<UploadResult />} />
-
+              
               <Route path="StudentResult" element={<StudentResult />} />
 
               <Route path="ChatPage" element={<ChatPage />} />
@@ -126,7 +130,7 @@ function App() {
               <Route path="RubricBuilder" element={<RubricBuilder />} />
               <Route path="Chatbot" element={<Chatbot />} />
               <Route path="FeedbackBot" element={<FeedbackBot />} />
-
+              <Route path="TermlyResult" element={<TermlyResult />} />
               <Route
                 path="FeedbackBotResponse"
                 element={<FeedbackBotResponse />}
