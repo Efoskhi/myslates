@@ -56,11 +56,11 @@ const Subjects = () => {
   // }
 
   const handleSubjectToggle = (type) => {
-    let filter = [];
+  let filter = [];
 
     if(type === "MySlates Subjects") {
       filter = [
-        ["teacher_id", "!=", user.teacher_id],
+        ["teacher_id", "==", user.teacher_id],
         ["curriculum", "==", user.school.curriculum],
         ["school_id", "==", "000000"],
       ]
