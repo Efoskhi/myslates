@@ -19,14 +19,14 @@ const LessonNote = () => {
   const { classes } = useClasses({ shouldGetClasses: true, pageSize: 100, shouldGetAllClassess: true });
   const { weeks } = useWeeks({ shouldGetWeeks: true, pageSize: 100 });
   const { terms } = useTerms({ shouldGetTerms: true, pageSize: 100 });
-
+  
   return (
     <div>
       <Header />
       <div className="flex flex-col lg:flex-row gap-6 p-6 min-h-screen">
         {/* Left Side: Lesson Plan Generator */}
         <div className="bg-white p-6 shadow-lg rounded-lg w-full lg:w-1/3">
-          <h2 className="text-lg font-semibold mb-4">Lesson Plan Generator</h2>
+          <h2 className="text-lg font-semibold mb-4">Lesson Note Generator</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <select
@@ -70,7 +70,7 @@ const LessonNote = () => {
               className="border rounded-lg p-2 w-full"
             >
               <option value="">Select Subject</option>
-              {staticSubjects.map((item, key) => (
+              {[...staticSubjects].map((item, key) => (
                 <option value={item.name.split("by")[0]} key={key}>{item.name.split("by")[0]}</option>
               ))}
             </select>
@@ -124,6 +124,7 @@ const LessonNote = () => {
             title="Lesson note will appear here"
             renderDownloadPDFButton={true}
             pdfDownloadFilename="lesson_note"
+            from="lessonNote"
           />
         </div>
       </div>
