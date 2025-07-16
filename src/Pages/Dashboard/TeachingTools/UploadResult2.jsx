@@ -19,6 +19,7 @@ export default function UploadResult2() {
   const [studentResults, setStudentResults] = useState([{}]);
   const [classTeacherComment, setClassTeacherComment] = useState("");
   const [loading, setLoading] = useState(false);
+  const [existingCa, setExistingCa] = useState(null);
   const handleBack = () => {
     navigate(-1); // This navigates back to the previous page
   };
@@ -33,7 +34,8 @@ export default function UploadResult2() {
       return val;
     });
   };
-  const { getSubjectsList, handleAddStudentResults } = useResultManagement({});
+  const { getSubjectsList, handleAddStudentResults, getExistingResult } =
+    useResultManagement({});
   useEffect(() => {
     if (
       !classId ||
@@ -44,30 +46,35 @@ export default function UploadResult2() {
       !term
     )
       navigate(-1);
-
+    getExistingResult(studentId, term, session).then(setExistingCa);
     getSubjectsList(schoolId).then((data) => {
       setSubjects(data.Subjects.map((subject) => subject.title));
     });
   }, []);
 
   const handleSubmit = async () => {
-    setLoading(true);
-    toast.success("lol")
-    handleAddStudentResults({
-      classTeacherComment,
-      className: classId,
-      term,
-      selectedSession: session,
-      studentId,
-      studentLength,
-      result: studentResults.map(({ ca1, ca2, subject, exam, remark }) => ({
-        ca1,
-        ca2,
-        exam,
-        subjectName: subject,
-        remark
-      })),
-    });
+    try {
+      setLoading(true);
+      await handleAddStudentResults({
+        classTeacherComment,
+        className: classId,
+        term,
+        selectedSession: session,
+        studentId,
+        studentLength,
+        result: studentResults.map(({ ca1, ca2, subject, exam, remark }) => ({
+          ca1,
+          ca2,
+          exam,
+          subjectName: subject,
+          remark,
+        })),
+      });
+      setLoading(false);
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+    }
   };
   return (
     <div>
@@ -192,6 +199,51 @@ export default function UploadResult2() {
             </svg>
             Add more
           </button>
+        </div>
+        <div className="mx-auto mt-6">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-blue-50/50">
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                  Subject Name
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                  CA1
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                  CA2
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                  Exam
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                  Grade
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {existingCa?.map((curr, index) => (
+                <tr key={index} className="hover:bg-gray-50 cursor-pointer">
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {curr.subject_name}
+                  </td>
+
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {curr.first_ca}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {curr.second_ca}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {curr.exam}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {curr.grade}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="mt-6">
           <p className="text-md font-semibold">Comments</p>

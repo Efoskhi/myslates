@@ -89,6 +89,25 @@ const useResultManagement = ({
     setLoading(isLoadingSubjectStudents);
     setStudents(subjectStudents);
   };
+  const getExistingResult = async (studentId, term, session) => {
+    const studentRef = doc(db, "users", studentId);
+
+    // 1. Get existing result for this student/term/session
+    const studentPrevious = await getFirebaseData({
+      query: [
+        ["student_ref", "==", studentRef],
+      ],
+      collection: "StudentResults",
+      subcollections: ["ResultSubjects"],
+    });
+
+    const existingResult = studentPrevious?.data?.StudentResults?.[0];
+    const existingSubjects = existingResult?.ResultSubjects || [];
+    const previousSubjects = existingSubjects.map((subject) => ({
+      ...subject,
+    }));
+    return previousSubjects;
+  };
 
   const getStudents = async (student_class, fetchAll) => {
     if (!fetchAll && !student_class) return;
@@ -140,7 +159,7 @@ const useResultManagement = ({
     console.log(result);
     let total = 0;
     let totalAverage = 0;
-    const realSubjectdata = [];
+    const realSubjectdata: any[] = [];
 
     const studentRef = doc(db, "users", studentId);
 
@@ -148,8 +167,7 @@ const useResultManagement = ({
     const studentPrevious = await getFirebaseData({
       query: [
         ["student_ref", "==", studentRef],
-        ["term", "==", term],
-        ["session", "==", selectedSession],
+      
       ],
       collection: "StudentResults",
       subcollections: ["ResultSubjects"],
@@ -162,7 +180,6 @@ const useResultManagement = ({
     for (let i = 0; i < result.length; i++) {
       const { ca1, ca2, subjectName, exam, remark } = result[i];
       const score = Number(ca1) + Number(ca2) + Number(exam);
-      total += score;
 
       realSubjectdata.push({
         subject_name: subjectName,
@@ -174,8 +191,31 @@ const useResultManagement = ({
         remark,
       });
     }
+    // Convert existing subjects to a map
+    const subjectMap = new Map();
 
-    totalAverage = total / realSubjectdata.length;
+    for (const subj of existingSubjects) {
+      if (subj?.subject_name) {
+        subjectMap.set(subj.subject_name, subj);
+      }
+    }
+
+    // Overwrite or add with new subjects
+    for (const newSubj of realSubjectdata) {
+      subjectMap.set(newSubj.subject_name, newSubj);
+    }
+
+    // Final merged subjects
+    const mergedSubjects = Array.from(subjectMap.values());
+
+    for (const subject of mergedSubjects) {
+      total += Number(subject.total || 0);
+    }
+
+    const average =
+      mergedSubjects.length > 0 ? total / mergedSubjects.length : 0;
+
+    totalAverage = average;
 
     const studentData = {
       class_teacher_comment: classTeacherComment,
@@ -198,12 +238,12 @@ const useResultManagement = ({
     // 3. Upsert StudentResult (no random ID)
     let resultResponse;
     if (existingResultId) {
-      console.log("here");
-
+      console.log("here", existingResultId);
       // Manually update using Firestore
-      const resultDocRef = doc(db, "StudentResults", existingResultId);
-      await setDoc(resultDocRef, studentData, { merge: true });
-
+      resultResponse = await addFirebaseData({
+        collection: "StudentResults",
+        data: studentData,
+      });
       resultResponse = {
         status: "success",
         data: {
@@ -211,6 +251,7 @@ const useResultManagement = ({
           ...studentData,
         },
       };
+      console.log("herex")
     } else {
       console.log("here 2");
       // Create new one
@@ -414,6 +455,7 @@ const useResultManagement = ({
     getClassesAndCategories,
     getSubjectsList,
     handleAddStudentResults,
+    getExistingResult
   };
 };
 

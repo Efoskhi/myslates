@@ -124,6 +124,7 @@ const LessonPlan = () => {
             title="Lesson plans will appear here"
             renderDownloadPDFButton={true}
             pdfDownloadFilename="lesson_plan"
+            from="lessonPlan"
           />
         </div>
       </div>

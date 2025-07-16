@@ -5,7 +5,7 @@ import Loading from "../Layout/Loading";
 import { IoClose } from "react-icons/io5";
 import { useAppContext } from "../../context/AppContext";
 
-const TopicDetails = ({ section, handleCloseModal, callback }) => {
+const TopicDetails = ({ section, handleCloseModal, callback, shouldDisable }) => {
   const { currentTopic } = useAppContext();
 
   const topic = section === "Update" ? currentTopic : null;
@@ -57,7 +57,7 @@ const TopicDetails = ({ section, handleCloseModal, callback }) => {
           className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           defaultValue={inputs.week}
           onChange={(e) => handleInput("week", e.target.value)}
-          disabled
+          disabled={shouldDisable}
         >
           <option value="">Select Week</option>
           {weeks.map((week, key) => (
@@ -82,7 +82,7 @@ const TopicDetails = ({ section, handleCloseModal, callback }) => {
           className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={inputs.term}
           onChange={(e) => handleInput("term", e.target.value)}
-          disabled
+          disabled={shouldDisable}
         >
           <option value="">Select Term</option>
           {terms.map((term, key) => (
@@ -104,7 +104,7 @@ const TopicDetails = ({ section, handleCloseModal, callback }) => {
           placeholder="Enter topic title"
           value={inputs.title}
           onChange={(e) => handleInput("title", e.target.value)}
-          disabled
+          disabled={shouldDisable}
         />
       </div>
 
@@ -119,7 +119,7 @@ const TopicDetails = ({ section, handleCloseModal, callback }) => {
           placeholder="Ensure serial number does not exist already"
           value={inputs.serial_no}
           onChange={(e) => handleInput("serial_no", e.target.value)}
-          disabled
+          disabled={shouldDisable}
         />
       </div>
 
@@ -132,14 +132,14 @@ const TopicDetails = ({ section, handleCloseModal, callback }) => {
           placeholder=""
           value={inputs.lesson_plan}
           onChange={(e) => handleInput("lesson_plan", e.target.value)}
-          disabled
+          disabled={shouldDisable}
         />
       </div>
 
       {/* Update Button */}
       {(topic?.isOwnSubject || section === "Add") && (
         <button
-          disabled
+          disabled={shouldDisable}
           onClick={
             section === "Update"
               ? handleUpdateTopic

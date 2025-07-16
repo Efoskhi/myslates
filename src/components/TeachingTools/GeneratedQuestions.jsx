@@ -109,7 +109,7 @@ const GeneratedQuestions = ({
     return (
         <div className="bg-white shadow-md px-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">
-               {from !== "lessonNote" ? "Generated Assignment Questions" : "Generated Lesson Note"}
+               {from == "lessonNote"  ? "Generated Lesson Note" : from == "lessonPlan" ?  "Generated Lesson Plan" : "Generated Assignment Questions"}
             </h2>
 
             <div id="pdf-content" className="border p-4 rounded-lg space-y-4">

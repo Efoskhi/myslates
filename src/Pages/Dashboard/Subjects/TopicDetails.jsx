@@ -49,7 +49,7 @@ const TopicDetails = () => {
             <div className="flex items-center gap-2 text-blue-700 text-lg font-semibold">
               📋 <span>Topic details</span>
             </div>
-            <UpdateTopicDetails section="Update" />
+            <UpdateTopicDetails section="Update" shouldDisable={true}/>
           </div>
         );
       case "lessons":

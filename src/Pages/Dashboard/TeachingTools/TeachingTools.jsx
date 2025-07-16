@@ -11,6 +11,16 @@ import Teach1 from "../../../assets/Teach1.png";
 
 const features = [
   {
+    title: "Termly Result",
+    description:
+      "This tool helps you generate termly results for bstudents",
+    icon: Teach1,
+    IconComponent: AiFillThunderbolt,
+    iconColor: "text-yellow-500",
+    gradient: "bg-gradient-to-r from-blue-100 to-white",
+    path: "/TermlyResult",
+  },
+  {
     title: "Assessment Builder",
     description:
       "This tool helps you generate different types of questions for both tests and exams e.g multiple choice or essay.",

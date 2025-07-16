@@ -47,7 +47,7 @@ const TermlyResult = () => {
   const handleContinue = () => {
 
     navigate(
-      `/UploadResult?${new URLSearchParams({
+      `/UploadResult2?${new URLSearchParams({
         className: selectedClass,
         term: selectedTerm,
         session: selectedSession,
