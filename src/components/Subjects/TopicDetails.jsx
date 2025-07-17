@@ -133,6 +133,8 @@ const TopicDetails = ({ section, handleCloseModal, callback, shouldDisable }) =>
           value={inputs.lesson_plan}
           onChange={(e) => handleInput("lesson_plan", e.target.value)}
           disabled={shouldDisable}
+          rows={5}
+          
         />
       </div>
 

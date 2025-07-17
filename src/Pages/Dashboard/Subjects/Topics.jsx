@@ -36,9 +36,9 @@ const Topics = () => {
       return;
     };
     const weeksId = topics.map((topic) => topic.weekRef.title.split(" ")[1]).map(Number);
-    console.log(weeksId);
+   
     const realWeeks = ["123456789".split("").map(Number), 10].flat();
-    console.log(realWeeks);
+  
     const filteredWeeks = realWeeks.filter((week) => weeksId.includes(week));
     const remainingWeeks = realWeeks.filter(
       (week) => !filteredWeeks.includes(week)

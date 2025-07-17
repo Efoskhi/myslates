@@ -186,6 +186,7 @@ const useSchedule = () => {
             setSchedules(prev => [...prev, ...newEvent] as any);
 
             toast.success("Schedule has been added");
+            await getTodaySchedules();
             toggleModal();
 
         } catch(error) {
