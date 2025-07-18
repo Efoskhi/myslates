@@ -54,7 +54,7 @@ const LessonCard = ({ isOwnSubject }) => {
                 className="font-semibold overflow-hidden text-ellipsis"
                 style={{
                   display: "-webkit-box",
-                  WebkitLineClamp: 2,
+                  WebkitLineClamp: 20,
                   WebkitBoxOrient: "vertical",
                 }}
               >

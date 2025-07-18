@@ -65,6 +65,7 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
               maxLength={200}
               value={inputs.activities}
               onChange={(e) => handleInputs("activities", e.target.value)}
+              
             ></textarea>
           </div>
 
@@ -76,6 +77,7 @@ const LessonDetailsModal = ({ hooks, isOwnSubject }) => {
               className="w-full mt-1 p-2 border rounded-md"
               value={inputs.content}
               onChange={(e) => handleInputs("content", e.target.value)}
+              rows={5}
             ></textarea>
           </div>
 
